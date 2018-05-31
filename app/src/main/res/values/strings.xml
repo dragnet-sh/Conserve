@@ -1,0 +1,30 @@
+<resources>
+    <string name="app_name">Gemini Energy</string>
+
+    <!-- Warning | Error Message -->
+    <string name="unknown_error">Unknown Error</string>
+
+    <!-- Menu -->
+    <string name="menu_create_audit">Create Audit</string>
+
+    <!-- Fragment Audit Dialog -->
+    <string name="audit_id">Audit Id</string>
+    <string name="audit_tag">Audit Tag</string>
+    <string name="audit_save">Save</string>
+    <string name="audit_cancel">Cancel</string>
+    <string name="create_audit">Create Audit</string>
+
+
+    <string name="navigation_drawer_header_title">Gemini Energy</string>
+
+    <plurals name="watering_needs_suffix">
+        <item quantity="one">every day</item>
+        <item quantity="other">every %d days</item>
+    </plurals>
+
+    <plurals name="watering_next_suffix">
+        <item quantity="one">water tomorrow.</item>
+        <item quantity="other">water in %d days.</item>
+    </plurals>
+
+</resources>

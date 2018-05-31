@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="FragmentAuditListBinding">
+        <variable
+            name="viewModel"
+            type="com.gemini.energy.presentation.list.AuditListViewModel" />
+
+        <variable
+            name="callbacks"
+            type="com.gemini.energy.presentation.list.adapter.AuditListAdapter.Callbacks" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:paddingTop="@dimen/recycler_view_padding_top"
+            android:layout_marginRight="@dimen/recycler_view_vertical_margin"
+            android:background="@android:color/holo_green_light"
+            android:id="@+id/recyclerView"
+
+            app:auditList="@{viewModel.result}"
+            app:auditListCallback="@{callbacks}"
+
+            tools:listitem="@layout/fragment_audit_list_item"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </FrameLayout>
+
+</layout>
+
