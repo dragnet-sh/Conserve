@@ -19,7 +19,7 @@ class HomePagerAdapter(fm: FragmentManager): FragmentStatePagerAdapter(fm){
 
     override fun getPageTitle(position: Int): CharSequence? {
         return when(position) {
-            0 -> "PreAudit"
+            0 -> "Pre-Audit"
             else -> "Zone"
         }
     }

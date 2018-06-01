@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.list
+package com.gemini.energy.presentation.list.audit
 
 import android.os.Bundle
 import android.support.v4.app.DialogFragment

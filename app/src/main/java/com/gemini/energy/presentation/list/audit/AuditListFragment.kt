@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.list
+package com.gemini.energy.presentation.list.audit
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
@@ -12,10 +12,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gemini.energy.R
-import com.gemini.energy.presentation.list.adapter.AuditListAdapter
-import com.gemini.energy.presentation.list.model.AuditModel
 import com.gemini.energy.databinding.FragmentAuditListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
+import com.gemini.energy.presentation.list.audit.adapter.AuditListAdapter
+import com.gemini.energy.presentation.list.audit.model.AuditModel
+import com.gemini.energy.presentation.list.audit.vm.AuditCreateViewModel
+import com.gemini.energy.presentation.list.audit.vm.AuditListViewModel
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 

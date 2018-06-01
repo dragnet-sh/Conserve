@@ -1,12 +1,15 @@
 package com.gemini.energy.presentation
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.gemini.energy.R
-import com.gemini.energy.presentation.list.AuditDialogFragment
-import com.gemini.energy.presentation.list.AuditListFragment
+import com.gemini.energy.databinding.ActivityHomeBinding
+import com.gemini.energy.presentation.list.audit.AuditDialogFragment
+import com.gemini.energy.presentation.list.audit.AuditListFragment
 import com.gemini.energy.presentation.navigation.Navigator
+import com.gemini.energy.presentation.pager.adapter.HomePagerAdapter
 import com.mikepenz.crossfader.Crossfader
 import com.mikepenz.crossfader.view.GmailStyleCrossFadeSlidingPaneLayout
 import dagger.android.support.DaggerAppCompatActivity
@@ -20,28 +23,24 @@ class HomeActivity : DaggerAppCompatActivity() {
     @Inject
     lateinit var navigator: Navigator
 
-//    private val binder by lazyThreadSafetyNone<ActivityHomeBinding> {
-//        DataBindingUtil.setContentView(this, R.layout.activity_home)
-//    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_home)
+        var binder = DataBindingUtil.setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
         setupToolbar()
 
         crossfader.withContent(findViewById(R.id.root_home_container))
-                .withFirst(layoutInflater.inflate(R.layout.activity_side_bar, null), WIDTH_SECONDARY)
-                .withSecond(layoutInflater.inflate(R.layout.activity_mini_bar, null), WIDTH_PRIMARY)
+                .withFirst(layoutInflater.inflate(R.layout.activity_side_bar, null), DIM_MAIN)
+                .withSecond(layoutInflater.inflate(R.layout.activity_mini_bar, null), DIM_MINI)
                 .build()
 
         // 1. Audit List
         supportFragmentManager.beginTransaction()
-                .replace(R.id.side_bar, AuditListFragment.newInstance(), TAG_FRAG_SECONDARY)
+                .replace(R.id.side_bar, AuditListFragment.newInstance(), FRAG_AUDIT_LIST)
                 .commit()
 
-        // 2. View Pager
-//        binder.viewPager.adapter = HomePagerAdapter(supportFragmentManager)
+        // 2. View Pager [PreAudit -- Zone List]
+        binder.viewPager.adapter = HomePagerAdapter(supportFragmentManager)
 
     }
 
@@ -69,15 +68,16 @@ class HomeActivity : DaggerAppCompatActivity() {
 
     private fun showCreateAudit() {
         val dialogFragment = AuditDialogFragment()
-        dialogFragment.show(supportFragmentManager, TAG_FRAG_DIALOG)
+        dialogFragment.show(supportFragmentManager, FRAG_DIALOG)
     }
 
     companion object {
         private const val TAG = "HomeActivity"
-        private const val TAG_FRAG_DIALOG = "AuditDialogFragment"
-        private const val TAG_FRAG_PRIMARY = ""
-        private const val TAG_FRAG_SECONDARY = "AuditListFragment"
-        private const val WIDTH_PRIMARY = 70
-        private const val WIDTH_SECONDARY = 200
+
+        private const val FRAG_DIALOG = "AuditDialogFragment"
+        private const val FRAG_AUDIT_LIST = "AuditListFragment"
+
+        private const val DIM_MINI = 70
+        private const val DIM_MAIN = 200
     }
 }

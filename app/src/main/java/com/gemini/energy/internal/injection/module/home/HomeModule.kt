@@ -3,13 +3,13 @@ package com.gemini.energy.internal.injection.module.home
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
-import com.gemini.energy.presentation.list.AuditCreateViewModel
-import com.gemini.energy.presentation.list.AuditDialogFragment
-import com.gemini.energy.presentation.list.AuditListFragment
+import com.gemini.energy.presentation.list.audit.vm.AuditCreateViewModel
+import com.gemini.energy.presentation.list.audit.AuditDialogFragment
+import com.gemini.energy.presentation.list.audit.AuditListFragment
 import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.gateway.AuditGateway
 import com.gemini.energy.domain.interactor.AuditGetAllUseCase
-import com.gemini.energy.presentation.list.AuditListViewModel
+import com.gemini.energy.presentation.list.audit.vm.AuditListViewModel
 import com.gemini.energy.domain.interactor.AuditSaveUseCase
 import com.gemini.energy.internal.injection.scope.HomeScope
 import com.gemini.energy.presentation.navigation.Navigator

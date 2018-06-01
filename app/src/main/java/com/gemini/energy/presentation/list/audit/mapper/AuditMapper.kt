@@ -1,7 +1,7 @@
-package com.gemini.energy.presentation.list.mapper
+package com.gemini.energy.presentation.list.audit.mapper
 
 import android.content.Context
-import com.gemini.energy.presentation.list.model.AuditModel
+import com.gemini.energy.presentation.list.audit.model.AuditModel
 import com.gemini.energy.domain.entity.Audit
 
 class AuditMapper(private val context: Context) {

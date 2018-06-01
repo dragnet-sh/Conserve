@@ -6,11 +6,11 @@
     <data class="FragmentAuditListBinding">
         <variable
             name="viewModel"
-            type="com.gemini.energy.presentation.list.AuditListViewModel" />
+            type="com.gemini.energy.presentation.list.audit.vm.AuditListViewModel" />
 
         <variable
             name="callbacks"
-            type="com.gemini.energy.presentation.list.adapter.AuditListAdapter.Callbacks" />
+            type="com.gemini.energy.presentation.list.audit.adapter.AuditListAdapter.Callbacks" />
     </data>
 
     <FrameLayout

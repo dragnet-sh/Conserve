@@ -19,6 +19,20 @@
                 android:layout_height="?attr/actionBarSize"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tabs"
+                style="@style/AppTabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="150dp"
+                android:elevation="6dp"
+                app:setupWithViewPager="@{viewPager}"
+                app:tabIndicatorColor="@android:color/holo_green_light"
+
+                app:tabIndicatorHeight="5dp"
+                app:tabMode="scrollable" />
+
         </android.support.design.widget.AppBarLayout>
 
         <FrameLayout
@@ -26,6 +40,20 @@
             android:layout_height="match_parent"
             android:id="@+id/root_home_container">
 
+            <android.support.v4.view.ViewPager
+                android:id="@+id/view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|bottom"
+                android:layout_margin="16dp"
+                android:background="@android:color/holo_green_light"
+                app:backgroundTint="@android:color/holo_green_light"
+                app:srcCompat="@drawable/ic_icon_add" />
 
         </FrameLayout>
 

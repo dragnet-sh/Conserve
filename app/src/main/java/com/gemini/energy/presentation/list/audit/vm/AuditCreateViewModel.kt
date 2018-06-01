@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.list
+package com.gemini.energy.presentation.list.audit.vm
 
 import android.app.Application
 import android.content.Context
