@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.list.audit.adapter
+package com.gemini.energy.presentation.audit.list.adapter
 
 import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gemini.energy.R
-import com.gemini.energy.presentation.list.audit.model.AuditModel
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.databinding.FragmentAuditListItemBinding
 
 class AuditListAdapter(private val items: List<AuditModel>, private val callbacks: Callbacks? = null):

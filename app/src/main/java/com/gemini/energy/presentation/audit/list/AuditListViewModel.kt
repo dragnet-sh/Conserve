@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.list.audit.vm
+package com.gemini.energy.presentation.audit.list
 
 import android.app.Application
 import android.content.Context
@@ -7,8 +7,8 @@ import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.util.Log
 import com.gemini.energy.R
-import com.gemini.energy.presentation.list.audit.mapper.AuditMapper
-import com.gemini.energy.presentation.list.audit.model.AuditModel
+import com.gemini.energy.presentation.audit.list.mapper.AuditMapper
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.domain.entity.Audit
 import com.gemini.energy.domain.interactor.AuditGetAllUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel

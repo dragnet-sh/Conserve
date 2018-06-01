@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation
+package com.gemini.energy.presentation.home
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -6,10 +6,10 @@ import android.view.Menu
 import android.view.MenuItem
 import com.gemini.energy.R
 import com.gemini.energy.databinding.ActivityHomeBinding
-import com.gemini.energy.presentation.list.audit.AuditDialogFragment
-import com.gemini.energy.presentation.list.audit.AuditListFragment
+import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
+import com.gemini.energy.presentation.audit.list.AuditListFragment
 import com.gemini.energy.presentation.navigation.Navigator
-import com.gemini.energy.presentation.pager.adapter.HomePagerAdapter
+import com.gemini.energy.presentation.audit.detail.adapter.HomePagerAdapter
 import com.mikepenz.crossfader.Crossfader
 import com.mikepenz.crossfader.view.GmailStyleCrossFadeSlidingPaneLayout
 import dagger.android.support.DaggerAppCompatActivity
@@ -30,8 +30,8 @@ class HomeActivity : DaggerAppCompatActivity() {
         setupToolbar()
 
         crossfader.withContent(findViewById(R.id.root_home_container))
-                .withFirst(layoutInflater.inflate(R.layout.activity_side_bar, null), DIM_MAIN)
-                .withSecond(layoutInflater.inflate(R.layout.activity_mini_bar, null), DIM_MINI)
+                .withFirst(layoutInflater.inflate(R.layout.activity_side_bar, null), LENGTH_AUDIT_LIST)
+                .withSecond(layoutInflater.inflate(R.layout.activity_mini_bar, null), LENGTH_MINI_BAR)
                 .build()
 
         // 1. Audit List
@@ -77,7 +77,7 @@ class HomeActivity : DaggerAppCompatActivity() {
         private const val FRAG_DIALOG = "AuditDialogFragment"
         private const val FRAG_AUDIT_LIST = "AuditListFragment"
 
-        private const val DIM_MINI = 70
-        private const val DIM_MAIN = 200
+        private const val LENGTH_MINI_BAR = 70
+        private const val LENGTH_AUDIT_LIST = 200
     }
 }

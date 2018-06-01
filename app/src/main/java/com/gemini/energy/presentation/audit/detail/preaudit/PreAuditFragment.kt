@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.pager
+package com.gemini.energy.presentation.audit.detail.preaudit
 
 import android.os.Bundle
 import dagger.android.support.DaggerFragment

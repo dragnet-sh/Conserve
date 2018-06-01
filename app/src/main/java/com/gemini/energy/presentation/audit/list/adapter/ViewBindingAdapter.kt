@@ -1,8 +1,8 @@
-package com.gemini.energy.presentation.list.audit.adapter
+package com.gemini.energy.presentation.audit.list.adapter
 
 import android.databinding.BindingAdapter
 import android.support.v7.widget.RecyclerView
-import com.gemini.energy.presentation.list.audit.model.AuditModel
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 
 object ViewBindingAdapter {
 

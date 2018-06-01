@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.list.audit.model
+package com.gemini.energy.presentation.audit.list.model
 
 data class AuditModel(
         val id: Int,

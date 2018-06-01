@@ -1,6 +1,6 @@
 package com.gemini.energy.internal.injection.module
 
-import com.gemini.energy.presentation.HomeActivity
+import com.gemini.energy.presentation.home.HomeActivity
 import com.gemini.energy.internal.injection.module.home.HomeModule
 import com.gemini.energy.internal.injection.scope.HomeScope
 import dagger.Module

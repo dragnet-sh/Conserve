@@ -6,7 +6,7 @@
     <data class="FragmentAuditListItemBinding">
         <variable
             name="audit"
-            type="com.gemini.energy.presentation.list.audit.model.AuditModel" />
+            type="com.gemini.energy.presentation.audit.list.model.AuditModel" />
     </data>
 
     <android.support.constraint.ConstraintLayout
