@@ -3,6 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data class="FragmentZoneListBinding">
+
+        <variable
+            name="viewModel"
+            type="com.gemini.energy.presentation.audit.detail.zone.list.ZoneListViewModel" />
+
+        <variable
+            name="callbacks"
+            type="com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAdapter.Callbacks" />
+
+        <variable
+            name="fabClick"
+            type="android.view.View.OnClickListener" />
+
+    </data>
+
     <FrameLayout
         android:layout_width="match_parent" android:layout_height="match_parent">
 
@@ -10,6 +26,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/recyclerView" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:onClick="@{fabClick}"
+            android:background="@android:color/holo_green_light"
+            app:backgroundTint="@android:color/holo_green_light"
+            app:srcCompat="@drawable/ic_icon_add" />
 
     </FrameLayout>
 

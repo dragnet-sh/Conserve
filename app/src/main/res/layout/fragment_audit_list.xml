@@ -10,7 +10,7 @@
 
         <variable
             name="callbacks"
-            type="com.gemini.energy.presentation.audit.list.adapter.AuditListAdapter.Callbacks" />
+            type="com.gemini.energy.presentation.audit.list.adapter.AuditListAdapter.OnAuditClickListener" />
     </data>
 
     <FrameLayout

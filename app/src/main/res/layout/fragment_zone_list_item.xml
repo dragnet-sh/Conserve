@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data class="FragmentZoneListItemBinding">
+        <variable
+            name="zone"
+            type="com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel" />
+    </data>
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -11,6 +17,7 @@
             android:id="@+id/text_zone_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@{zone.name}"
             tools:text="Zone Tag Placeholder"
             android:padding="10dp"
             android:layout_marginLeft="10dp"

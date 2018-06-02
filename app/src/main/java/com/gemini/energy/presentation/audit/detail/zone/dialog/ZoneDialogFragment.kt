@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.audit.dialog
+package com.gemini.energy.presentation.audit.detail.zone.dialog
 
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
@@ -12,18 +12,13 @@ import com.gemini.energy.presentation.navigation.Navigator
 import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
-import com.mobsandgeeks.saripaar.annotation.Pattern
 import dagger.android.support.AndroidSupportInjection
 import javax.inject.Inject
 
-class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
+class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
 
     @NotEmpty
-    @Pattern(regex = "^\\d+$")
-    private lateinit var auditId: EditText
-
-    @NotEmpty
-    private lateinit var auditTag: EditText
+    private lateinit var zoneTag: EditText
 
     //ToDo: Check why this fails from Dagger
     private lateinit var validator: Validator
@@ -42,18 +37,16 @@ class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val view = inflater.inflate(R.layout.fragment_audit_dialog, container, false)
-        dialog.setTitle(R.string.create_audit)
+        val view = inflater.inflate(R.layout.fragment_zone_dialog, container, false)
+        dialog.setTitle(R.string.create_zone)
 
-        view.findViewById<Button>(R.id.btn_cancel_audit).setOnClickListener { dismiss() }
-        view.findViewById<Button>(R.id.btn_save_audit).setOnClickListener { validator.validate() }
+        view.findViewById<Button>(R.id.btn_cancel_zone).setOnClickListener { dismiss() }
+        view.findViewById<Button>(R.id.btn_save_zone).setOnClickListener { validator.validate() }
 
-        auditId = view.findViewById(R.id.edt_create_audit_id)
-        auditTag = view.findViewById(R.id.edt_create_audit_tag)
+        zoneTag = view.findViewById(R.id.edt_create_zone_tag)
 
         return view
     }
-
 
     override fun onValidationFailed(errors: MutableList<ValidationError>?) {
         navigator.message("Audit Create - Form Validation Failed.")
@@ -61,22 +54,21 @@ class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
 
     override fun onValidationSucceeded() {
         var args = Bundle().apply {
-            this.putInt("auditId", auditId.text.toString().toInt())
-            this.putString("auditTag", auditTag.text.toString())
+            this.putString("zoneTag", zoneTag.text.toString())
         }
 
-        val callbacks = fragmentManager?.findFragmentByTag(TAG_AUDIT_LIST) as OnAuditCreateListener
-        callbacks.onAuditCreate(args)
+        val callbacks = fragmentManager?.findFragmentByTag(FRAG_ZONE_LIST) as Callbacks
+        callbacks.onZoneCreate(args)
         dismiss()
     }
 
-
     companion object {
         private const val TAG = "AuditDialogFragment"
-        private const val TAG_AUDIT_LIST = "AuditListFragment"
+        private const val FRAG_ZONE_LIST = "ZoneListFragment"
     }
 
-    interface OnAuditCreateListener {
-        fun onAuditCreate(args: Bundle)
+    interface Callbacks {
+        fun onZoneCreate(args: Bundle)
     }
+
 }

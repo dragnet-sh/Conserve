@@ -9,7 +9,7 @@ object ViewBindingAdapter {
     @JvmStatic
     @BindingAdapter("auditList", "auditListCallback", requireAll = false)
     fun setAuditListAdapter(recyclerView: RecyclerView, auditList: List<AuditModel>?,
-                            auditListCallback: AuditListAdapter.Callbacks?) {
+                            auditListCallback: AuditListAdapter.OnAuditClickListener?) {
 
         auditList?.let {
             recyclerView.setHasFixedSize(true)

@@ -3,18 +3,23 @@ package com.gemini.energy.internal.injection.module.home
 import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
-import com.gemini.energy.presentation.audit.dialog.AuditCreateViewModel
-import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
-import com.gemini.energy.presentation.audit.list.AuditListFragment
 import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.gateway.AuditGateway
 import com.gemini.energy.domain.interactor.AuditGetAllUseCase
-import com.gemini.energy.presentation.audit.list.AuditListViewModel
 import com.gemini.energy.domain.interactor.AuditSaveUseCase
+import com.gemini.energy.domain.interactor.ZoneGetAllUseCase
+import com.gemini.energy.domain.interactor.ZoneSaveUseCase
 import com.gemini.energy.internal.injection.scope.HomeScope
-import com.gemini.energy.presentation.navigation.Navigator
 import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditFragment
-import com.gemini.energy.presentation.audit.detail.zone.ZoneListFragment
+import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneCreateViewModel
+import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragment
+import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
+import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListViewModel
+import com.gemini.energy.presentation.audit.dialog.AuditCreateViewModel
+import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
+import com.gemini.energy.presentation.audit.list.AuditListFragment
+import com.gemini.energy.presentation.audit.list.AuditListViewModel
+import com.gemini.energy.presentation.navigation.Navigator
 import com.mikepenz.crossfader.Crossfader
 import com.mikepenz.crossfader.view.GmailStyleCrossFadeSlidingPaneLayout
 import com.mobsandgeeks.saripaar.Validator
@@ -39,6 +44,8 @@ internal abstract class HomeModule {
     @ContributesAndroidInjector
     internal abstract fun contributeZoneListFragment(): ZoneListFragment
 
+    @ContributesAndroidInjector
+    internal abstract fun contributeZoneDialogFragment(): ZoneDialogFragment
 
     @Module
     companion object {
@@ -79,22 +86,47 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideZoneGetAllUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneGetAllUseCase {
+            return ZoneGetAllUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideZoneSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneSaveUseCase {
+            return ZoneSaveUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideViewModelFactory(
 
                 context: Context,
                 auditGetAllUseCase: AuditGetAllUseCase,
-                auditSaveUseCase: AuditSaveUseCase
+                auditSaveUseCase: AuditSaveUseCase,
+                zoneGetAllUseCase: ZoneGetAllUseCase,
+                zoneSaveUseCase: ZoneSaveUseCase
 
         ): ViewModelProvider.Factory {
 
             return object : ViewModelProvider.Factory {
                 override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                     return when {
+
                         modelClass.isAssignableFrom(AuditListViewModel::class.java) ->
                                 AuditListViewModel(context, auditGetAllUseCase) as T
 
                         modelClass.isAssignableFrom(AuditCreateViewModel::class.java) ->
                                 AuditCreateViewModel(context, auditSaveUseCase) as T
+
+                        modelClass.isAssignableFrom(ZoneListViewModel::class.java) ->
+                                ZoneListViewModel(context, zoneGetAllUseCase) as T
+
+                        modelClass.isAssignableFrom(ZoneCreateViewModel::class.java) ->
+                                ZoneCreateViewModel(context, zoneSaveUseCase) as T
 
                         else -> throw IllegalArgumentException("Unknown ViewModel class : ${modelClass.name}")
                     }

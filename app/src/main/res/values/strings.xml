@@ -14,6 +14,11 @@
     <string name="audit_cancel">Cancel</string>
     <string name="create_audit">Create Audit</string>
 
+    <!-- Fragment Zone Dialog -->
+    <string name="zone_tag">Zone Tag</string>
+    <string name="zone_save">Save</string>
+    <string name="zone_cancel">Cancel</string>
+    <string name="create_zone">Create Zone</string>
 
     <string name="navigation_drawer_header_title">Gemini Energy</string>
 

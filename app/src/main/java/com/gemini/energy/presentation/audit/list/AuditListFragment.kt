@@ -19,15 +19,20 @@ import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
 import com.gemini.energy.presentation.audit.list.adapter.AuditListAdapter
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import dagger.android.support.DaggerFragment
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
-class AuditListFragment : DaggerFragment(), AuditListAdapter.Callbacks,
-        AuditDialogFragment.Callbacks {
+class AuditListFragment : DaggerFragment(),
+
+        AuditListAdapter.OnAuditClickListener,
+        AuditDialogFragment.OnAuditCreateListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binder: FragmentAuditListBinding
+    private var disposables = CompositeDisposable()
 
     private val viewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(AuditListViewModel::class.java)
@@ -68,17 +73,30 @@ class AuditListFragment : DaggerFragment(), AuditListAdapter.Callbacks,
         refreshViewModel()
     }
 
-    override fun onItemClick(view: View, item: AuditModel) {
-        Log.d(TAG, "Audit List Item - Click")
-        //ToDo: ***** Load the List of Zones in the ViewPager ****
+    override fun onAuditClick(observable: Observable<AuditModel>) {
+        Log.d(TAG, "ON ITEM CLICK")
+        val activity = activity as OnAuditSelectedListener?
+        activity?.let {
+            Log.d(TAG, "ON ITEM CLICK -- Instance Home Activity")
+            it.onAuditSelected(observable)
+        }
     }
 
     override fun onAuditCreate(args: Bundle) {
         _viewModel.createAudit(args.getInt("auditId"), args.getString("auditTag"))
     }
 
+    override fun onStop() {
+        super.onStop()
+        disposables.dispose()
+    }
+
     private fun refreshViewModel() {
         viewModel.loadAuditList()
+    }
+
+    interface OnAuditSelectedListener {
+        fun onAuditSelected(observable: Observable<AuditModel>)
     }
 
     companion object {
