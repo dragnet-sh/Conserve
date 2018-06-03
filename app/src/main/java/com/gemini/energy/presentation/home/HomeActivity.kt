@@ -2,10 +2,10 @@ package com.gemini.energy.presentation.home
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.ViewGroup
+import android.widget.TextView
 import com.gemini.energy.R
 import com.gemini.energy.databinding.ActivityHomeBinding
 import com.gemini.energy.presentation.audit.detail.adapter.DetailPagerAdapter
@@ -79,9 +79,16 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
     override fun onAuditSelected(observable: Observable<AuditModel>) {
         disposables.add(observable.subscribeWith(object : DisposableObserver<AuditModel>() {
             override fun onComplete() { }
-            override fun onNext(t: AuditModel) { refreshZoneViewModel(t.id) }
+            override fun onNext(t: AuditModel) {
+                setAuditHeader(t)
+                refreshZoneViewModel(t.id)
+            }
             override fun onError(e: Throwable) {}
         }))
+    }
+
+    private fun setAuditHeader(audit: AuditModel) {
+        findViewById<TextView>(R.id.txt_header_audit).text = "${audit.name} -- ${audit.id}"
     }
 
     private fun refreshZoneViewModel(auditId: Int) {
