@@ -9,7 +9,7 @@ object ViewBindingAdapter {
     @JvmStatic
     @BindingAdapter("zoneList", "zoneListCallback", requireAll = false)
     fun setZoneListAdapter(recyclerView: RecyclerView, zoneList: List<ZoneModel>?,
-                           zoneListCallback: ZoneListAdapter.Callbacks?) {
+                           zoneListCallback: ZoneListAdapter.OnZoneClickListener?) {
 
         zoneList?.let {
             recyclerView.setHasFixedSize(true)

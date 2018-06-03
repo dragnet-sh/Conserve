@@ -43,6 +43,7 @@
                 <TextView
                     tool:text="Hello World - Audit Tag"
                     android:id="@+id/txt_header_audit"
+                    android:textColor="@android:color/holo_green_light"
                     android:layout_width="0px"
                     android:layout_weight="1"
                     android:textSize="20sp"

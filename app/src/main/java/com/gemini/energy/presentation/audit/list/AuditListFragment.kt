@@ -7,7 +7,6 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -74,10 +73,8 @@ class AuditListFragment : DaggerFragment(),
     }
 
     override fun onAuditClick(observable: Observable<AuditModel>) {
-        Log.d(TAG, "ON ITEM CLICK")
         val activity = activity as OnAuditSelectedListener?
         activity?.let {
-            Log.d(TAG, "ON ITEM CLICK -- Instance Home Activity")
             it.onAuditSelected(observable)
         }
     }

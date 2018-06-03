@@ -1,5 +1,6 @@
 package com.gemini.energy.presentation.audit.detail.zone.list
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
@@ -17,13 +18,14 @@ import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneCreateViewMod
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAdapter
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
 class ZoneListFragment : DaggerFragment(),
 
-        ZoneListAdapter.Callbacks,
-        ZoneDialogFragment.Callbacks,
+        ZoneListAdapter.OnZoneClickListener,
+        ZoneDialogFragment.OnZoneCreateListener,
 
         View.OnClickListener {
 
@@ -31,6 +33,7 @@ class ZoneListFragment : DaggerFragment(),
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binder: FragmentZoneListBinding
+    private var auditModel: AuditModel? = null
 
     private val viewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(ZoneListViewModel::class.java)
@@ -38,6 +41,14 @@ class ZoneListFragment : DaggerFragment(),
 
     private val _viewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(ZoneCreateViewModel::class.java)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        _viewModel.result.observe(this, Observer {
+            refreshViewModel()
+        })
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -59,29 +70,38 @@ class ZoneListFragment : DaggerFragment(),
 
 
     override fun onClick(v: View?) {
-        Log.d(TAG, "Fab Button On Click")
         showCreateZone()
     }
 
-    override fun onItemClick(view: View, item: ZoneModel) {
+    override fun onZoneClick(view: View, item: ZoneModel) {
         Log.d(TAG, "Zone List Item - Click")
         //ToDo: ***** Load the Audit Entity ****
     }
 
     override fun onZoneCreate(args: Bundle) {
-        _viewModel.createZone(0, args.getString("zoneTag"))
+        Log.d(TAG, "ON ZONE CREATE")
+        auditModel?.let {
+            _viewModel.createZone(it.id, args.getString("zoneTag"))
+        }
     }
 
     private fun showCreateZone() {
         val dialogFragment = ZoneDialogFragment()
-        dialogFragment.show(fragmentManager, FRAG_DIALOG)
+        dialogFragment.show(childFragmentManager, FRAG_DIALOG)
     }
 
-    fun refreshViewModel(auditId: Int) {
-        Log.d(TAG, "Zone List - Audit Id ---- $auditId")
-//        viewModel.loadZoneList(auditId)
+    private fun refreshViewModel() {
+        auditModel?.let {
+            viewModel.loadZoneList(it.id)
+        }
     }
 
+    fun setAuditModel(auditModel: AuditModel) {
+        Log.d(TAG, "Current Active Audit Id ---- ${auditModel?.id}")
+
+        this.auditModel = auditModel
+        refreshViewModel()
+    }
 
     companion object {
         fun newInstance(): ZoneListFragment {

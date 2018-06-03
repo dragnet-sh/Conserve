@@ -7,7 +7,7 @@ class ZoneMapper {
 
     fun toLocal(zone: Zone): ZoneLocalModel {
         return ZoneLocalModel(
-                zone.id,
+                zone?.id,
                 zone.name,
                 zone.type,
                 zone.auditId,

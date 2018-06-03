@@ -14,7 +14,7 @@ import java.util.*
 data class ZoneLocalModel(
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "id")
-        var zoneId: Int,
+        var zoneId: Int?,
         var name: String,
         var type: String,
 

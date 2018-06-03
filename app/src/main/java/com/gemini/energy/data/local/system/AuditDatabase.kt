@@ -13,7 +13,7 @@ import com.gemini.energy.data.local.util.Converters
 
 @Database(
         entities = [AuditLocalModel::class, ZoneLocalModel::class, PreAuditLocalModel::class],
-        version = 3, exportSchema = false)
+        version = 4, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class AuditDatabase : RoomDatabase() {

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import com.gemini.energy.R
+import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
 import com.gemini.energy.presentation.navigation.Navigator
 import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
@@ -20,11 +21,10 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
     @NotEmpty
     private lateinit var zoneTag: EditText
 
-    //ToDo: Check why this fails from Dagger
-    private lateinit var validator: Validator
-
     @Inject
     lateinit var navigator: Navigator
+
+    private lateinit var validator: Validator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AndroidSupportInjection.inject(this)
@@ -49,7 +49,7 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
     }
 
     override fun onValidationFailed(errors: MutableList<ValidationError>?) {
-        navigator.message("Audit Create - Form Validation Failed.")
+        navigator.message("Zone Create - Form Validation Failed.")
     }
 
     override fun onValidationSucceeded() {
@@ -57,7 +57,7 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
             this.putString("zoneTag", zoneTag.text.toString())
         }
 
-        val callbacks = fragmentManager?.findFragmentByTag(FRAG_ZONE_LIST) as Callbacks
+        val callbacks = parentFragment as OnZoneCreateListener
         callbacks.onZoneCreate(args)
         dismiss()
     }
@@ -67,7 +67,7 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
         private const val FRAG_ZONE_LIST = "ZoneListFragment"
     }
 
-    interface Callbacks {
+    interface OnZoneCreateListener {
         fun onZoneCreate(args: Bundle)
     }
 

@@ -31,8 +31,6 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
     @Inject
     lateinit var navigator: Navigator
 
-    private var viewGroup: ViewGroup? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -81,7 +79,7 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
             override fun onComplete() { }
             override fun onNext(t: AuditModel) {
                 setAuditHeader(t)
-                refreshZoneViewModel(t.id)
+                refreshZoneViewModel(t)
             }
             override fun onError(e: Throwable) {}
         }))
@@ -91,11 +89,11 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
         findViewById<TextView>(R.id.txt_header_audit).text = "${audit.name} -- ${audit.id}"
     }
 
-    private fun refreshZoneViewModel(auditId: Int) {
+    private fun refreshZoneViewModel(auditModel: AuditModel) {
         val tag = "$ANDROID_SWITCHER:${view_pager.id}:$ZONE_LIST_FRAGMENT_INDEX"
         val fragment = supportFragmentManager.findFragmentByTag(tag) as ZoneListFragment?
         fragment?.let {
-            fragment.refreshViewModel(auditId)
+            fragment.setAuditModel(auditModel)
         }
     }
 

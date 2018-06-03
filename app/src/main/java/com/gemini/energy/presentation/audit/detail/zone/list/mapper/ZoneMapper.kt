@@ -7,7 +7,7 @@ import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 class ZoneMapper(private val context: Context) {
 
     fun toModel(zone: List<Zone>): List<ZoneModel> {
-        return zone.map { ZoneModel(it.id, it.name) }
+        return zone.map { ZoneModel(it.id, it.name, it.auditId) }
     }
 
 }

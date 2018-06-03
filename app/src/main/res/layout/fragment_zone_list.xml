@@ -11,7 +11,7 @@
 
         <variable
             name="callbacks"
-            type="com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAdapter.Callbacks" />
+            type="com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAdapter.OnZoneClickListener" />
 
         <variable
             name="fabClick"
@@ -25,7 +25,12 @@
         <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/recyclerView" />
+            android:id="@+id/recyclerView"
+
+            app:zoneList="@{viewModel.result}"
+            app:zoneListCallback="@{callbacks}"
+
+            tools:listitem="@layout/fragment_zone_list_item" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"

@@ -8,6 +8,7 @@ import com.gemini.energy.domain.entity.Zone
 import com.gemini.energy.domain.interactor.ZoneSaveUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.internal.util.SingleLiveData
+import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import java.util.*
@@ -23,7 +24,7 @@ class ZoneCreateViewModel(context: Context, private val zoneCreateUseCase: ZoneS
 
     fun createZone(auditId: Int, zoneTag: String) {
         val date = Date()
-        addDisposable(save(Zone(0, zoneTag, "Sample Zone", auditId, date, date)))
+        addDisposable(save(Zone(null, zoneTag, "Sample Zone", auditId, date, date)))
     }
 
     private fun save(zone: Zone): Disposable {

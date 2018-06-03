@@ -13,11 +13,11 @@ import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks: Callbacks? = null):
+class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks: OnZoneClickListener? = null):
     RecyclerView.Adapter<ZoneListAdapter.ViewHolder>() {
 
-    interface Callbacks { // OnItemClickListener //
-        fun onItemClick(view: View, item: ZoneModel)
+    interface OnZoneClickListener { // OnItemClickListener //
+        fun onZoneClick(view: View, item: ZoneModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ZoneListAdapter.ViewHolder {
@@ -54,7 +54,7 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
                        }
                 )
 
-                callbacks?.onItemClick(it, items[adapterPosition])
+                callbacks?.onZoneClick(it, items[adapterPosition])
             }
 
         }
