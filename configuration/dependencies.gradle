@@ -34,7 +34,6 @@ ext {
             "com.google.dagger:dagger-android-processor:${daggerVersion}",
 
             "android.arch.persistence.room:compiler:$roomVersion"
-
     ]
 
     presentationDependencies = [
@@ -54,7 +53,6 @@ ext {
             "io.reactivex.rxjava2:rxkotlin:${rxKotlinVersion}",
             "io.reactivex.rxjava2:rxandroid:${rxAndroidVersion}",
             "com.jakewharton.timber:timber:$timberVersion",
-            "com.thejuki:k-form-master:${kFormVersion}",
             "com.mikepenz:crossfader:${crossFaderVersion}",
             "com.mobsandgeeks:android-saripaar:${saripaarVersion}",
             "com.squareup.moshi:moshi-kotlin:${moshiVersion}",
