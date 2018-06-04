@@ -25,14 +25,13 @@ ext {
     mockitoVersion = '2.13.+'
     espressoVersion = '3.0.+'
     jacocoVersion = '0.7.9'
-    saripaar = '2.0.3'
+    saripaarVersion = '2.0.3'
+    moshiVersion = '1.6.0'
 
     presentationKaptDependencies = [
             "android.arch.lifecycle:compiler:$lifecycleVersion",
             "com.google.dagger:dagger-compiler:${daggerVersion}",
             "com.google.dagger:dagger-android-processor:${daggerVersion}",
-
-
 
             "android.arch.persistence.room:compiler:$roomVersion"
 
@@ -57,7 +56,8 @@ ext {
             "com.jakewharton.timber:timber:$timberVersion",
             "com.thejuki:k-form-master:${kFormVersion}",
             "com.mikepenz:crossfader:${crossFaderVersion}",
-            "com.mobsandgeeks:android-saripaar:${saripaar}",
+            "com.mobsandgeeks:android-saripaar:${saripaarVersion}",
+            "com.squareup.moshi:moshi-kotlin:${moshiVersion}",
 
             "android.arch.persistence.room:runtime:$roomVersion",
             "android.arch.persistence.room:rxjava2:$roomVersion",

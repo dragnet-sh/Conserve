@@ -1,0 +1,50 @@
+[
+  {
+    "section": "1",
+    "elements": [
+      {
+        "productname": "Sony Bravia Television HD",
+        "price": 24490
+      },
+      {
+        "productname": "LCD Curved TV",
+        "price": 876125
+      },
+      {
+        "productname": "Small Retro LED",
+        "price": 998122
+      }
+    ]
+  },
+  {
+    "section": "2",
+    "elements": [
+      {
+        "productname": "Samsung HD Ready Television",
+        "price": 11399
+      },
+      {
+        "productname": "Samsung HD Sample 1",
+        "price": 88765
+      },
+      {
+        "productname": "Samsung HD Sample 2",
+        "price": 11190
+      }
+    ]
+  },
+  {
+    "section": "3",
+    "elements": [
+      {
+        "productname": "Vivo V5-S Smart phone",
+        "price": 19999
+      }
+    ]
+  },
+  {
+    "section": "4",
+    "elements": []
+  }
+
+]
