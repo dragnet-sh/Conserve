@@ -1,17 +1,14 @@
 package com.gemini.energy.data.gateway.mapper
 
-import com.gemini.energy.data.local.model.AuditLocalModel
-import com.gemini.energy.data.local.model.PreAuditLocalModel
-import com.gemini.energy.data.local.model.ZoneLocalModel
-import com.gemini.energy.domain.entity.Audit
-import com.gemini.energy.domain.entity.PreAudit
-import com.gemini.energy.domain.entity.Zone
+import com.gemini.energy.data.local.model.*
+import com.gemini.energy.domain.entity.*
 
 class SystemMapper {
 
     fun toEntity(type: AuditLocalModel) = Audit(
             type.auditId,
             type.name,
+
             type.createdAt,
             type.updatedAt
     )
@@ -20,7 +17,9 @@ class SystemMapper {
             zone.zoneId,
             zone.name,
             zone.type,
+
             zone.auditId,
+
             zone.createdAt,
             zone.updatedAt
     )
@@ -29,12 +28,40 @@ class SystemMapper {
             preAudit.id,
             preAudit.formId,
             preAudit.type,
+
             preAudit.valueDouble,
             preAudit.valueInt,
             preAudit.valueString,
+
             preAudit.auditId,
+
             preAudit.createdAt,
             preAudit.updatedAt
+    )
+
+    fun toEntity(auditScopeParent: AuditScopeParentLocalModel) = AuditScopeParent(
+            auditScopeParent.auditParentId,
+            auditScopeParent.name,
+            auditScopeParent.type,
+
+            auditScopeParent.zoneId,
+            auditScopeParent.auditId,
+
+            auditScopeParent.createdAt,
+            auditScopeParent.updatedAt
+    )
+
+    fun toEntity(auditScopeChild: AuditScopeChildLocalModel) = AuditScopeChild (
+            auditScopeChild.auditChildId,
+            auditScopeChild.name,
+            auditScopeChild.type,
+
+            auditScopeChild.auditParentId,
+            auditScopeChild.zoneId,
+            auditScopeChild.auditId,
+
+            auditScopeChild.createdAt,
+            auditScopeChild.updatedAt
     )
 
 }

@@ -97,9 +97,10 @@ class AuditListFragment : DaggerFragment(),
     }
 
     companion object {
-        private const val TAG = "AuditListFragment"
         fun newInstance(): AuditListFragment {
             return AuditListFragment()
         }
+
+        private const val TAG = "AuditListFragment"
     }
 }

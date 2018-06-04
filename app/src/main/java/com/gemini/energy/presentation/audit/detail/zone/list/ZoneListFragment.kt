@@ -3,8 +3,10 @@ package com.gemini.energy.presentation.audit.detail.zone.list
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -19,6 +21,7 @@ import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragmen
 import com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAdapter
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
+import com.gemini.energy.presentation.scope.ScopeParentActivity
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -33,7 +36,7 @@ class ZoneListFragment : DaggerFragment(),
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var binder: FragmentZoneListBinding
-    private var auditModel: AuditModel? = null
+    private var auditModel: AuditModel? = null // **** IMP -- Audit Model ***** //
 
     private val viewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(ZoneListViewModel::class.java)
@@ -68,18 +71,23 @@ class ZoneListFragment : DaggerFragment(),
         return binder.root
     }
 
-
     override fun onClick(v: View?) {
         showCreateZone()
     }
 
     override fun onZoneClick(view: View, item: ZoneModel) {
-        Log.d(TAG, "Zone List Item - Click")
-        //ToDo: ***** Load the Audit Entity ****
+
+        val intent = Intent(activity, ScopeParentActivity::class.java)
+        intent.putExtra(EXTRA_AUDIT_ID, item.auditId)
+        intent.putExtra(EXTRA_ZONE_ID, item.id)
+        intent.putExtra(EXTRA_ZONE_NAME, item.name)
+
+        context?.let {
+            ActivityCompat.startActivity(it, intent, null)
+        }
     }
 
     override fun onZoneCreate(args: Bundle) {
-        Log.d(TAG, "ON ZONE CREATE")
         auditModel?.let {
             _viewModel.createZone(it.id, args.getString("zoneTag"))
         }
@@ -96,9 +104,16 @@ class ZoneListFragment : DaggerFragment(),
         }
     }
 
+    /**
+     * Message Passing : Audit List Fragment <> Home Activity <> Zone List Fragment
+     *
+     * Step 1: The Audit List Click Event Registers the Audit Id
+     * Step 2: Passes Audit Id to the Home Activity
+     * Step 3: Uses Fragment Manager to find Zone List Fragment
+     * Step 4: Passes the Audit Model to Zone List Fragment
+     *
+     * */
     fun setAuditModel(auditModel: AuditModel) {
-        Log.d(TAG, "Current Active Audit Id ---- ${auditModel?.id}")
-
         this.auditModel = auditModel
         refreshViewModel()
     }
@@ -110,5 +125,9 @@ class ZoneListFragment : DaggerFragment(),
 
         private const val TAG = "ZoneListFragment"
         private const val FRAG_DIALOG = "ZoneDialogFragment"
+
+        private const val EXTRA_AUDIT_ID    = "$TAG.EXTRA.AUDIT_ID"
+        private const val EXTRA_ZONE_ID     = "$TAG.EXTRA.ZONE_ID"
+        private const val EXTRA_ZONE_NAME   = "$TAG.EXTRA.ZONE_NAME"
     }
 }

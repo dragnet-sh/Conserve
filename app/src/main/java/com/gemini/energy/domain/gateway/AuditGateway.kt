@@ -1,8 +1,6 @@
 package com.gemini.energy.domain.gateway
 
-import com.gemini.energy.domain.entity.Audit
-import com.gemini.energy.domain.entity.PreAudit
-import com.gemini.energy.domain.entity.Zone
+import com.gemini.energy.domain.entity.*
 import io.reactivex.Observable
 
 interface AuditGateway {
@@ -14,4 +12,10 @@ interface AuditGateway {
 
     fun getPreAudit(auditId: Int): Observable<List<PreAudit>>
     fun savePreAudit(preAudit: List<PreAudit>): Observable<Unit>
+
+    fun getAuditScopeParentList(zoneId: Int): Observable<List<AuditScopeParent>>
+    fun saveAuditScopeParent(auditScope: AuditScopeParent): Observable<Unit>
+
+    fun getAuditScopeChildList(parentId: Int): Observable<List<AuditScopeChild>>
+    fun saveAuditScopeChild(auditScope: AuditScopeChild): Observable<Unit>
 }

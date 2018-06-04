@@ -34,12 +34,21 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var binder = DataBindingUtil.setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
+        var binder = DataBindingUtil
+                .setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
+
         setupToolbar()
 
         crossfader.withContent(findViewById(R.id.root_home_container))
-                .withFirst(layoutInflater.inflate(R.layout.activity_side_bar, null), LENGTH_AUDIT_LIST)
-                .withSecond(layoutInflater.inflate(R.layout.activity_mini_bar, null), LENGTH_MINI_BAR)
+
+                .withFirst(layoutInflater.inflate(
+                        R.layout.activity_side_bar, null),
+                        LENGTH_AUDIT_LIST)
+
+                .withSecond(layoutInflater.inflate(
+                        R.layout.activity_mini_bar, null),
+                        LENGTH_MINI_BAR)
+
                 .build()
 
         // 1. Audit List
@@ -57,7 +66,7 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
         //ToDo: This is where to implement the Back Button and stuff !!
         supportActionBar?.run {
             //setDisplayHomeAsUpEnabled(true)
-            //setHomeButtonEnabled(true)
+            setHomeButtonEnabled(true)
         }
     }
 

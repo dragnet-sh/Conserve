@@ -6,6 +6,7 @@
 
     <!-- Menu -->
     <string name="menu_create_audit">Create Audit</string>
+    <string name="menu_create_audit_scope_parent">Create Audit Entity</string>
 
     <!-- Fragment Audit Dialog -->
     <string name="audit_id">Audit Id</string>
@@ -13,6 +14,13 @@
     <string name="audit_save">Save</string>
     <string name="audit_cancel">Cancel</string>
     <string name="create_audit">Create Audit</string>
+
+    <!-- Fragment Audit Scope Parent Dialog -->
+    <string name="scope_parent_name">Audit Entity Name</string>
+    <string name="scope_parent_save">Save</string>
+    <string name="scope_parent_cancel">Cancel</string>
+    <string name="scope_parent_create_entity">Create Audit Entity</string>
+    <string name="selected_item">Selected Item</string>
 
     <!-- Fragment Zone Dialog -->
     <string name="zone_tag">Zone Tag</string>
