@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +44,8 @@ class AuditListFragment : DaggerFragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Log.d(TAG, "ON - CREATE")
 
         _viewModel.result.observe(this, Observer {
             refreshViewModel()
