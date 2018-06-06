@@ -6,7 +6,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import com.gemini.energy.R
-import com.gemini.energy.databinding.ActivityHomeBinding
+import com.gemini.energy.databinding.ActivityHomeDetailBinding
 import com.gemini.energy.presentation.audit.detail.adapter.DetailPagerAdapter
 import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
 import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
@@ -17,7 +17,7 @@ import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
-import kotlinx.android.synthetic.main.activity_home.*
+import kotlinx.android.synthetic.main.activity_home_detail.*
 import kotlinx.android.synthetic.main.activity_home_mini_bar.*
 import javax.inject.Inject
 
@@ -33,19 +33,12 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
         super.onCreate(savedInstanceState)
 
         var binder = DataBindingUtil
-                .setContentView<ActivityHomeBinding>(this, R.layout.activity_home)
+                .setContentView<ActivityHomeDetailBinding>(this, R.layout.activity_home_detail)
 
         setupToolbar()
         setupCrossfader()
+        setupContent(binder)
 
-        // 1. Audit List
-        var auditListFragment = AuditListFragment.newInstance()
-        supportFragmentManager.beginTransaction()
-                .add(R.id.side_bar, auditListFragment, FRAG_AUDIT_LIST)
-                .commit()
-
-        // 2. View Pager [PreAudit -- Zone List]
-        binder.viewPager.adapter = DetailPagerAdapter(supportFragmentManager)
     }
 
     private fun setupToolbar() {
@@ -72,6 +65,17 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
             crossfader.crossFade()
         }
 
+    }
+
+    private fun setupContent(binder: ActivityHomeDetailBinding) {
+        // 1. Audit List
+        var auditListFragment = AuditListFragment.newInstance()
+        supportFragmentManager.beginTransaction()
+                .add(R.id.side_bar, auditListFragment, FRAG_AUDIT_LIST)
+                .commit()
+
+        // 2. View Pager [PreAudit -- Zone List]
+        binder.viewPager.adapter = DetailPagerAdapter(supportFragmentManager)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
