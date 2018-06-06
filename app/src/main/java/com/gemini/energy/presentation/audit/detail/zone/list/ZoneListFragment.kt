@@ -59,8 +59,8 @@ class ZoneListFragment : DaggerFragment(),
         binder.callbacks = this
         binder.fabClick = this
 
-        binder.recyclerView.addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+//        binder.recyclerView.addItemDecoration(
+//                DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
 
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
 
