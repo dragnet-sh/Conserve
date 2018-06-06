@@ -132,7 +132,7 @@ class HomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelecte
         private const val FRAG_AUDIT_LIST = "AuditListFragment"
 
         private const val WIDTH_SECOND = 70
-        private const val WIDTH_FIRST = 200
+        private const val WIDTH_FIRST = 180
         private const val ZONE_LIST_FRAGMENT_INDEX = 1
         private const val ANDROID_SWITCHER = "android:switcher"
 

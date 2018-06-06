@@ -20,7 +20,6 @@
         <android.support.v7.widget.RecyclerView
             android:paddingTop="@dimen/recycler_view_padding_top"
             android:layout_marginRight="@dimen/recycler_view_vertical_margin"
-            android:background="@android:color/holo_green_light"
             android:id="@+id/recyclerView"
 
             app:auditList="@{viewModel.result}"

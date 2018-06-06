@@ -8,21 +8,34 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
-
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                android:theme="@style/AppTheme.Toolbar"
+                app:popupTheme="@style/AppTheme.PopupOverlay">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="20dp"
+                    android:background="@android:drawable/ic_dialog_alert" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GEMINI ENERGY SOLUTIONS"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:gravity="left"
+                    android:fontFamily="sans-serif"/>
+
+            </android.support.v7.widget.Toolbar>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:orientation="horizontal"
+                android:background="#eeeeee"
                 android:layout_height="wrap_content">
 
                 <android.support.design.widget.TabLayout
@@ -36,28 +49,27 @@
                     android:paddingLeft="180dp"
                     app:setupWithViewPager="@{viewPager}"
                     app:tabIndicatorColor="@android:color/holo_green_light"
-
                     app:tabIndicatorHeight="5dp"
                     app:tabMode="scrollable" />
 
                 <TextView
-                    tool:text="Hello World - Audit Tag"
                     android:id="@+id/txt_header_audit"
-                    android:textColor="@android:color/holo_green_light"
                     android:layout_width="0px"
-                    android:layout_weight="1"
-                    android:textSize="20sp"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|right"
+                    android:layout_weight="1"
                     android:paddingLeft="50dp"
-                    android:layout_height="wrap_content" />
+                    android:textColor="#689f38"
+                    android:textSize="20sp"
+                    tool:text="Hello World - Audit Tag" />
 
             </LinearLayout>
 
-        </android.support.design.widget.AppBarLayout>
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:padding="10dp"
             android:id="@+id/root_home_container">
 
             <android.support.v4.view.ViewPager
@@ -66,6 +78,8 @@
                 android:layout_height="wrap_content" />
 
         </FrameLayout>
+
+
 
     </LinearLayout>
 
