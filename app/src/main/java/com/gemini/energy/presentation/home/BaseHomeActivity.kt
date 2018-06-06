@@ -1,5 +1,6 @@
 package com.gemini.energy.presentation.home
 
+import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.view.Menu
@@ -27,6 +28,7 @@ open class BaseHomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAud
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
 
         binder = DataBindingUtil
                 .setContentView(this, R.layout.activity_home_detail)
