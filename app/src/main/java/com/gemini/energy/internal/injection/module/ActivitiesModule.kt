@@ -1,11 +1,9 @@
 package com.gemini.energy.internal.injection.module
 
-import com.gemini.energy.internal.injection.module.entity.EntityModule
-import com.gemini.energy.presentation.home.HomeActivity
 import com.gemini.energy.internal.injection.module.home.HomeModule
-import com.gemini.energy.internal.injection.scope.AuditEntityScope
 import com.gemini.energy.internal.injection.scope.HomeScope
-import com.gemini.energy.presentation.scope.ScopeParentActivity
+import com.gemini.energy.presentation.home.BaseHomeActivity
+import com.gemini.energy.presentation.home.HomeActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -14,9 +12,9 @@ internal abstract class ActivitiesModule {
 
     @HomeScope
     @ContributesAndroidInjector(modules = [HomeModule::class])
-    internal abstract fun contributeHomeActivity(): HomeActivity
+    internal abstract fun contributeBaseHomeActivity(): BaseHomeActivity
 
-    @AuditEntityScope
-    @ContributesAndroidInjector(modules = [EntityModule::class])
-    internal abstract fun contributeScopeParentActivity(): ScopeParentActivity
+    @HomeScope
+    @ContributesAndroidInjector(modules = [HomeModule::class])
+    internal abstract fun contributeHomeActivity(): HomeActivity
 }

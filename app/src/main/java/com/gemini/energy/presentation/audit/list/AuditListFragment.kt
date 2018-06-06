@@ -45,8 +45,6 @@ class AuditListFragment : DaggerFragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        Log.d(TAG, "ON - CREATE")
-
         _viewModel.result.observe(this, Observer {
             refreshViewModel()
         })
