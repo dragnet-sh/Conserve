@@ -3,9 +3,10 @@ package com.gemini.energy.presentation.audit.detail.zone.list
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
+import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragmen
 import com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAdapter
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
+import com.gemini.energy.presentation.zone.TypeActivity
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -77,14 +79,15 @@ class ZoneListFragment : DaggerFragment(),
      * */
     override fun onZoneClick(view: View, item: ZoneModel) {
 
-//        val intent = Intent(activity, ScopeParentActivity::class.java)
-//        intent.putExtra(EXTRA_AUDIT_ID, item.auditId)
-//        intent.putExtra(EXTRA_ZONE_ID, item.id)
-//        intent.putExtra(EXTRA_ZONE_NAME, item.name)
-//
-//        context?.let {
-//            ActivityCompat.startActivity(it, intent, null)
-//        }
+        val intent = Intent(activity, TypeActivity::class.java)
+
+        intent.putExtra(EXTRA_AUDIT_ID, item.auditId)
+        intent.putExtra(EXTRA_ZONE_ID, item.id)
+        intent.putExtra(EXTRA_ZONE_NAME, item.name)
+
+        context?.let {
+            ActivityCompat.startActivity(it, intent, null)
+        }
 
     }
 

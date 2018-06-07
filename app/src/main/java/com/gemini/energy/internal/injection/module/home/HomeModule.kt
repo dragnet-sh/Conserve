@@ -22,6 +22,7 @@ import com.gemini.energy.presentation.audit.list.AuditListViewModel
 import com.gemini.energy.presentation.base.Crossfader
 import com.gemini.energy.presentation.base.GmailStyleCrossFadeSlidingPaneLayout
 import com.gemini.energy.presentation.util.Navigator
+import com.gemini.energy.presentation.zone.TypeFragment
 import com.mobsandgeeks.saripaar.Validator
 import dagger.Module
 import dagger.Provides
@@ -46,6 +47,14 @@ internal abstract class HomeModule {
 
     @ContributesAndroidInjector
     internal abstract fun contributeZoneDialogFragment(): ZoneDialogFragment
+
+
+    //ToDo: Move this to it's specific module
+    //****** Type Activity *******//
+    @ContributesAndroidInjector
+    internal abstract fun contributeTypeFragment(): TypeFragment
+
+
 
     @Module
     companion object {
