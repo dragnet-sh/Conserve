@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.home
+package com.gemini.energy.presentation.base
 
 import android.content.pm.ActivityInfo
 import android.databinding.DataBindingUtil

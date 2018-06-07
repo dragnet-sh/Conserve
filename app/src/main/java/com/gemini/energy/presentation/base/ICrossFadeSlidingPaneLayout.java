@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.home;
+package com.gemini.energy.presentation.base;
 
 /**
  * Created by mikepenz on 04.11.15.

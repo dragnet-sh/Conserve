@@ -2,8 +2,8 @@ package com.gemini.energy.internal.injection.module
 
 import com.gemini.energy.internal.injection.module.home.HomeModule
 import com.gemini.energy.internal.injection.scope.HomeScope
-import com.gemini.energy.presentation.home.BaseActivity
-import com.gemini.energy.presentation.home.AuditActivity
+import com.gemini.energy.presentation.base.BaseActivity
+import com.gemini.energy.presentation.audit.AuditActivity
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 

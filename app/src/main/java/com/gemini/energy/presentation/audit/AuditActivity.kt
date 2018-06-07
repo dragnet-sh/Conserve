@@ -1,8 +1,9 @@
-package com.gemini.energy.presentation.home
+package com.gemini.energy.presentation.audit
 
 import android.os.Bundle
 import com.gemini.energy.databinding.ActivityHomeDetailBinding
 import com.gemini.energy.presentation.audit.detail.adapter.DetailPagerAdapter
+import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.Navigator
 import javax.inject.Inject
 
