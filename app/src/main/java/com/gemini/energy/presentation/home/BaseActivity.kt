@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.activity_home_detail.*
 import kotlinx.android.synthetic.main.activity_home_mini_bar.*
 import javax.inject.Inject
 
-open class BaseHomeActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelectedListener {
+open class BaseActivity : DaggerAppCompatActivity(), AuditListFragment.OnAuditSelectedListener {
 
     @Inject
     lateinit var crossfader: Crossfader<GmailStyleCrossFadeSlidingPaneLayout>

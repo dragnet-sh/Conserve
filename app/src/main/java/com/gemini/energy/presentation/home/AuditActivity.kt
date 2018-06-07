@@ -3,10 +3,10 @@ package com.gemini.energy.presentation.home
 import android.os.Bundle
 import com.gemini.energy.databinding.ActivityHomeDetailBinding
 import com.gemini.energy.presentation.audit.detail.adapter.DetailPagerAdapter
-import com.gemini.energy.presentation.navigation.Navigator
+import com.gemini.energy.presentation.util.Navigator
 import javax.inject.Inject
 
-class HomeActivity : BaseHomeActivity() {
+class AuditActivity : BaseActivity() {
 
     @Inject
     lateinit var navigator: Navigator
@@ -24,7 +24,7 @@ class HomeActivity : BaseHomeActivity() {
     }
 
     companion object {
-        private const val TAG = "HomeActivity"
+        private const val TAG = "AuditActivity"
     }
 
 }

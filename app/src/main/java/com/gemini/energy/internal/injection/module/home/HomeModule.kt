@@ -19,10 +19,9 @@ import com.gemini.energy.presentation.audit.dialog.AuditCreateViewModel
 import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
 import com.gemini.energy.presentation.audit.list.AuditListFragment
 import com.gemini.energy.presentation.audit.list.AuditListViewModel
-import com.gemini.energy.presentation.home.CrossFadeSlidingPaneLayout
 import com.gemini.energy.presentation.home.Crossfader
 import com.gemini.energy.presentation.home.GmailStyleCrossFadeSlidingPaneLayout
-import com.gemini.energy.presentation.navigation.Navigator
+import com.gemini.energy.presentation.util.Navigator
 import com.mobsandgeeks.saripaar.Validator
 import dagger.Module
 import dagger.Provides

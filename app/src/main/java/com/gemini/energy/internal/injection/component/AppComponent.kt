@@ -4,7 +4,6 @@ import com.gemini.energy.internal.injection.DaggerApplication
 import com.gemini.energy.internal.injection.module.AppModule
 import com.gemini.energy.internal.injection.module.ActivitiesModule
 import com.gemini.energy.internal.injection.module.DataModule
-import com.gemini.energy.presentation.navigation.Navigator
 import dagger.Component
 import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
