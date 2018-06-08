@@ -34,6 +34,11 @@ class ZoneListFragment : DaggerFragment(),
         View.OnClickListener {
 
 
+    interface OnZoneSelectedListener {
+        fun onZoneSelected(zone: ZoneModel)
+    }
+
+
     /*
     * View Model Setup - [ZoneListViewModel | ZoneCreateViewModel]
     * */
@@ -150,6 +155,9 @@ class ZoneListFragment : DaggerFragment(),
 
         //Case 2: Populate Zone Type for each of the Zone Click
         if (activity is TypeActivity) {
+            val callbacks = activity as OnZoneSelectedListener
+            callbacks.onZoneSelected(ZoneModel(item.id, item.name, item.auditId))
+
             Log.d(TAG, "${item.id} -- ${item.name} >> ${item.auditId}")
             //ToDo: Populate the correct Type Data for this Zone
         }

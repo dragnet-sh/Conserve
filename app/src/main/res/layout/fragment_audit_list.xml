@@ -18,8 +18,7 @@
         android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
-            android:paddingTop="@dimen/recycler_view_padding_top"
-            android:layout_marginRight="@dimen/recycler_view_vertical_margin"
+            android:padding="10dp"
             android:id="@+id/recyclerView"
 
             app:auditList="@{viewModel.result}"

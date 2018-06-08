@@ -6,17 +6,21 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import com.gemini.energy.R
 import com.gemini.energy.databinding.ActivityHomeDetailBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
+import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
 import com.gemini.energy.presentation.audit.list.AuditListViewModel
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.zone.adapter.TypePagerAdapter
 import javax.inject.Inject
 
-class TypeActivity : BaseActivity() {
+class TypeActivity : BaseActivity(), ZoneListFragment.OnZoneSelectedListener {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -52,15 +56,15 @@ class TypeActivity : BaseActivity() {
     /*
     * Option Menu Management
     * */
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.menu_zone, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
-        R.id.menu_create_zone -> consume { showCreateZone() }
-        else -> super.onOptionsItemSelected(item)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+//        menuInflater.inflate(R.menu.menu_home, menu)
+//        return true
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+//        R.id.menu_create_zone -> consume { showCreateAudit() }
+//        else -> super.onOptionsItemSelected(item)
+//    }
 
     private inline fun consume(f: () -> Unit): Boolean {
         f()
@@ -105,9 +109,17 @@ class TypeActivity : BaseActivity() {
     * 5. Once the Zone is created reload the Zone List
     *
     * */
-    private fun showCreateZone() {
-        val dialogFragment = ZoneDialogFragment()
+    private fun showCreateAudit() {
+        val dialogFragment = AuditDialogFragment()
         dialogFragment.show(supportFragmentManager, FRAG_DIALOG)
+    }
+
+    override fun onZoneSelected(zone: ZoneModel) {
+        setZoneHeader(zone)
+    }
+
+    private fun setZoneHeader(zone: ZoneModel) {
+        findViewById<TextView>(R.id.txt_header_audit).text = "${zone.name}"
     }
 
     override fun setupToolbar() {
@@ -126,7 +138,7 @@ class TypeActivity : BaseActivity() {
     companion object {
         private const val TAG = "TypeActivity"
 
-        private const val FRAG_DIALOG       = "TypeActivityZoneDialogFragment"
+        private const val FRAG_DIALOG       = "TypeActivityAuditDialogFragment"
         private const val FRAG_ZONE_LIST    = "TypeActivityZoneListFragment"
         private const val CALL_TAG          = "ZoneListFragment"
 
