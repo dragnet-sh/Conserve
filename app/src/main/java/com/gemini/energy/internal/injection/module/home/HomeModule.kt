@@ -21,6 +21,7 @@ import com.gemini.energy.presentation.base.GmailStyleCrossFadeSlidingPaneLayout
 import com.gemini.energy.presentation.util.Navigator
 import com.gemini.energy.presentation.zone.TypeFragment
 import com.gemini.energy.presentation.zone.dialog.ZoneTypeCreateViewModel
+import com.gemini.energy.presentation.zone.list.TypeListFragment
 import com.gemini.energy.presentation.zone.list.TypeListViewModel
 import com.mobsandgeeks.saripaar.Validator
 import dagger.Module
@@ -53,6 +54,8 @@ internal abstract class HomeModule {
     @ContributesAndroidInjector
     internal abstract fun contributeTypeFragment(): TypeFragment
 
+    @ContributesAndroidInjector
+    internal abstract fun contributeTypeListFragment(): TypeListFragment
 
 
     @Module

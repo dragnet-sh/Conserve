@@ -21,10 +21,6 @@
             type="android.view.View.OnClickListener" />
 
         <variable
-            name="activity"
-            type="com.gemini.energy.presentation.base.BaseActivity" />
-
-        <variable
             name="showCreate"
             type="java.lang.Boolean" />
 
@@ -48,7 +44,6 @@
             android:layout_margin="16dp"
 
             android:onClick="@{fabClick}"
-            android:visibility="@{showCreate ? View.VISIBLE : View.GONE}"
 
             android:background="@android:color/holo_green_light"
             app:backgroundTint="@android:color/holo_green_light"

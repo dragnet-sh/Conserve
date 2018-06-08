@@ -4,12 +4,12 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import com.gemini.energy.presentation.util.EZoneType
-import com.gemini.energy.presentation.zone.TypeFragment
+import com.gemini.energy.presentation.zone.list.TypeListFragment
 
 class TypePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        return TypeFragment.newInstance(position)
+        return TypeListFragment.newInstance(position)
     }
 
     override fun getCount(): Int {

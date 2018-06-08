@@ -12,8 +12,6 @@ import android.view.ViewGroup
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
-import com.gemini.energy.presentation.base.BaseActivity
-import com.gemini.energy.presentation.zone.TypeActivity
 import com.gemini.energy.presentation.zone.dialog.ZoneTypeCreateViewModel
 import com.gemini.energy.presentation.zone.dialog.ZoneTypeDialogFragment
 import com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter
@@ -71,10 +69,7 @@ class TypeListFragment : DaggerFragment(),
         binder.viewModel = typeListViewModel
         binder.callbacks = this
         binder.fabClick = this
-        binder.activity = activity as BaseActivity
         binder.showCreate = true
-
-        if (activity is TypeActivity) { binder.showCreate = false }
 
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -126,6 +121,7 @@ class TypeListFragment : DaggerFragment(),
 
 
     companion object {
+        fun newInstance(type: Int) = TypeListFragment()
         private const val FRAG_DIALOG = "TypeDialogFragment"
     }
 
