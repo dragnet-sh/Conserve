@@ -5,6 +5,8 @@
 
     <data class="FragmentZoneListBinding">
 
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.gemini.energy.presentation.audit.detail.zone.list.ZoneListViewModel" />
@@ -16,6 +18,14 @@
         <variable
             name="fabClick"
             type="android.view.View.OnClickListener" />
+
+        <variable
+            name="activity"
+            type="com.gemini.energy.presentation.base.BaseActivity" />
+
+        <variable
+            name="showCreate"
+            type="java.lang.Boolean" />
 
     </data>
 
@@ -29,6 +39,7 @@
 
             app:zoneList="@{viewModel.result}"
             app:zoneListCallback="@{callbacks}"
+            app:activity="@{activity}"
 
             tools:listitem="@layout/fragment_zone_list_item" />
 
@@ -38,7 +49,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:layout_margin="16dp"
+
             android:onClick="@{fabClick}"
+            android:visibility="@{showCreate ? View.VISIBLE : View.GONE}"
+
             android:background="@android:color/holo_green_light"
             app:backgroundTint="@android:color/holo_green_light"
             app:srcCompat="@drawable/ic_icon_add" />

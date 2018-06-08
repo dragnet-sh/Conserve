@@ -21,6 +21,7 @@ import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragmen
 import com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAdapter
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
+import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.zone.TypeActivity
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
@@ -80,6 +81,10 @@ class ZoneListFragment : DaggerFragment(),
         binder.viewModel = zoneListViewModel
         binder.callbacks = this
         binder.fabClick = this
+        binder.activity = activity as BaseActivity
+        binder.showCreate = true
+
+        if (activity is TypeActivity) { binder.showCreate = false }
 
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
 

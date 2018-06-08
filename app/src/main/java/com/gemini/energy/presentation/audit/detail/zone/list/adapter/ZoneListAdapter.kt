@@ -1,5 +1,6 @@
 package com.gemini.energy.presentation.audit.detail.zone.list.adapter
 
+import android.app.Activity
 import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -9,11 +10,13 @@ import android.view.ViewGroup
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneListItemBinding
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.zone.TypeActivity
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks: OnZoneClickListener? = null):
+class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks: OnZoneClickListener? = null,
+                      private val activity: Activity):
     RecyclerView.Adapter<ZoneListAdapter.ViewHolder>() {
 
     interface OnZoneClickListener { // OnItemClickListener //
@@ -35,6 +38,16 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.zone = items[position]
         holder.binding.executePendingBindings()
+
+        holder.binding.showClose = true
+        holder.binding.showEdit = true
+
+        // *** Updating UI Based on the Parent Activity **** //
+        if (activity is TypeActivity) {
+            holder.binding.showClose = false
+            holder.binding.showEdit = false
+        }
+
     }
 
 
