@@ -7,7 +7,6 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,6 @@ import com.gemini.energy.presentation.audit.list.adapter.AuditListAdapter
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import dagger.android.support.DaggerFragment
 import io.reactivex.Observable
-import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 class AuditListFragment : DaggerFragment(),
@@ -28,28 +26,41 @@ class AuditListFragment : DaggerFragment(),
         AuditListAdapter.OnAuditClickListener,
         AuditDialogFragment.OnAuditCreateListener {
 
+
+    interface OnAuditSelectedListener {
+        fun onAuditSelected(observable: Observable<AuditModel>)
+    }
+
+
+    /*
+    * View Model Setup - [AuditListViewModel | AuditCreateViewModel]
+    * */
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var binder: FragmentAuditListBinding
-    private var disposables = CompositeDisposable()
-
-    private val viewModel by lazyThreadSafetyNone {
+    private val auditListViewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(AuditListViewModel::class.java)
     }
 
-    private val _viewModel by lazyThreadSafetyNone {
+    private val auditCreateViewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(AuditCreateViewModel::class.java)
     }
 
+
+    /*
+    * Binder - fragment_audit_list.xml
+    * */
+    private lateinit var binder: FragmentAuditListBinding
+
+
+    /*
+    * Fragment Lifecycle Methods
+    * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        _viewModel.result.observe(this, Observer {
-            refreshViewModel()
-        })
+        setupListeners()
     }
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -57,7 +68,7 @@ class AuditListFragment : DaggerFragment(),
         binder = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_audit_list, container, false)
 
-        binder.viewModel = viewModel
+        binder.viewModel = auditListViewModel
         binder.callbacks = this
 
         binder.recyclerView.addItemDecoration(
@@ -73,6 +84,14 @@ class AuditListFragment : DaggerFragment(),
         refreshViewModel()
     }
 
+    private fun refreshViewModel() {
+        auditListViewModel.loadAuditList()
+    }
+
+
+    /*
+    * Listeners | Observers
+    * */
     override fun onAuditClick(observable: Observable<AuditModel>) {
         val activity = activity as OnAuditSelectedListener?
         activity?.let {
@@ -81,22 +100,19 @@ class AuditListFragment : DaggerFragment(),
     }
 
     override fun onAuditCreate(args: Bundle) {
-        _viewModel.createAudit(args.getInt("auditId"), args.getString("auditTag"))
+        auditCreateViewModel.createAudit(args.getInt("auditId"), args.getString("auditTag"))
     }
 
-    override fun onStop() {
-        super.onStop()
-        disposables.dispose()
+    private fun setupListeners() {
+        auditCreateViewModel.result.observe(this, Observer {
+            refreshViewModel()
+        })
     }
 
-    private fun refreshViewModel() {
-        viewModel.loadAuditList()
-    }
 
-    interface OnAuditSelectedListener {
-        fun onAuditSelected(observable: Observable<AuditModel>)
-    }
-
+    /*
+    * Static Content
+    * */
     companion object {
         fun newInstance(): AuditListFragment {
             return AuditListFragment()

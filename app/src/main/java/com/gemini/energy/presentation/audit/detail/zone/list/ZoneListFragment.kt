@@ -13,11 +13,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gemini.energy.R
-import com.gemini.energy.data.gateway.AuditGatewayImpl
 import com.gemini.energy.databinding.FragmentZoneListBinding
-import com.gemini.energy.domain.gateway.AuditGateway
-import com.gemini.energy.domain.interactor.ZoneGetAllUseCase
-import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.AuditActivity
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneCreateViewModel
@@ -27,7 +23,6 @@ import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.zone.TypeActivity
 import dagger.android.support.DaggerFragment
-import java.lang.reflect.Type
 import javax.inject.Inject
 
 class ZoneListFragment : DaggerFragment(),
@@ -37,31 +32,44 @@ class ZoneListFragment : DaggerFragment(),
 
         View.OnClickListener {
 
+
+    /*
+    * View Model Setup - [ZoneListViewModel | ZoneCreateViewModel]
+    * */
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private lateinit var binder: FragmentZoneListBinding
-    private var auditModel: AuditModel? = null // **** IMP -- Audit Model ***** //
-
-    private val viewModel by lazyThreadSafetyNone {
+    private val zoneListViewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(ZoneListViewModel::class.java)
     }
 
-    private val _viewModel by lazyThreadSafetyNone {
+    private val zoneCreateViewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(ZoneCreateViewModel::class.java)
     }
 
+
+    /*
+    * Binder - fragment_zone_list.xml
+    * */
+    private lateinit var binder: FragmentZoneListBinding
+
+
+    /*
+    * Audit Model is set by
+    * 1. Audit Activity via Zone List Fragment (View Pager - Content)
+    * 2. Type Activity
+    * */
+    private var auditModel: AuditModel? = null
+
+
+    /*
+    * Fragment Lifecycle Methods
+    * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        _viewModel.result.observe(this, Observer {
-            refreshViewModel()
-        })
-
-        val auditId = arguments?.getInt("auditId")
-        auditId?.let {
-            setAuditModel(AuditModel(auditId, "n/a"))
-        }
+        setupListeners()
+        setupArguments()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -69,7 +77,7 @@ class ZoneListFragment : DaggerFragment(),
         binder = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_zone_list, container, false)
 
-        binder.viewModel = viewModel
+        binder.viewModel = zoneListViewModel
         binder.callbacks = this
         binder.fabClick = this
 
@@ -78,14 +86,48 @@ class ZoneListFragment : DaggerFragment(),
         return binder.root
     }
 
+    private fun showCreateZone() {
+        val dialogFragment = ZoneDialogFragment()
+        dialogFragment.show(childFragmentManager, FRAG_DIALOG)
+    }
+
+    private fun refreshViewModel() {
+        auditModel?.let {
+            zoneListViewModel.loadZoneList(it.id)
+        }
+    }
+
+    private fun setupArguments() {
+        val auditId = arguments?.getInt("auditId")
+        auditId?.let {
+            setAuditModel(AuditModel(auditId, "n/a"))
+        }
+    }
+
+
+    /**
+     * Message Passing : Audit List Fragment <> Audit Activity <> Zone List Fragment
+     *
+     * Step 1: The Audit List Click Event Registers the Audit Id
+     * Step 2: Passes Audit Id to the Home Activity
+     * Step 3: Uses Fragment Manager to find Zone List Fragment
+     * Step 4: Passes the Audit Model to Zone List Fragment
+     *
+     * */
+    fun setAuditModel(auditModel: AuditModel) {
+        this.auditModel = auditModel
+        refreshViewModel()
+    }
+
+
+    /*
+    * Listeners | Observers
+    * */
     override fun onClick(v: View?) {
         showCreateZone()
     }
 
-    /* *
-     * Home Audit Activity <> Scope | Audit Entity Activity
-     * INTENT >> Gateway
-     * */
+    // *** Navigator : Audit Activity <> Type Activity *** //
     override fun onZoneClick(view: View, item: ZoneModel) {
 
         val intent = Intent(activity, TypeActivity::class.java)
@@ -111,35 +153,20 @@ class ZoneListFragment : DaggerFragment(),
 
     override fun onZoneCreate(args: Bundle) {
         auditModel?.let {
-            _viewModel.createZone(it.id, args.getString("zoneTag"))
+            zoneCreateViewModel.createZone(it.id, args.getString("zoneTag"))
         }
     }
 
-    private fun showCreateZone() {
-        val dialogFragment = ZoneDialogFragment()
-        dialogFragment.show(childFragmentManager, FRAG_DIALOG)
+    private fun setupListeners() {
+        zoneCreateViewModel.result.observe(this, Observer {
+            refreshViewModel()
+        })
     }
 
-    private fun refreshViewModel() {
-        auditModel?.let {
-            viewModel.loadZoneList(it.id)
-        }
-    }
 
-    /**
-     * Message Passing : Audit List Fragment <> Home Activity <> Zone List Fragment
-     *
-     * Step 1: The Audit List Click Event Registers the Audit Id
-     * Step 2: Passes Audit Id to the Home Activity
-     * Step 3: Uses Fragment Manager to find Zone List Fragment
-     * Step 4: Passes the Audit Model to Zone List Fragment
-     *
-     * */
-    fun setAuditModel(auditModel: AuditModel) {
-        this.auditModel = auditModel
-        refreshViewModel()
-    }
-
+    /*
+    * Static Content
+    * */
     companion object {
         fun newInstance(): ZoneListFragment {
             return ZoneListFragment()
