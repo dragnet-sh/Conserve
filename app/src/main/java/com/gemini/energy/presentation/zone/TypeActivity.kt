@@ -46,6 +46,12 @@ class TypeActivity : BaseActivity(), ZoneListFragment.OnZoneSelectedListener {
         zoneId = intent.getIntExtra(EXTRA_ZONE_ID, 0)
         zoneName = intent.getStringExtra(EXTRA_ZONE_NAME)
 
+        setZoneHeader(ZoneModel(zoneId, zoneName!!, auditId!!))
+
+
+        //ToDo: Query with a ViewModel to get the List of Data *****
+
+
         super.binder?.let {
             setupContent(it)
             setupZoneList()
