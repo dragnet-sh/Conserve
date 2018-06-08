@@ -8,11 +8,16 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gemini.energy.R
+import com.gemini.energy.data.gateway.AuditGatewayImpl
 import com.gemini.energy.databinding.FragmentZoneListBinding
+import com.gemini.energy.domain.gateway.AuditGateway
+import com.gemini.energy.domain.interactor.ZoneGetAllUseCase
+import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneCreateViewModel
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragment
@@ -50,6 +55,11 @@ class ZoneListFragment : DaggerFragment(),
         _viewModel.result.observe(this, Observer {
             refreshViewModel()
         })
+
+        val auditId = arguments?.getInt("auditId")
+        auditId?.let {
+            setAuditModel(AuditModel(auditId, "n/a"))
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -60,9 +70,6 @@ class ZoneListFragment : DaggerFragment(),
         binder.viewModel = viewModel
         binder.callbacks = this
         binder.fabClick = this
-
-//        binder.recyclerView.addItemDecoration(
-//                DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
 
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
 

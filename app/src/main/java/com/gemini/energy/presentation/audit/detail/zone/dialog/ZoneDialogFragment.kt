@@ -52,12 +52,17 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
     }
 
     override fun onValidationSucceeded() {
-        var args = Bundle().apply {
+        val args = Bundle().apply {
             this.putString("zoneTag", zoneTag.text.toString())
         }
 
-        val callbacks = parentFragment as OnZoneCreateListener
-        callbacks.onZoneCreate(args)
+        val callbacks: OnZoneCreateListener? = if (parentFragment == null) {
+            activity as OnZoneCreateListener
+        } else {
+            parentFragment as OnZoneCreateListener
+        }
+
+        callbacks?.onZoneCreate(args)
         dismiss()
     }
 

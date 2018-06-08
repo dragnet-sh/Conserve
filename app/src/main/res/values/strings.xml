@@ -6,6 +6,7 @@
 
     <!-- Menu -->
     <string name="menu_create_audit">Create Audit</string>
+    <string name="menu_create_zone">Create Zone</string>
     <string name="menu_create_audit_scope_parent">Create Audit Entity</string>
 
     <!-- Fragment Audit Dialog -->
