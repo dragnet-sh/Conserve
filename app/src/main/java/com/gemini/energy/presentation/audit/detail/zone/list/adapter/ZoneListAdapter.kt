@@ -42,18 +42,6 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
         init {
 
             itemView.setOnClickListener {
-
-                // *** CREATE AN OBSERVABLE SO THAT ANY FRAGMENT CAN SUBSCRIBE TO IT **** //
-
-                Observable.just("item").subscribe(
-                       object: Observer<String> {
-                           override fun onComplete() { Log.d(TAG, "JUST ON COMPLETE") }
-                           override fun onSubscribe(d: Disposable) { Log.d(TAG, "JUST ON SUBSCRIBE")}
-                           override fun onNext(t: String) { Log.d(TAG, "JUST -- $t")}
-                           override fun onError(e: Throwable) { Log.d(TAG, "Just ON ERROR -- ${e.printStackTrace()}") }
-                       }
-                )
-
                 callbacks?.onZoneClick(it, items[adapterPosition])
             }
 

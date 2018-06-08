@@ -19,6 +19,7 @@ import com.gemini.energy.domain.gateway.AuditGateway
 import com.gemini.energy.domain.interactor.ZoneGetAllUseCase
 import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
+import com.gemini.energy.presentation.audit.AuditActivity
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneCreateViewModel
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAdapter
@@ -26,6 +27,7 @@ import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.zone.TypeActivity
 import dagger.android.support.DaggerFragment
+import java.lang.reflect.Type
 import javax.inject.Inject
 
 class ZoneListFragment : DaggerFragment(),
@@ -92,8 +94,17 @@ class ZoneListFragment : DaggerFragment(),
         intent.putExtra(EXTRA_ZONE_ID, item.id)
         intent.putExtra(EXTRA_ZONE_NAME, item.name)
 
-        context?.let {
-            ActivityCompat.startActivity(it, intent, null)
+        //Case 1: Navigate form Audit Activity to Zone Activity
+        if (activity is AuditActivity) {
+            context?.let {
+                ActivityCompat.startActivity(it, intent, null)
+            }
+        }
+
+        //Case 2: Populate Zone Type for each of the Zone Click
+        if (activity is TypeActivity) {
+            Log.d(TAG, "${item.id} -- ${item.name} >> ${item.auditId}")
+            //ToDo: Populate the correct Type Data for this Zone
         }
 
     }
