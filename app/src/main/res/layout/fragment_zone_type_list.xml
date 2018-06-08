@@ -34,6 +34,9 @@
             android:layout_height="wrap_content"
             android:id="@+id/recyclerView"
 
+            app:zoneTypeList="@{viewModel.result}"
+            app:zoneTypeListCallback="@{callbacks}"
+
             tools:listitem="@layout/fragment_zone_type_list_item" />
 
         <android.support.design.widget.FloatingActionButton
