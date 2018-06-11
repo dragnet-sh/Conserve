@@ -14,11 +14,13 @@ import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.presentation.zone.dialog.TypeCreateViewModel
 import com.gemini.energy.presentation.zone.dialog.TypeDialogFragment
 import com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter
 import com.gemini.energy.presentation.zone.list.model.TypeModel
 import dagger.android.support.DaggerFragment
+import kotlinx.android.synthetic.main.activity_home_detail.*
 import javax.inject.Inject
 
 class TypeListFragment : DaggerFragment(),
@@ -56,11 +58,12 @@ class TypeListFragment : DaggerFragment(),
 
     private var typeModel: TypeModel? = null
     private var zoneModel: ZoneModel? = null
+    private var typeId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupListeners()
         setupArguments()
+        setupListeners()
     }
 
 
@@ -86,19 +89,33 @@ class TypeListFragment : DaggerFragment(),
     }
 
     private fun refreshViewModel() {
-        typeModel?.let {
-            typeListViewModel.loadZoneTypeList(it.zoneId!!, it.type!!)
+        Log.d(TAG, "Refreshing View Model !!")
+        Log.d(TAG, "Zone : ${zoneModel.toString()}")
+        Log.d(TAG, "Pager Index : $typeId")
+
+        zoneModel?.let {zone ->
+            typeId?.let { typeId ->
+                typeListViewModel.loadZoneTypeList(
+                        zone.id!!,
+                        getType(typeId)
+                )
+            }
         }
     }
 
     private fun setupArguments() {
-        val auditId = arguments?.getInt("auditId")
-        val zoneId = arguments?.getInt("zoneId")
+
+        val zone = arguments?.getParcelable<ZoneModel>(PARCEL_ZONE)
+        setZoneModel(zone)
+        setTypeId(arguments?.getInt("typeId"))
+
+        val auditId = zone?.auditId
+        val zoneId = zone?.id
+        val zoneName = zone?.name
         val typeId = arguments?.getInt("typeId")
-        val zoneName = arguments?.getString("zoneName")
 
         Log.d(TAG, "*********************************************")
-        Log.d(TAG, "$auditId -- $zoneId -- $typeId -- $zoneName")
+        Log.d(TAG, "Audit Id : $auditId | Zone Id : $zoneId | Type Id : $typeId | Zone Name : $zoneName")
     }
 
     /*
@@ -111,18 +128,27 @@ class TypeListFragment : DaggerFragment(),
 
     // *** Navigator : Audit Activity <> Type Activity *** //
     override fun onZoneTypeClick(view: View, item: TypeModel) {
-
+        //ToDo : Figure out how to go about ??
     }
 
 
     override fun onTypeCreate(args: Bundle) {
-        typeModel?.let {
-            typeCreateViewModel.createZoneType(
-                    it.zoneId!!,
-                    args.getString("zoneType"),
-                    args.getString("zoneTypeTag"),
-                    it.auditId!!
-            )
+
+        val typeTag = args.getString("typeTag")
+        val type= args.getString("type")
+
+        Log.d(TAG, typeTag)
+        Log.d(TAG, type)
+
+        zoneModel?.let {zone ->
+            if (zone.id != null) {
+                typeCreateViewModel.createZoneType(
+                        zone.id,
+                        type,
+                        typeTag,
+                        zone.auditId
+                )
+            }
         }
     }
 
@@ -132,16 +158,34 @@ class TypeListFragment : DaggerFragment(),
         })
     }
 
+    fun setZoneModel(zone: ZoneModel?) {
+        Log.d(TAG, "Setting Zone Model -- ${zone.toString()}")
+        this.zoneModel = zone
+        refreshViewModel()
+    }
+
+    private fun setTypeId(typeId: Int?) {
+        this.typeId = typeId
+    }
+
+    private fun getType(pagerIndex: Int): String {
+        return when(pagerIndex) {
+            0 -> EZoneType.plugload.value
+            1 -> EZoneType.hvac.value
+            2 -> EZoneType.lighting.value
+            3 -> EZoneType.motors.value
+            else -> EZoneType.others.value
+        }
+    }
+
     companion object {
 
         fun newInstance(type: Int, zone: ZoneModel): TypeListFragment {
             val fragment = TypeListFragment()
 
             fragment.arguments = Bundle().apply {
-                this.putInt("auditId", zone.auditId)
-                this.putInt("zoneId", zone.id!!)
+                this.putParcelable(PARCEL_ZONE, zone)
                 this.putInt("typeId", type)
-                this.putString("zoneName", zone.name)
             }
 
             return fragment
@@ -149,6 +193,8 @@ class TypeListFragment : DaggerFragment(),
 
         private const val FRAG_DIALOG = "TypeDialogFragment"
         private const val TAG = "TypeListFragment"
+        private const val CALL_TAG = "TypeListFragment"
+        private const val PARCEL_ZONE = "$CALL_TAG.EXTRA.ZONE"
 
     }
 

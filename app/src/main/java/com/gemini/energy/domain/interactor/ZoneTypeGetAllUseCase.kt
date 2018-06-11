@@ -10,7 +10,7 @@ class ZoneTypeGetAllUseCase(schedulers: Schedulers, private val auditGateway: Au
         UseCase<List<Any>, List<AuditScopeParent>>(schedulers) {
 
     override fun buildObservable(params: List<Any>?): Observable<List<AuditScopeParent>> {
-        return auditGateway.getAuditScopeParentList(0)
+        return auditGateway.getAuditScopeParentList(params?.get(0) as Int, params[1] as String)
     }
 
 }

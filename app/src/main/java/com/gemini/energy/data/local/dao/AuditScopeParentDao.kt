@@ -10,8 +10,8 @@ import io.reactivex.Maybe
 @Dao
 interface AuditScopeParentDao {
 
-    @Query("SELECT * FROM AuditScopeParent WHERE zone_id = :id")
-    fun getAllByZone(id: Int): Maybe<List<AuditScopeParentLocalModel>>
+    @Query("SELECT * FROM AuditScopeParent WHERE zone_id = :id AND type = :type")
+    fun getAllByZone(id: Int, type: String): Maybe<List<AuditScopeParentLocalModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(auditScope: AuditScopeParentLocalModel)

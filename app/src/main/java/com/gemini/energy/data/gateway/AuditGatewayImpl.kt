@@ -44,8 +44,8 @@ class AuditGatewayImpl(
 
 
     /*Audit Scope Parent*/
-    override fun getAuditScopeParentList(zoneId: Int): Observable<List<AuditScopeParent>> =
-        auditScopeRepository.getAllParentByZone(zoneId)
+    override fun getAuditScopeParentList(zoneId: Int, type: String): Observable<List<AuditScopeParent>> =
+        auditScopeRepository.getAllParentByZone(zoneId, type)
                 .map { it.map { mapper.toEntity(it) } }
 
     override fun saveAuditScopeParent(auditScope: AuditScopeParent) = auditScopeRepository.saveParent(auditScope)

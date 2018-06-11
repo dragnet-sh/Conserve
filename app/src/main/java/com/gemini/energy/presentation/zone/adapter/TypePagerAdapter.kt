@@ -3,6 +3,7 @@ package com.gemini.energy.presentation.zone.adapter
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
+import android.util.Log
 import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.presentation.zone.list.TypeListFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel

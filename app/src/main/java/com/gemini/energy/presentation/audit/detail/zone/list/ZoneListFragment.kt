@@ -137,13 +137,12 @@ class ZoneListFragment : DaggerFragment(),
         showCreateZone()
     }
 
-    // *** Navigator : Audit Activity <> Type Activity *** //
     override fun onZoneClick(view: View, item: ZoneModel) {
 
         val intent = Intent(activity, TypeActivity::class.java)
         intent.putExtra(PARCEL_ZONE, item)
 
-        //Case 1: Navigate form Audit Activity to Zone Activity
+        //Case 1: Navigate form Audit Activity to Type Activity
         if (activity is AuditActivity) {
             context?.let {
                 ActivityCompat.startActivity(it, intent, null)
@@ -154,9 +153,7 @@ class ZoneListFragment : DaggerFragment(),
         if (activity is TypeActivity) {
             val callbacks = activity as OnZoneSelectedListener
             callbacks.onZoneSelected(ZoneModel(item.id, item.name, item.auditId))
-
-            Log.d(TAG, "${item.id} -- ${item.name} >> ${item.auditId}")
-            //ToDo: Populate the correct Type Data for this Zone
+            Log.d(TAG, "Zone Id : ${item.id} | Zone Name : ${item.name} | Audit Id : ${item.auditId}")
         }
 
     }

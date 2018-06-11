@@ -14,8 +14,8 @@ class ScopeRepository(
         private val auditScopeRemoteDataSource: AuditScopeRemoteDataSource,
         private val auditScopeMapper: AuditScopeMapper) {
 
-    fun getAllParentByZone(id: Int): Observable<List<AuditScopeParentLocalModel>> {
-        return auditScopeLocalDataSource.getAllParentByZone(id)
+    fun getAllParentByZone(id: Int, type: String): Observable<List<AuditScopeParentLocalModel>> {
+        return auditScopeLocalDataSource.getAllParentByZone(id, type)
     }
 
     fun getAllChildByParent(id: Int): Observable<List<AuditScopeChildLocalModel>> {

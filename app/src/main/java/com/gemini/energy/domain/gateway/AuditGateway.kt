@@ -13,7 +13,7 @@ interface AuditGateway {
     fun getPreAudit(auditId: Int): Observable<List<PreAudit>>
     fun savePreAudit(preAudit: List<PreAudit>): Observable<Unit>
 
-    fun getAuditScopeParentList(zoneId: Int): Observable<List<AuditScopeParent>>
+    fun getAuditScopeParentList(zoneId: Int, type: String): Observable<List<AuditScopeParent>>
     fun saveAuditScopeParent(auditScope: AuditScopeParent): Observable<Unit>
 
     fun getAuditScopeChildList(parentId: Int): Observable<List<AuditScopeChild>>

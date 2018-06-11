@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.EditText
 import com.gemini.energy.R
 import com.gemini.energy.presentation.util.Navigator
+import com.gemini.energy.presentation.util.hideInput
 import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
@@ -45,7 +46,7 @@ class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
         val view = inflater.inflate(R.layout.fragment_audit_dialog, container, false)
         dialog.setTitle(R.string.create_audit)
 
-        view.findViewById<Button>(R.id.btn_cancel_audit).setOnClickListener { dismiss() }
+        view.findViewById<Button>(R.id.btn_cancel_audit).setOnClickListener { dismiss(); view.hideInput() }
         view.findViewById<Button>(R.id.btn_save_audit).setOnClickListener { validator.validate() }
 
         auditId = view.findViewById(R.id.edt_create_audit_id)
@@ -68,6 +69,7 @@ class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
         val callbacks = fragmentManager?.findFragmentByTag(TAG_AUDIT_LIST) as OnAuditCreateListener
         callbacks.onAuditCreate(args)
         dismiss()
+        view?.hideInput()
     }
 
 

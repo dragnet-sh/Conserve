@@ -11,7 +11,7 @@ class AuditScopeLocalDataSource(
         private val auditScopeParentDao: AuditScopeParentDao,
         private val auditScopeChildDao: AuditScopeChildDao) {
 
-    fun getAllParentByZone(id: Int): Observable<List<AuditScopeParentLocalModel>> = auditScopeParentDao.getAllByZone(id).toObservable()
+    fun getAllParentByZone(id: Int, type: String): Observable<List<AuditScopeParentLocalModel>> = auditScopeParentDao.getAllByZone(id, type).toObservable()
     fun getAllChildByParent(id: Int): Observable<List<AuditScopeChildLocalModel>> = auditScopeChildDao.getAllByParent(id).toObservable()
 
     fun save(scopeParent: AuditScopeParentLocalModel): Observable<Unit> {

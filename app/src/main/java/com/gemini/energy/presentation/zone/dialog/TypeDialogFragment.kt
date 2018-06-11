@@ -2,6 +2,7 @@ package com.gemini.energy.presentation.zone.dialog
 
 import android.support.v4.app.DialogFragment
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -45,7 +46,6 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         val scopeOptions = arrayOf("Plugload", "HVAC", "Motors", "Lighting", "Others")
         scopeSpinner.adapter = ArrayAdapter(activity, R.layout.support_simple_spinner_dropdown_item, scopeOptions)
 
-
         scopeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 Toast.makeText(activity, getString(R.string.selected_item) + " " + scopeOptions[position], Toast.LENGTH_SHORT).show()
@@ -64,8 +64,8 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
 
     override fun onValidationSucceeded() {
         var args = Bundle().apply {
-            this.putString("auditScopeName", scopeName.text.toString())
-            this.putString("auditScopeType", scopeType)
+            this.putString("typeTag", scopeName.text.toString())
+            this.putString("type", scopeType)
         }
 
         if (parentFragment != null) {

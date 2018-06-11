@@ -58,9 +58,8 @@ ext {
             "com.squareup.moshi:moshi-kotlin:${moshiVersion}",
 
             "android.arch.persistence.room:runtime:$roomVersion",
-            "android.arch.persistence.room:rxjava2:$roomVersion",
+            "android.arch.persistence.room:rxjava2:$roomVersion"
 
-            'com.amitshekhar.android:debug-db:1.0.3'
     ]
 
     presentationTestDependencies = [
