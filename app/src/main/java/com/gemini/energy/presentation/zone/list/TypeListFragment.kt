@@ -9,9 +9,12 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.util.Log
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
+import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.zone.dialog.ZoneTypeCreateViewModel
 import com.gemini.energy.presentation.zone.dialog.ZoneTypeDialogFragment
 import com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter
@@ -19,7 +22,7 @@ import com.gemini.energy.presentation.zone.list.model.TypeModel
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-class TypeListFragment : DaggerFragment(),
+class TypeListFragment() : DaggerFragment(),
 
         TypeListAdapter.OnZoneTypeClickListener,
         ZoneTypeDialogFragment.OnAuditScopeCreateListener,
@@ -53,11 +56,12 @@ class TypeListFragment : DaggerFragment(),
     private lateinit var binder: FragmentZoneTypeListBinding
 
     private var typeModel: TypeModel? = null
-
+    private var zoneModel: ZoneModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupListeners()
+        setupArguments()
     }
 
 
@@ -86,6 +90,16 @@ class TypeListFragment : DaggerFragment(),
         typeModel?.let {
             typeListViewModel.loadZoneTypeList(it.zoneId!!, it.type!!)
         }
+    }
+
+    private fun setupArguments() {
+        val auditId = arguments?.getInt("auditId")
+        val zoneId = arguments?.getInt("zoneId")
+        val typeId = arguments?.getInt("typeId")
+        val zoneName = arguments?.getString("zoneName")
+
+        Log.d(TAG, "*********************************************")
+        Log.d(TAG, "$auditId -- $zoneId -- $typeId -- $zoneName")
     }
 
     /*
@@ -119,10 +133,24 @@ class TypeListFragment : DaggerFragment(),
         })
     }
 
-
     companion object {
-        fun newInstance(type: Int) = TypeListFragment()
+
+        fun newInstance(type: Int, zone: ZoneModel): TypeListFragment {
+            val fragment = TypeListFragment()
+
+            fragment.arguments = Bundle().apply {
+                this.putInt("auditId", zone.auditId)
+                this.putInt("zoneId", zone.id!!)
+                this.putInt("typeId", type)
+                this.putString("zoneName", zone.name)
+            }
+
+            return fragment
+        }
+
         private const val FRAG_DIALOG = "TypeDialogFragment"
+        private const val TAG = "TypeListFragment"
+
     }
 
 }

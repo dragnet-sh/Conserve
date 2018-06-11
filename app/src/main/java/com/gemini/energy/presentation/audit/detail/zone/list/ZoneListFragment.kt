@@ -141,10 +141,7 @@ class ZoneListFragment : DaggerFragment(),
     override fun onZoneClick(view: View, item: ZoneModel) {
 
         val intent = Intent(activity, TypeActivity::class.java)
-
-        intent.putExtra(EXTRA_AUDIT_ID, item.auditId)
-        intent.putExtra(EXTRA_ZONE_ID, item.id)
-        intent.putExtra(EXTRA_ZONE_NAME, item.name)
+        intent.putExtra(PARCEL_ZONE, item)
 
         //Case 1: Navigate form Audit Activity to Zone Activity
         if (activity is AuditActivity) {
@@ -188,8 +185,6 @@ class ZoneListFragment : DaggerFragment(),
         private const val TAG = "ZoneListFragment"
         private const val FRAG_DIALOG = "ZoneDialogFragment"
 
-        private const val EXTRA_AUDIT_ID    = "$TAG.EXTRA.AUDIT_ID"
-        private const val EXTRA_ZONE_ID     = "$TAG.EXTRA.ZONE_ID"
-        private const val EXTRA_ZONE_NAME   = "$TAG.EXTRA.ZONE_NAME"
+        private const val PARCEL_ZONE    = "$TAG.EXTRA.ZONE"
     }
 }

@@ -2,11 +2,13 @@ package com.gemini.energy.presentation.zone.dialog
 
 import android.support.v4.app.DialogFragment
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.gemini.energy.R
+import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
 import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
@@ -68,11 +70,16 @@ class ZoneTypeDialogFragment : DialogFragment(), Validator.ValidationListener {
             this.putString("auditScopeType", scopeType)
         }
 
-        //ToDo: Give this Bundle to who ever is listening to this Dialog !!
+        if (parentFragment != null) {
+            val callbacks = parentFragment as OnAuditScopeCreateListener?
+            callbacks?.onAuditScopeCreate(args)
+        }
+
+        dismiss()
     }
 
     companion object {
-        private const val TAG = "ScopeDialogFragment"
+        private const val TAG = "ZoneTypeDialogFragment"
     }
 
     interface OnAuditScopeCreateListener {

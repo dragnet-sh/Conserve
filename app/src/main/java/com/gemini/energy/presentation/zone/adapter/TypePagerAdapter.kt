@@ -5,11 +5,12 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentPagerAdapter
 import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.presentation.zone.list.TypeListFragment
+import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 
-class TypePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
+class TypePagerAdapter(fm: FragmentManager, private val zone: ZoneModel) : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        return TypeListFragment.newInstance(position)
+        return TypeListFragment.newInstance(position, zone)
     }
 
     override fun getCount(): Int {
