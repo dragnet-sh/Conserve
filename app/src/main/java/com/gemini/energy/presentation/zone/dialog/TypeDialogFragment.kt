@@ -2,19 +2,17 @@ package com.gemini.energy.presentation.zone.dialog
 
 import android.support.v4.app.DialogFragment
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.gemini.energy.R
-import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
 import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
 
 
-class ZoneTypeDialogFragment : DialogFragment(), Validator.ValidationListener {
+class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
 
     @NotEmpty
     private lateinit var scopeName: EditText
@@ -35,7 +33,7 @@ class ZoneTypeDialogFragment : DialogFragment(), Validator.ValidationListener {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        val view = inflater.inflate(R.layout.fragment_audit_scope_parent_dialog, container, false)
+        val view = inflater.inflate(R.layout.fragment_type_parent_dialog, container, false)
         dialog.setTitle(R.string.menu_create_audit_scope_parent)
 
         view.findViewById<Button>(R.id.btn_cancel_scope).setOnClickListener { dismiss() }
@@ -71,19 +69,19 @@ class ZoneTypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         }
 
         if (parentFragment != null) {
-            val callbacks = parentFragment as OnAuditScopeCreateListener?
-            callbacks?.onAuditScopeCreate(args)
+            val callbacks = parentFragment as OnTypeCreateListener?
+            callbacks?.onTypeCreate(args)
         }
 
         dismiss()
     }
 
     companion object {
-        private const val TAG = "ZoneTypeDialogFragment"
+        private const val TAG = "TypeDialogFragment"
     }
 
-    interface OnAuditScopeCreateListener {
-        fun onAuditScopeCreate(args: Bundle)
+    interface OnTypeCreateListener {
+        fun onTypeCreate(args: Bundle)
     }
 
 }

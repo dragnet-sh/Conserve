@@ -13,7 +13,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import java.util.*
 
-class ZoneTypeCreateViewModel(context: Context, private val zoneTypeCreateUseCase: ZoneTypeSaveUseCase) :
+class TypeCreateViewModel(context: Context, private val zoneTypeCreateUseCase: ZoneTypeSaveUseCase) :
         BaseAndroidViewModel(context.applicationContext as Application) {
 
     private val _result = SingleLiveData<Boolean>()

@@ -19,7 +19,7 @@ import com.gemini.energy.presentation.audit.list.AuditListViewModel
 import com.gemini.energy.presentation.base.Crossfader
 import com.gemini.energy.presentation.base.GmailStyleCrossFadeSlidingPaneLayout
 import com.gemini.energy.presentation.util.Navigator
-import com.gemini.energy.presentation.zone.dialog.ZoneTypeCreateViewModel
+import com.gemini.energy.presentation.zone.dialog.TypeCreateViewModel
 import com.gemini.energy.presentation.zone.list.TypeListFragment
 import com.gemini.energy.presentation.zone.list.TypeListViewModel
 import com.mobsandgeeks.saripaar.Validator
@@ -156,8 +156,8 @@ internal abstract class HomeModule {
                         modelClass.isAssignableFrom(TypeListViewModel::class.java) ->
                             TypeListViewModel(context, zoneTypeGetAllUseCase) as T
 
-                        modelClass.isAssignableFrom(ZoneTypeCreateViewModel::class.java) ->
-                            ZoneTypeCreateViewModel(context, zoneTypeSaveUseCase) as T
+                        modelClass.isAssignableFrom(TypeCreateViewModel::class.java) ->
+                            TypeCreateViewModel(context, zoneTypeSaveUseCase) as T
 
 
                         else -> throw IllegalArgumentException("Unknown ViewModel class : ${modelClass.name}")

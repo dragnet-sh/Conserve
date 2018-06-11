@@ -1,31 +1,17 @@
 package com.gemini.energy.presentation.zone
 
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.widget.TextView
 import com.gemini.energy.R
 import com.gemini.energy.databinding.ActivityHomeDetailBinding
-import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
-import com.gemini.energy.presentation.audit.list.AuditListViewModel
 import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.zone.adapter.TypePagerAdapter
-import javax.inject.Inject
 
-class TypeActivity : BaseActivity(), ZoneListFragment.OnZoneSelectedListener {
+class TypeActivity : BaseActivity(),
+        ZoneListFragment.OnZoneSelectedListener {
 
-
-     /*
-     * View Model Setup - [AuditListViewModel]
-     * */
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private val auditListViewModel by lazyThreadSafetyNone {
-        ViewModelProviders.of(this, viewModelFactory).get(AuditListViewModel::class.java)
-    }
 
     /*
     * These parameters are being set by the Zone List Fragment
@@ -55,9 +41,9 @@ class TypeActivity : BaseActivity(), ZoneListFragment.OnZoneSelectedListener {
     * View Pager Main Content
     * */
     private fun setupContent(binder: ActivityHomeDetailBinding) {
-        zone?.let {
+        zone?.let {zoneModel ->
             binder.viewPager.adapter = TypePagerAdapter(
-                    supportFragmentManager, it
+                    supportFragmentManager, zoneModel
             )
         }
     }
@@ -106,11 +92,9 @@ class TypeActivity : BaseActivity(), ZoneListFragment.OnZoneSelectedListener {
     companion object {
         private const val TAG = "TypeActivity"
 
-        private const val FRAG_DIALOG       = "TypeActivityAuditDialogFragment"
         private const val FRAG_ZONE_LIST    = "TypeActivityZoneListFragment"
         private const val CALL_TAG          = "ZoneListFragment"
-
-        private const val PARCEL_ZONE     = "$CALL_TAG.EXTRA.ZONE"
+        private const val PARCEL_ZONE       = "$CALL_TAG.EXTRA.ZONE"
     }
 
 }

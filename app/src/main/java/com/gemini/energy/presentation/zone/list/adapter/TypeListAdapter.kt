@@ -20,7 +20,7 @@ class TypeListAdapter(private val items: List<TypeModel>, private val callbacks:
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding: FragmentZoneTypeListItemBinding = DataBindingUtil.inflate(
-                inflater, R.layout.fragment_zone_type_list_item, parent, false)
+                inflater, R.layout.fragment_type_list_item, parent, false)
 
         return ViewHolder(binding)
     }

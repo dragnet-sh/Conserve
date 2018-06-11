@@ -6,26 +6,25 @@ import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.util.Log
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
-import com.gemini.energy.presentation.audit.list.model.AuditModel
-import com.gemini.energy.presentation.zone.dialog.ZoneTypeCreateViewModel
-import com.gemini.energy.presentation.zone.dialog.ZoneTypeDialogFragment
+import com.gemini.energy.presentation.zone.dialog.TypeCreateViewModel
+import com.gemini.energy.presentation.zone.dialog.TypeDialogFragment
 import com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter
 import com.gemini.energy.presentation.zone.list.model.TypeModel
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
-class TypeListFragment() : DaggerFragment(),
+class TypeListFragment : DaggerFragment(),
 
         TypeListAdapter.OnZoneTypeClickListener,
-        ZoneTypeDialogFragment.OnAuditScopeCreateListener,
+        TypeDialogFragment.OnTypeCreateListener,
 
         View.OnClickListener {
 
@@ -45,8 +44,8 @@ class TypeListFragment() : DaggerFragment(),
         ViewModelProviders.of(this, viewModelFactory).get(TypeListViewModel::class.java)
     }
 
-    private val zoneTypeCreateViewModel by lazyThreadSafetyNone {
-        ViewModelProviders.of(this, viewModelFactory).get(ZoneTypeCreateViewModel::class.java)
+    private val typeCreateViewModel by lazyThreadSafetyNone {
+        ViewModelProviders.of(this, viewModelFactory).get(TypeCreateViewModel::class.java)
     }
 
 
@@ -68,7 +67,7 @@ class TypeListFragment() : DaggerFragment(),
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
         binder = DataBindingUtil.inflate(inflater,
-                R.layout.fragment_zone_type_list, container, false)
+                R.layout.fragment_type_list, container, false)
 
         binder.viewModel = typeListViewModel
         binder.callbacks = this
@@ -82,7 +81,7 @@ class TypeListFragment() : DaggerFragment(),
     }
 
     private fun showCreateZoneType() {
-        val dialogFragment = ZoneTypeDialogFragment()
+        val dialogFragment = TypeDialogFragment()
         dialogFragment.show(childFragmentManager, FRAG_DIALOG)
     }
 
@@ -116,9 +115,9 @@ class TypeListFragment() : DaggerFragment(),
     }
 
 
-    override fun onAuditScopeCreate(args: Bundle) {
+    override fun onTypeCreate(args: Bundle) {
         typeModel?.let {
-            zoneTypeCreateViewModel.createZoneType(
+            typeCreateViewModel.createZoneType(
                     it.zoneId!!,
                     args.getString("zoneType"),
                     args.getString("zoneTypeTag"),
@@ -128,7 +127,7 @@ class TypeListFragment() : DaggerFragment(),
     }
 
     private fun setupListeners() {
-        zoneTypeCreateViewModel.result.observe(this, Observer {
+        typeCreateViewModel.result.observe(this, Observer {
             refreshViewModel()
         })
     }
