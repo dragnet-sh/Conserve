@@ -20,6 +20,7 @@ import com.gemini.energy.presentation.base.Crossfader
 import com.gemini.energy.presentation.base.GmailStyleCrossFadeSlidingPaneLayout
 import com.gemini.energy.presentation.util.Navigator
 import com.gemini.energy.presentation.zone.dialog.TypeCreateViewModel
+import com.gemini.energy.presentation.zone.feature.FeatureDataFragment
 import com.gemini.energy.presentation.zone.list.TypeListFragment
 import com.gemini.energy.presentation.zone.list.TypeListViewModel
 import com.mobsandgeeks.saripaar.Validator
@@ -49,6 +50,9 @@ internal abstract class HomeModule {
 
     @ContributesAndroidInjector
     internal abstract fun contributeTypeListFragment(): TypeListFragment
+
+    @ContributesAndroidInjector
+    internal abstract fun contributeFeatureDataFragment(): FeatureDataFragment
 
     @Module
     companion object {

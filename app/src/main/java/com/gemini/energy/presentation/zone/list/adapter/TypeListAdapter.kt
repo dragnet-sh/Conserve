@@ -14,7 +14,7 @@ class TypeListAdapter(private val items: List<TypeModel>, private val callbacks:
         RecyclerView.Adapter<TypeListAdapter.ViewHolder>() {
 
     interface OnTypeClickListener {
-        fun onTypeClick(view: View, item: TypeModel)
+        fun onTypeClick(view: View, typeModel: TypeModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

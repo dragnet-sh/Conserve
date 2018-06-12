@@ -63,7 +63,7 @@ class TypeListFragment : DaggerFragment(),
 
     private var auditModel: AuditModel? = null
     private var zoneModel: ZoneModel? = null
-    private var typeModel: TypeModel? = null //ToDo: When do you set this ??
+    private var typeModel: TypeModel? = null
 
 
     /*
@@ -92,7 +92,7 @@ class TypeListFragment : DaggerFragment(),
         binder.viewModel = typeListViewModel
         binder.callbacks = this
         binder.fabClick = this
-        binder.showCreate = true
+        binder.showCreate = app.isParent()
 
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
 
@@ -125,6 +125,8 @@ class TypeListFragment : DaggerFragment(),
         setZoneModel(zone)
         setTypeId(arguments?.getInt("typeId"))
 
+        if (app.isChild()) { refreshViewModel() }
+
     }
 
     /*
@@ -136,20 +138,19 @@ class TypeListFragment : DaggerFragment(),
 
 
     // *** Navigator : Audit Activity <> Type Activity *** //
-    override fun onTypeClick(view: View, itemModel: TypeModel) {
+    override fun onTypeClick(view: View, typeModel: TypeModel) {
 
         // Step 1 : Check if the Type has a Child
         // Step 2 : If it has a Child load the Type Activity with the proper set of Dialog
         // Step 3 : If it has no Child - Load the Feature Form
 
-        if (itemModel.type == EZoneType.Plugload.value) {
+        if (app.isParent()) {
 
-            if (app.getCount() == 0) {
+            // 1. Pass a message to the Type Activity that this is a Child View for Plugload
+            // 2. Side List -> Has Plugload Types
+            // 3. View Pager -> Has only one Element the PlugLoad Child Elements
 
-                // 1. Pass a message to the Type Activity that this is a Child View for Plugload
-                // 2. Side List -> Has Plugload Types
-                // 3. View Pager -> Has only one Element the PlugLoad Child Elements
-
+            {
                 Log.d(TAG, "<<<<< AUDIT MODEL >>>>>")
                 Log.d(TAG, auditModel.toString())
 
@@ -157,37 +158,31 @@ class TypeListFragment : DaggerFragment(),
                 Log.d(TAG, zoneModel.toString())
 
                 Log.d(TAG, "<<<<< ITEM MODEL >>>>>")
-                Log.d(TAG, itemModel.toString())
+                Log.d(TAG, typeModel.toString())
 
                 Log.d(TAG, "<<<<< TYPE ID >>>>>")
                 Log.d(TAG, typeId.toString())
                 Log.d(TAG, getType(typeId!!))
-
-                val intent = Intent(activity, TypeActivity::class.java)
-                intent.putExtra(PARCEL_AUDIT, auditModel)
-                intent.putExtra(PARCEL_ZONE, zoneModel)
-                intent.putExtra(PARCEL_TYPE, itemModel)
-                intent.putExtra("typeId", typeId as Int)
-
-                context?.let {
-                    ActivityCompat.startActivity(it, intent, null)
-                }
-
-                app.setCounter(EAction.Push, itemModel)
-
-            } else {
-
-                // 1. Load the Form
-                // 2. When you get back from Form perhaps Pop the Stack
-
             }
+
+            val intent = Intent(activity, TypeActivity::class.java)
+
+            intent.putExtra(PARCEL_AUDIT, auditModel)
+            intent.putExtra(PARCEL_ZONE, zoneModel)
+            intent.putExtra(PARCEL_TYPE, typeModel)
+            intent.putExtra("typeId", typeId as Int)
+
+            context?.let {
+                ActivityCompat.startActivity(it, intent, null)
+            }
+
+            app.setCounter(EAction.Push, typeModel)
 
         } else {
 
-            // 1. Side List -> Has Parent Elements for the Specific Type
-            // 2. View Pager -> Has the Form for the Specific Type for the Selected Parent
-
-            Log.d(TAG, "N/A -- N/A -- N/A")
+            setTypeModel(typeModel)
+            val callbacks = activity as OnTypeSelectedListener
+            callbacks.onTypeSelected(typeModel)
 
         }
 
@@ -230,6 +225,11 @@ class TypeListFragment : DaggerFragment(),
         refreshViewModel()
     }
 
+    private fun setTypeModel(type: TypeModel?) {
+        Log.d(TAG, "Setting Type Model -- ${type.toString()}")
+        this.typeModel = type
+    }
+
     private fun setTypeId(typeId: Int?) {
         this.typeId = typeId
     }
@@ -262,9 +262,9 @@ class TypeListFragment : DaggerFragment(),
         private const val FRAG_DIALOG = "TypeDialogFragment"
         private const val TAG = "TypeListFragment"
 
-        private const val PARCEL_AUDIT = "EXTRA.AUDIT"
-        private const val PARCEL_ZONE = "EXTRA.ZONE"
-        private const val PARCEL_TYPE = "EXTRA.TYPE"
+        private const val PARCEL_AUDIT      = "EXTRA.AUDIT"
+        private const val PARCEL_ZONE       = "EXTRA.ZONE"
+        private const val PARCEL_TYPE       = "EXTRA.TYPE"
 
     }
 

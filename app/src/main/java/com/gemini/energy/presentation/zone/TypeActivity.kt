@@ -13,7 +13,9 @@ import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.EAction
+import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.presentation.zone.adapter.TypePagerAdapter
+import com.gemini.energy.presentation.zone.feature.FeatureDataFragment
 import com.gemini.energy.presentation.zone.list.TypeListFragment
 import com.gemini.energy.presentation.zone.list.model.TypeModel
 import kotlinx.android.synthetic.main.activity_home_detail.*
@@ -49,7 +51,7 @@ class TypeActivity : BaseActivity(),
 
         super.binder?.let {
             setupContent(it)
-            setupZoneList()
+            setupSideMenu()
         }
 
     }
@@ -58,7 +60,7 @@ class TypeActivity : BaseActivity(),
     override fun onResume() {
         super.onResume()
 
-        when (app?.getCount()) {
+        when (app.getCount()) {
             0 -> Log.d(TAG, "*** PARENT TYPE ACTIVITY ***")
             1 -> Log.d(TAG, "*** CHILD TYPE ACTIVITY ***")
         }
@@ -91,7 +93,7 @@ class TypeActivity : BaseActivity(),
             return
         }
 
-        if (app?.isParent()!!) {
+        if (app.isParent()) {
 
             binder.viewPager.adapter = TypePagerAdapter(
                     supportFragmentManager, zoneModel!!, auditModel!!
@@ -101,7 +103,7 @@ class TypeActivity : BaseActivity(),
 
             binder.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
                 override fun getItem(position: Int): Fragment {
-                    return TypeListFragment.newInstance(0, zoneModel!!, auditModel!!)
+                    return FeatureDataFragment()
                 }
 
                 override fun getCount(): Int {
@@ -109,12 +111,18 @@ class TypeActivity : BaseActivity(),
                 }
 
                 override fun getPageTitle(position: Int): CharSequence? {
-                    return "Plugload - Child"
+                    return getType(typeId ?: 0)
                 }
             }
 
         }
 
+    }
+
+
+    private fun setupSideMenu() {
+        if (app.isParent()) { setupZoneList() }
+        if (app.isChild()) { setupTypeList() }
     }
 
 
@@ -125,6 +133,7 @@ class TypeActivity : BaseActivity(),
     private fun setupZoneList() {
         val zoneListFragment = ZoneListFragment.newInstance()
 
+        //ToDo : Maybe move this bundling to the Fragment itself
         zoneListFragment.arguments = Bundle().apply {
             this.putInt("auditId", zoneModel?.auditId!!)
             this.putString("auditTag", "n/a")
@@ -138,7 +147,21 @@ class TypeActivity : BaseActivity(),
     }
 
     private fun setupTypeList() {
-//        val typeListFragment = TypeListFragment.newInstance(typeId, zoneModel, auditModel)
+
+        Log.d(TAG, "Type Id -- $typeId")
+        Log.d(TAG, "Zone Model -- ${zoneModel.toString()}")
+        Log.d(TAG, "Audit Model -- ${auditModel.toString()}")
+
+        if (typeId != null && zoneModel != null && auditModel != null) {
+            val typeListFragment = TypeListFragment.newInstance(
+                    typeId!!, zoneModel!!, auditModel!!
+            )
+
+            supportFragmentManager
+                    .beginTransaction()
+                    .add(R.id.side_bar, typeListFragment, FRAG_TYPE_LIST)
+                    .commit()
+        }
 
     }
 
@@ -223,14 +246,26 @@ class TypeActivity : BaseActivity(),
         return true
     }
 
+    private fun getType(pagerIndex: Int): String {
+        return when(pagerIndex) {
+            0 -> EZoneType.Plugload.value
+            1 -> EZoneType.HVAC.value
+            2 -> EZoneType.Lighting.value
+            3 -> EZoneType.Motors.value
+            else -> EZoneType.Others.value
+        }
+    }
+
     companion object {
         private const val TAG = "TypeActivity"
         private var app: App = App.instance
 
-        private const val FRAG_ZONE_LIST = "TypeActivityZoneListFragment"
-        private const val PARCEL_AUDIT = "EXTRA.AUDIT"
-        private const val PARCEL_ZONE = "EXTRA.ZONE"
-        private const val PARCEL_TYPE = "EXTRA.TYPE"
+        private const val FRAG_ZONE_LIST    = "TypeActivityZoneListFragment"
+        private const val FRAG_TYPE_LIST    = "TypeActivityTypeListFragment"
+
+        private const val PARCEL_AUDIT      = "EXTRA.AUDIT"
+        private const val PARCEL_ZONE       = "EXTRA.ZONE"
+        private const val PARCEL_TYPE       = "EXTRA.TYPE"
 
         private const val ANDROID_SWITCHER = "android:switcher"
     }
