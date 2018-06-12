@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gemini.energy.R
-import com.gemini.energy.presentation.feature.FormBuilder
-import com.gemini.energy.presentation.feature.FormMapper
+import com.gemini.energy.presentation.form.FormBuilder
+import com.gemini.energy.presentation.form.FormMapper
 import com.thejuki.kformmaster.helper.FormBuildHelper
 import com.thejuki.kformmaster.model.BaseFormElement
 import dagger.android.support.DaggerFragment

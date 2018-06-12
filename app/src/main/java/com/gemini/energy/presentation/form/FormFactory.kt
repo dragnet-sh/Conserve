@@ -1,6 +1,6 @@
-package com.gemini.energy.presentation.feature
+package com.gemini.energy.presentation.form
 
-import com.gemini.energy.presentation.feature.model.GElements
+import com.gemini.energy.presentation.form.model.GElements
 import com.thejuki.kformmaster.model.*
 import java.io.Serializable
 

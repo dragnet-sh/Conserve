@@ -1,10 +1,10 @@
-package com.gemini.energy.presentation.feature
+package com.gemini.energy.presentation.form
 
 import android.content.Context
 import android.util.Log
 import com.gemini.energy.R
-import com.gemini.energy.presentation.feature.model.GElements
-import com.gemini.energy.presentation.feature.model.GEnergyFormModel
+import com.gemini.energy.presentation.form.model.GElements
+import com.gemini.energy.presentation.form.model.GEnergyFormModel
 import com.squareup.moshi.Moshi
 
 class FormMapper(private val context: Context) {

@@ -18,3 +18,14 @@ enum class EZoneType(val value: String) {
     }
 
 }
+
+
+/*
+* Stack Operation for Type Counter
+* */
+enum class EAction(val value: String) {
+
+    Push("push"),
+    Pop("pop");
+
+}

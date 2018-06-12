@@ -3,29 +3,33 @@ package com.gemini.energy.presentation.zone.list
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.gemini.energy.App
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.util.EZoneType
+import com.gemini.energy.presentation.zone.TypeActivity
 import com.gemini.energy.presentation.zone.dialog.TypeCreateViewModel
 import com.gemini.energy.presentation.zone.dialog.TypeDialogFragment
 import com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter
 import com.gemini.energy.presentation.zone.list.model.TypeModel
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.activity_home_detail.*
 import javax.inject.Inject
 
 class TypeListFragment : DaggerFragment(),
 
-        TypeListAdapter.OnZoneTypeClickListener,
+        TypeListAdapter.OnTypeClickListener,
         TypeDialogFragment.OnTypeCreateListener,
 
         View.OnClickListener {
@@ -62,6 +66,7 @@ class TypeListFragment : DaggerFragment(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setupArguments()
         setupListeners()
     }
@@ -89,10 +94,6 @@ class TypeListFragment : DaggerFragment(),
     }
 
     private fun refreshViewModel() {
-        Log.d(TAG, "Refreshing View Model !!")
-        Log.d(TAG, "Zone : ${zoneModel.toString()}")
-        Log.d(TAG, "Pager Index : $typeId")
-
         zoneModel?.let {zone ->
             typeId?.let { typeId ->
                 typeListViewModel.loadZoneTypeList(
@@ -109,13 +110,6 @@ class TypeListFragment : DaggerFragment(),
         setZoneModel(zone)
         setTypeId(arguments?.getInt("typeId"))
 
-        val auditId = zone?.auditId
-        val zoneId = zone?.id
-        val zoneName = zone?.name
-        val typeId = arguments?.getInt("typeId")
-
-        Log.d(TAG, "*********************************************")
-        Log.d(TAG, "Audit Id : $auditId | Zone Id : $zoneId | Type Id : $typeId | Zone Name : $zoneName")
     }
 
     /*
@@ -127,10 +121,49 @@ class TypeListFragment : DaggerFragment(),
 
 
     // *** Navigator : Audit Activity <> Type Activity *** //
-    override fun onZoneTypeClick(view: View, item: TypeModel) {
-        //ToDo : Figure out how to go about ??
-    }
+    override fun onTypeClick(view: View, item: TypeModel) {
 
+        // Step 1 : Check if the Type has a Child
+        // Step 2 : If it has a Child load the Type Activity with the proper set of Dialog
+        // Step 3 : If it has no Child - Load the Feature Form
+
+        val app = App.instance
+
+        if (item.type == EZoneType.plugload.value) {
+
+            if (app.getCount() == 0) {
+
+                // 1. Pass a message to the Type Activity that this is a Child View for Plugload
+                // 2. Side List -> Has Plugload Types
+                // 3. View Pager -> Has only one Element the PlugLoad Child Elements
+
+                val intent = Intent(activity, TypeActivity::class.java)
+                intent.putExtra(PARCEL_TYPE, item)
+                intent.putExtra(PARCEL_ZONE, zoneModel)
+
+                context?.let {
+                    ActivityCompat.startActivity(it, intent, null)
+                }
+
+                app.setCounter(EAction.Push, item)
+
+            } else {
+
+                // 1. Load the Form
+                // 2. When you get back from Form perhaps Pop the Stack
+
+            }
+
+        } else {
+
+            // 1. Side List -> Has Parent Elements for the Specific Type
+            // 2. View Pager -> Has the Form for the Specific Type for the Selected Parent
+
+            Log.d(TAG, "N/A -- N/A -- N/A")
+
+        }
+
+    }
 
     override fun onTypeCreate(args: Bundle) {
 
@@ -194,7 +227,8 @@ class TypeListFragment : DaggerFragment(),
         private const val FRAG_DIALOG = "TypeDialogFragment"
         private const val TAG = "TypeListFragment"
         private const val CALL_TAG = "TypeListFragment"
-        private const val PARCEL_ZONE = "$CALL_TAG.EXTRA.ZONE"
+        private const val PARCEL_ZONE = "EXTRA.ZONE"
+        private const val PARCEL_TYPE = "EXTRA.TYPE"
 
     }
 

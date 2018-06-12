@@ -14,7 +14,7 @@
 
         <variable
             name="callbacks"
-            type="com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter.OnZoneTypeClickListener" />
+            type="com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter.OnTypeClickListener" />
 
         <variable
             name="fabClick"

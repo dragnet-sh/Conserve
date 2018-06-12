@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.feature.model
+package com.gemini.energy.presentation.form.model
 
 
 class GEnergyFormModel {

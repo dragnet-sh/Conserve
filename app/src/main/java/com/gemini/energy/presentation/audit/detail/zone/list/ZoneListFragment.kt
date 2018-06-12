@@ -182,6 +182,6 @@ class ZoneListFragment : DaggerFragment(),
         private const val TAG = "ZoneListFragment"
         private const val FRAG_DIALOG = "ZoneDialogFragment"
 
-        private const val PARCEL_ZONE    = "$TAG.EXTRA.ZONE"
+        private const val PARCEL_ZONE = "EXTRA.ZONE"
     }
 }

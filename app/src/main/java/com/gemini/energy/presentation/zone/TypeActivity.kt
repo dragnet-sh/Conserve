@@ -3,11 +3,13 @@ package com.gemini.energy.presentation.zone
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import com.gemini.energy.App
 import com.gemini.energy.R
 import com.gemini.energy.databinding.ActivityHomeDetailBinding
 import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.base.BaseActivity
+import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.zone.adapter.TypePagerAdapter
 import com.gemini.energy.presentation.zone.list.TypeListFragment
 import kotlinx.android.synthetic.main.activity_home_detail.*
@@ -22,22 +24,40 @@ class TypeActivity : BaseActivity(),
     * */
     private var zone: ZoneModel? = null
 
+    private var app: App? = null
+
 
     /*
     * Fragment Lifecycle Methods
+    * Type Counter - 0 :: Parent Type Activity
+    * Type Counter - 1 :: Child Type Activity
+    *
+    * Note : Only Plugload and Lighting have Parent | Child rest Types only have Parent
+    *
     * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         zone = intent.getParcelableExtra(PARCEL_ZONE)
 
-        // *** Initially being set from ZoneActivity *** //
+        setAppInstance()
         setZone(zone as ZoneModel)
         setZoneHeader(zone as ZoneModel)
 
         super.binder?.let {
             setupContent(it)
             setupZoneList()
+        }
+
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        when(app?.getCount()) {
+            0 -> Log.d(TAG, "*** PARENT TYPE ACTIVITY ***")
+            1 -> Log.d(TAG, "*** CHILD TYPE ACTIVITY ***")
         }
     }
 
@@ -82,11 +102,9 @@ class TypeActivity : BaseActivity(),
         for (index in 0..4) {
             val tag = "${ANDROID_SWITCHER}:${view_pager.id}:$index"
 
-            Log.d(TAG, "################################")
-            Log.d(TAG, "View Pager Index : $index")
-            Log.d(TAG, tag.toString())
+            val fragment = supportFragmentManager
+                    .findFragmentByTag(tag) as TypeListFragment?
 
-            val fragment = supportFragmentManager.findFragmentByTag(tag) as TypeListFragment?
             fragment?.let {
                 fragment.setZoneModel(zone)
             }
@@ -110,6 +128,10 @@ class TypeActivity : BaseActivity(),
         this.zone = zone
     }
 
+    private fun setAppInstance() {
+        this.app = App.instance
+    }
+
     override fun setupToolbar() {
         super.setupToolbar()
         supportActionBar?.run {
@@ -120,6 +142,11 @@ class TypeActivity : BaseActivity(),
 
     override fun onSupportNavigateUp(): Boolean {
         finish()
+
+        if (App.instance.getCount() > 0) {
+            App.instance.setCounter(EAction.Pop)
+        }
+
         return true
     }
 
@@ -128,7 +155,7 @@ class TypeActivity : BaseActivity(),
 
         private const val FRAG_ZONE_LIST = "TypeActivityZoneListFragment"
         private const val CALL_TAG = "ZoneListFragment"
-        private const val PARCEL_ZONE = "$CALL_TAG.EXTRA.ZONE"
+        private const val PARCEL_ZONE = "EXTRA.ZONE"
 
         private const val ANDROID_SWITCHER = "android:switcher"
         private const val CURRENT_FRAGMENT_INDEX = 0

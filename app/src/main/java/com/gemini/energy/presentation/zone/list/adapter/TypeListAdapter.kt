@@ -10,11 +10,11 @@ import com.gemini.energy.databinding.FragmentZoneTypeListItemBinding
 import com.gemini.energy.presentation.zone.list.model.TypeModel
 
 
-class TypeListAdapter(private val items: List<TypeModel>, private val callbacks: OnZoneTypeClickListener? = null) :
+class TypeListAdapter(private val items: List<TypeModel>, private val callbacks: OnTypeClickListener? = null) :
         RecyclerView.Adapter<TypeListAdapter.ViewHolder>() {
 
-    interface OnZoneTypeClickListener { // OnItemClickListener //
-        fun onZoneTypeClick(view: View, item: TypeModel)
+    interface OnTypeClickListener {
+        fun onTypeClick(view: View, item: TypeModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,7 +38,7 @@ class TypeListAdapter(private val items: List<TypeModel>, private val callbacks:
         init {
 
             itemView.setOnClickListener {
-                callbacks?.onZoneTypeClick(it, items[adapterPosition])
+                callbacks?.onTypeClick(it, items[adapterPosition])
             }
 
         }

@@ -1,7 +1,7 @@
 package com.gemini.energy
 
-import com.gemini.energy.presentation.feature.model.GElements
-import com.gemini.energy.presentation.feature.model.GEnergyFormModel
+import com.gemini.energy.presentation.form.model.GElements
+import com.gemini.energy.presentation.form.model.GEnergyFormModel
 import com.squareup.moshi.Moshi
 import com.thejuki.kformmaster.model.*
 import org.junit.Test
