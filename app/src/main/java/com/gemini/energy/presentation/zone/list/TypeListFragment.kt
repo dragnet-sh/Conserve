@@ -129,7 +129,7 @@ class TypeListFragment : DaggerFragment(),
 
         val app = App.instance
 
-        if (item.type == EZoneType.plugload.value) {
+        if (item.type == EZoneType.Plugload.value) {
 
             if (app.getCount() == 0) {
 
@@ -203,11 +203,11 @@ class TypeListFragment : DaggerFragment(),
 
     private fun getType(pagerIndex: Int): String {
         return when(pagerIndex) {
-            0 -> EZoneType.plugload.value
-            1 -> EZoneType.hvac.value
-            2 -> EZoneType.lighting.value
-            3 -> EZoneType.motors.value
-            else -> EZoneType.others.value
+            0 -> EZoneType.Plugload.value
+            1 -> EZoneType.HVAC.value
+            2 -> EZoneType.Lighting.value
+            3 -> EZoneType.Motors.value
+            else -> EZoneType.Others.value
         }
     }
 
@@ -226,7 +226,7 @@ class TypeListFragment : DaggerFragment(),
 
         private const val FRAG_DIALOG = "TypeDialogFragment"
         private const val TAG = "TypeListFragment"
-        private const val CALL_TAG = "TypeListFragment"
+
         private const val PARCEL_ZONE = "EXTRA.ZONE"
         private const val PARCEL_TYPE = "EXTRA.TYPE"
 

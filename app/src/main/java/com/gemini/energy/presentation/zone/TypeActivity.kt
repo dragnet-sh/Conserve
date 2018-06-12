@@ -1,6 +1,8 @@
 package com.gemini.energy.presentation.zone
 
 import android.os.Bundle
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentPagerAdapter
 import android.util.Log
 import android.widget.TextView
 import com.gemini.energy.App
@@ -12,6 +14,7 @@ import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.zone.adapter.TypePagerAdapter
 import com.gemini.energy.presentation.zone.list.TypeListFragment
+import com.gemini.energy.presentation.zone.list.model.TypeModel
 import kotlinx.android.synthetic.main.activity_home_detail.*
 
 class TypeActivity : BaseActivity(),
@@ -23,6 +26,7 @@ class TypeActivity : BaseActivity(),
     * Case 2 : Set via ZoneListFragment - On Zone Click - Within the same Activity
     * */
     private var zone: ZoneModel? = null
+    private var type: TypeModel? = null
 
     private var app: App? = null
 
@@ -39,6 +43,7 @@ class TypeActivity : BaseActivity(),
         super.onCreate(savedInstanceState)
 
         zone = intent.getParcelableExtra(PARCEL_ZONE)
+        type = intent.getParcelableExtra(PARCEL_TYPE)
 
         setAppInstance()
         setZone(zone as ZoneModel)
@@ -66,11 +71,33 @@ class TypeActivity : BaseActivity(),
     * View Pager Main Content
     * */
     private fun setupContent(binder: ActivityHomeDetailBinding) {
-        zone?.let { zoneModel ->
-            binder.viewPager.adapter = TypePagerAdapter(
-                    supportFragmentManager, zoneModel
-            )
+
+        if (app?.isParent()!!) {
+
+            zone?.let { zoneModel ->
+                binder.viewPager.adapter = TypePagerAdapter(
+                        supportFragmentManager, zoneModel
+                )
+            }
+
+        } else {
+
+            binder.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
+                override fun getItem(position: Int): Fragment {
+                    return TypeListFragment.newInstance(0, zone!!)
+                }
+
+                override fun getCount(): Int {
+                    return 1
+                }
+
+                override fun getPageTitle(position: Int): CharSequence? {
+                    return "Plugload - Child"
+                }
+            }
+
         }
+
     }
 
 
@@ -154,11 +181,10 @@ class TypeActivity : BaseActivity(),
         private const val TAG = "TypeActivity"
 
         private const val FRAG_ZONE_LIST = "TypeActivityZoneListFragment"
-        private const val CALL_TAG = "ZoneListFragment"
         private const val PARCEL_ZONE = "EXTRA.ZONE"
+        private const val PARCEL_TYPE = "EXTRA.TYPE"
 
         private const val ANDROID_SWITCHER = "android:switcher"
-        private const val CURRENT_FRAGMENT_INDEX = 0
     }
 
 }

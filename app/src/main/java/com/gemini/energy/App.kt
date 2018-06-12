@@ -34,4 +34,6 @@ class App : DaggerApplication() {
             EAction.Pop -> counter.removeAt(counter.size - 1)
         }
     }
+    fun isParent(): Boolean = counter.size == 0
+    fun isChild(): Boolean = !(isParent())
 }

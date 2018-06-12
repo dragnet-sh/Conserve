@@ -5,11 +5,11 @@ package com.gemini.energy.presentation.util
 * */
 enum class EZoneType(val value: String) {
 
-    plugload("Plugload"),
-    hvac("HVAC"),
-    motors("Motors"),
-    lighting("Lighting"),
-    others("Others");
+    Plugload("Plugload"),
+    HVAC("HVAC"),
+    Motors("Motors"),
+    Lighting("Lighting"),
+    Others("Others");
 
     companion object {
         private val map = EZoneType.values().associateBy(EZoneType::value)
@@ -28,4 +28,26 @@ enum class EAction(val value: String) {
     Push("push"),
     Pop("pop");
 
+}
+
+
+/*
+* Plugload - Appliance Type
+* */
+enum class EApplianceType(val value: String) {
+
+    CombinationOven("CombinationOven"),
+    ConvectionOven("ConvectionOven"),
+    ConveyorOven("ConveyorOven"),
+    Fryer("Fryer"),
+    IceMaker("IceMaker"),
+    RackOven("RackOven"),
+    Refrigerator("Refrigerator"),
+    SteamCooker("SteamCooker");
+
+    companion object {
+        private val map = EApplianceType.values().associateBy(EApplianceType::value)
+        fun get(type: String) = map[type]
+        fun count() = map.size
+    }
 }

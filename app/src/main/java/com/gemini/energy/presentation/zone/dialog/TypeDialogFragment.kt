@@ -1,13 +1,15 @@
 package com.gemini.energy.presentation.zone.dialog
 
-import android.support.v4.app.DialogFragment
 import android.os.Bundle
-import android.util.Log
+import android.support.v4.app.DialogFragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.gemini.energy.App
 import com.gemini.energy.R
+import com.gemini.energy.presentation.util.EApplianceType
+import com.gemini.energy.presentation.util.EZoneType
 import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
@@ -43,13 +45,13 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         scopeName = view.findViewById(R.id.edt_create_audit_scope_parent_name)
         scopeSpinner = view.findViewById(R.id.spin_audit_scope) as Spinner
 
-        val scopeOptions = arrayOf("Plugload", "HVAC", "Motors", "Lighting", "Others")
+        val scopeOptions  = getScopeOptions()
         scopeSpinner.adapter = ArrayAdapter(activity, R.layout.support_simple_spinner_dropdown_item, scopeOptions)
 
         scopeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 Toast.makeText(activity, getString(R.string.selected_item) + " " + scopeOptions[position], Toast.LENGTH_SHORT).show()
-                scopeType = scopeOptions[position]
+                scopeType = scopeOptions[position].name
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -76,7 +78,16 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         dismiss()
     }
 
+    /*
+    * Options depend on the Type ToDo: Need to Expand on this thought !!
+    * */
+    private fun getScopeOptions() = when(app.getCount() == 0) {
+        true -> EZoneType.values()
+        false -> EApplianceType.values()
+    }
+
     companion object {
+        private val app = App.instance
         private const val TAG = "TypeDialogFragment"
     }
 
