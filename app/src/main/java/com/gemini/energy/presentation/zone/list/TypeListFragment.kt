@@ -101,8 +101,11 @@ class TypeListFragment : DaggerFragment(),
     }
 
     private fun showCreateZoneType() {
-        val dialogFragment = TypeDialogFragment()
-        dialogFragment.show(childFragmentManager, FRAG_DIALOG)
+        typeId?.let {
+            val fragment = TypeDialogFragment.newInstance(it)
+            fragment.show(childFragmentManager, FRAG_DIALOG)
+        }
+
     }
 
     private fun refreshViewModel() {
