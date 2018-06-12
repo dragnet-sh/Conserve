@@ -63,9 +63,19 @@ class TypeListFragment : DaggerFragment(),
 
     private var auditModel: AuditModel? = null
     private var zoneModel: ZoneModel? = null
-    private var typeModel: TypeModel? = null
+    private var typeModel: TypeModel? = null //ToDo: When do you set this ??
+
+
+    /*
+    * Type Id is used to query the specific Type
+    * [Plugload - Motors - HVAC - Lighting - Others]
+    * */
     private var typeId: Int? = null
 
+
+    /*
+    * Fragment Life Cycle Methods
+    * */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -149,10 +159,15 @@ class TypeListFragment : DaggerFragment(),
                 Log.d(TAG, "<<<<< ITEM MODEL >>>>>")
                 Log.d(TAG, itemModel.toString())
 
+                Log.d(TAG, "<<<<< TYPE ID >>>>>")
+                Log.d(TAG, typeId.toString())
+                Log.d(TAG, getType(typeId!!))
+
                 val intent = Intent(activity, TypeActivity::class.java)
                 intent.putExtra(PARCEL_AUDIT, auditModel)
                 intent.putExtra(PARCEL_ZONE, zoneModel)
                 intent.putExtra(PARCEL_TYPE, itemModel)
+                intent.putExtra("typeId", typeId as Int)
 
                 context?.let {
                     ActivityCompat.startActivity(it, intent, null)

@@ -27,11 +27,11 @@ class TypeActivity : BaseActivity(),
     * Case 1 : Set via ZoneListFragment - On Zone Click - Within different Activity
     * Case 2 : Set via ZoneListFragment - On Zone Click - Within the same Activity
     * */
-    private var audit: AuditModel? = null
-    private var zone: ZoneModel? = null
-    private var type: TypeModel? = null
+    private var auditModel: AuditModel? = null
+    private var zoneModel: ZoneModel? = null
+    private var typeModel: TypeModel? = null
 
-    private var app: App? = null
+    private var typeId: Int? = null
 
 
     /*
@@ -46,10 +46,6 @@ class TypeActivity : BaseActivity(),
         super.onCreate(savedInstanceState)
 
         setupArguments()
-
-        setAppInstance()
-        setZone(zone as ZoneModel)
-        setHeader(zone as ZoneModel, type)
 
         super.binder?.let {
             setupContent(it)
@@ -70,9 +66,17 @@ class TypeActivity : BaseActivity(),
 
 
     private fun setupArguments() {
-        this.audit = intent.getParcelableExtra(PARCEL_AUDIT)
-        this.zone = intent.getParcelableExtra(PARCEL_ZONE)
-        this.type = intent.getParcelableExtra(PARCEL_TYPE)
+
+        setAudit(intent.getParcelableExtra(PARCEL_AUDIT))
+        setZone(intent.getParcelableExtra(PARCEL_ZONE))
+
+        setType(intent.getParcelableExtra(PARCEL_TYPE))
+        setTypeId(intent.getIntExtra("typeId", 0))
+
+        zoneModel?.let {
+            setHeader(it, typeModel)
+        }
+
     }
 
 
@@ -82,7 +86,7 @@ class TypeActivity : BaseActivity(),
     * */
     private fun setupContent(binder: ActivityHomeDetailBinding) {
 
-        if (zone == null || audit == null) {
+        if (zoneModel == null || auditModel == null) {
             Log.e(TAG, "Null - Zone or Audit")
             return
         }
@@ -90,14 +94,14 @@ class TypeActivity : BaseActivity(),
         if (app?.isParent()!!) {
 
             binder.viewPager.adapter = TypePagerAdapter(
-                    supportFragmentManager, zone!!, audit!!
+                    supportFragmentManager, zoneModel!!, auditModel!!
             )
 
         } else {
 
             binder.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
                 override fun getItem(position: Int): Fragment {
-                    return TypeListFragment.newInstance(0, zone!!, audit!!)
+                    return TypeListFragment.newInstance(0, zoneModel!!, auditModel!!)
                 }
 
                 override fun getCount(): Int {
@@ -122,7 +126,7 @@ class TypeActivity : BaseActivity(),
         val zoneListFragment = ZoneListFragment.newInstance()
 
         zoneListFragment.arguments = Bundle().apply {
-            this.putInt("auditId", zone?.auditId!!)
+            this.putInt("auditId", zoneModel?.auditId!!)
             this.putString("auditTag", "n/a")
         }
 
@@ -133,6 +137,11 @@ class TypeActivity : BaseActivity(),
 
     }
 
+    private fun setupTypeList() {
+//        val typeListFragment = TypeListFragment.newInstance(typeId, zoneModel, auditModel)
+
+    }
+
     /*
     * This gets called when the Zone is selected
     * Should reload the specific Fragment that is currently being selected
@@ -140,7 +149,7 @@ class TypeActivity : BaseActivity(),
     private fun refreshTypeViewModel(zone: ZoneModel) {
 
         for (index in 0..4) {
-            val tag = "${ANDROID_SWITCHER}:${view_pager.id}:$index"
+            val tag = "$ANDROID_SWITCHER:${view_pager.id}:$index"
 
             val fragment = supportFragmentManager
                     .findFragmentByTag(tag) as TypeListFragment?
@@ -151,8 +160,9 @@ class TypeActivity : BaseActivity(),
         }
     }
 
+
     /*
-    * ZoneModel gets set from the ZoneListFragment
+    * Listeners Setup
     * */
     override fun onZoneSelected(zone: ZoneModel) {
         setZone(zone)
@@ -161,26 +171,38 @@ class TypeActivity : BaseActivity(),
     }
 
     override fun onTypeSelected(type: TypeModel) {
-        if (zone != null) {
-            setHeader(zone!!, type)
+        if (zoneModel != null) {
+            setHeader(zoneModel!!, type)
         }
     }
 
+
+    /*
+    * Data Setup
+    * */
+    private fun setAudit(audit: AuditModel?) {
+        this.auditModel = audit
+    }
+
+    private fun setZone(zone: ZoneModel?) {
+        this.zoneModel = zone
+    }
+
+    private fun setType(type: TypeModel?) {
+        this.typeModel = type
+    }
+
+    private fun setTypeId(id: Int) {
+        this.typeId = id
+    }
+
     private fun setHeader(zone: ZoneModel, type: TypeModel? = null) {
-        var header = "${audit?.name} > ${zone.name}"
+        var header = "${auditModel?.name} > ${zone.name}"
         if (type != null) {
             header = "$header > ${type.name}"
         }
 
         findViewById<TextView>(R.id.txt_header_audit).text = header
-    }
-
-    private fun setZone(zone: ZoneModel) {
-        this.zone = zone
-    }
-
-    private fun setAppInstance() {
-        this.app = App.instance
     }
 
     override fun setupToolbar() {
@@ -203,6 +225,7 @@ class TypeActivity : BaseActivity(),
 
     companion object {
         private const val TAG = "TypeActivity"
+        private var app: App = App.instance
 
         private const val FRAG_ZONE_LIST = "TypeActivityZoneListFragment"
         private const val PARCEL_AUDIT = "EXTRA.AUDIT"
