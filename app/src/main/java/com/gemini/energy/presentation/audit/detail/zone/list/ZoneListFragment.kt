@@ -141,6 +141,7 @@ class ZoneListFragment : DaggerFragment(),
 
         val intent = Intent(activity, TypeActivity::class.java)
         intent.putExtra(PARCEL_ZONE, item)
+        intent.putExtra(PARCEL_AUDIT, auditModel)
 
         //Case 1: Navigate form Audit Activity to Type Activity
         if (activity is AuditActivity) {
@@ -183,5 +184,6 @@ class ZoneListFragment : DaggerFragment(),
         private const val FRAG_DIALOG = "ZoneDialogFragment"
 
         private const val PARCEL_ZONE = "EXTRA.ZONE"
+        private const val PARCEL_AUDIT = "EXTRA.AUDIT"
     }
 }

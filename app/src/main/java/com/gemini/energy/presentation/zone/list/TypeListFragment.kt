@@ -17,6 +17,7 @@ import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.presentation.zone.TypeActivity
@@ -35,8 +36,8 @@ class TypeListFragment : DaggerFragment(),
         View.OnClickListener {
 
 
-    interface OnZoneTypeSelectedListener {
-        fun onZoneTypeSelected(zone: TypeModel)
+    interface OnTypeSelectedListener {
+        fun onTypeSelected(type: TypeModel)
     }
 
 
@@ -60,8 +61,9 @@ class TypeListFragment : DaggerFragment(),
     * */
     private lateinit var binder: FragmentZoneTypeListBinding
 
-    private var typeModel: TypeModel? = null
+    private var auditModel: AuditModel? = null
     private var zoneModel: ZoneModel? = null
+    private var typeModel: TypeModel? = null
     private var typeId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,6 +109,9 @@ class TypeListFragment : DaggerFragment(),
     private fun setupArguments() {
 
         val zone = arguments?.getParcelable<ZoneModel>(PARCEL_ZONE)
+        val audit = arguments?.getParcelable<AuditModel>(PARCEL_AUDIT)
+
+        setAuditModel(audit)
         setZoneModel(zone)
         setTypeId(arguments?.getInt("typeId"))
 
@@ -121,15 +126,13 @@ class TypeListFragment : DaggerFragment(),
 
 
     // *** Navigator : Audit Activity <> Type Activity *** //
-    override fun onTypeClick(view: View, item: TypeModel) {
+    override fun onTypeClick(view: View, itemModel: TypeModel) {
 
         // Step 1 : Check if the Type has a Child
         // Step 2 : If it has a Child load the Type Activity with the proper set of Dialog
         // Step 3 : If it has no Child - Load the Feature Form
 
-        val app = App.instance
-
-        if (item.type == EZoneType.Plugload.value) {
+        if (itemModel.type == EZoneType.Plugload.value) {
 
             if (app.getCount() == 0) {
 
@@ -137,15 +140,25 @@ class TypeListFragment : DaggerFragment(),
                 // 2. Side List -> Has Plugload Types
                 // 3. View Pager -> Has only one Element the PlugLoad Child Elements
 
+                Log.d(TAG, "<<<<< AUDIT MODEL >>>>>")
+                Log.d(TAG, auditModel.toString())
+
+                Log.d(TAG, "<<<<< ZONE MODEL >>>>>")
+                Log.d(TAG, zoneModel.toString())
+
+                Log.d(TAG, "<<<<< ITEM MODEL >>>>>")
+                Log.d(TAG, itemModel.toString())
+
                 val intent = Intent(activity, TypeActivity::class.java)
-                intent.putExtra(PARCEL_TYPE, item)
+                intent.putExtra(PARCEL_AUDIT, auditModel)
                 intent.putExtra(PARCEL_ZONE, zoneModel)
+                intent.putExtra(PARCEL_TYPE, itemModel)
 
                 context?.let {
                     ActivityCompat.startActivity(it, intent, null)
                 }
 
-                app.setCounter(EAction.Push, item)
+                app.setCounter(EAction.Push, itemModel)
 
             } else {
 
@@ -191,6 +204,11 @@ class TypeListFragment : DaggerFragment(),
         })
     }
 
+    private fun setAuditModel(audit: AuditModel?) {
+        Log.d(TAG, "Setting Audit Model -- ${audit.toString()}")
+        this.auditModel = audit
+    }
+
     fun setZoneModel(zone: ZoneModel?) {
         Log.d(TAG, "Setting Zone Model -- ${zone.toString()}")
         this.zoneModel = zone
@@ -213,20 +231,23 @@ class TypeListFragment : DaggerFragment(),
 
     companion object {
 
-        fun newInstance(type: Int, zone: ZoneModel): TypeListFragment {
+        fun newInstance(type: Int, zone: ZoneModel, audit: AuditModel): TypeListFragment {
             val fragment = TypeListFragment()
 
             fragment.arguments = Bundle().apply {
                 this.putParcelable(PARCEL_ZONE, zone)
+                this.putParcelable(PARCEL_AUDIT, audit)
                 this.putInt("typeId", type)
             }
 
             return fragment
         }
 
+        private val app = App.instance
         private const val FRAG_DIALOG = "TypeDialogFragment"
         private const val TAG = "TypeListFragment"
 
+        private const val PARCEL_AUDIT = "EXTRA.AUDIT"
         private const val PARCEL_ZONE = "EXTRA.ZONE"
         private const val PARCEL_TYPE = "EXTRA.TYPE"
 

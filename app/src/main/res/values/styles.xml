@@ -29,7 +29,7 @@
 
     <!-- Tab Bar Setup -->
     <style name="AppTabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabMaxWidth">800dp</item>
+        <item name="tabMaxWidth">500dp</item>
         <item name="tabIndicatorColor">#689f38</item>
         <item name="tabIndicatorHeight">4dp</item>
         <item name="tabPaddingStart">6dp</item>

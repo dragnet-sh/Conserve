@@ -1,6 +1,10 @@
 package com.gemini.energy.presentation.audit.list.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
+
+@Parcelize
 data class AuditModel(
         val id: Int,
         val name: String
-)
+) : Parcelable
