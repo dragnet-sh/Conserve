@@ -25,6 +25,9 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
     @NotEmpty
     private lateinit var scopeType: String
 
+    @NotEmpty
+    private lateinit var scopeSubType: String
+
     private lateinit var scopeSpinner: Spinner
     private lateinit var validator: Validator
 
@@ -51,6 +54,8 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
 
         scopeName = view.findViewById(R.id.edt_create_audit_scope_parent_name)
         scopeType = getType(typeId ?: 0)
+        scopeSubType = "none"
+
         scopeSpinner = view.findViewById(R.id.spin_audit_scope) as Spinner
 
         val scopeOptions  = getScopeOptions()
@@ -59,7 +64,7 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         scopeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
                 Toast.makeText(activity, getString(R.string.selected_item) + " " + scopeOptions[position], Toast.LENGTH_SHORT).show()
-                //ToDo: Sub Type Implementation
+                scopeSubType = scopeOptions[position]
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -76,6 +81,7 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         var args = Bundle().apply {
             this.putString("typeTag", scopeName.text.toString())
             this.putString("type", scopeType)
+            this.putString("subType", scopeSubType)
         }
 
         if (parentFragment != null) {
@@ -93,10 +99,10 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
 
         return (when(getType(typeId!!)) {
 
-            EZoneType.Lighting.value -> arrayOf<String>("Lighting Option 1", "Lighting Option 2", "Lighting Option 3")
+            EZoneType.Lighting.value -> arrayOf("Lighting Option 1", "Lighting Option 2", "Lighting Option 3")
             EZoneType.Motors.value -> arrayOf()
-            EZoneType.Plugload.value -> arrayOf("Combination Oven", "Convection Oven", "Conveyor Oven", "Fryer",
-                    "Ice Maker", "Rack Oven", "Refrigerator", "Steam Cooker")
+            EZoneType.Plugload.value -> arrayOf("CombinationOven", "ConvectionOven", "ConveyorOven", "Fryer",
+                    "IceMaker", "RackOven", "Refrigerator", "SteamCooker")
             EZoneType.HVAC.value -> arrayOf()
             EZoneType.Others.value -> arrayOf()
 

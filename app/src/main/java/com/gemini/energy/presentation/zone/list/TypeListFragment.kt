@@ -195,15 +195,18 @@ class TypeListFragment : DaggerFragment(),
 
         val typeTag = args.getString("typeTag")
         val type= args.getString("type")
+        val subType: String? = args.getString("subType")
 
-        Log.d(TAG, typeTag)
-        Log.d(TAG, type)
+        Log.d(TAG, "Type Tag :: $typeTag")
+        Log.d(TAG, "Type :: $type")
+        Log.d(TAG, "Sub Type :: $subType")
 
         zoneModel?.let {zone ->
             if (zone.id != null) {
                 typeCreateViewModel.createZoneType(
                         zone.id,
                         type,
+                        subType,
                         typeTag,
                         zone.auditId
                 )

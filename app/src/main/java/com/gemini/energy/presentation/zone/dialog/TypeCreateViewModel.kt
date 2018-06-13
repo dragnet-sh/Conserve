@@ -23,9 +23,9 @@ class TypeCreateViewModel(context: Context, private val zoneTypeCreateUseCase: Z
     val error = _error
 
 
-    fun createZoneType(zoneId: Int, zoneType: String, zoneTypeTag: String, auditId: Int) {
+    fun createZoneType(zoneId: Int, zoneType: String, zoneSubType: String?, zoneTypeTag: String, auditId: Int) {
         val date = Date()
-        addDisposable(save(AuditScopeParent(null, zoneTypeTag, zoneType, zoneId, auditId, date, date)))
+        addDisposable(save(AuditScopeParent(null, zoneTypeTag, zoneType, zoneSubType, zoneId, auditId, date, date)))
     }
 
     private fun save(scope: AuditScopeParent): Disposable {

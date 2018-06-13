@@ -8,6 +8,7 @@ data class TypeModel(
         val id: Int?,
         var name: String?,
         val type: String?,
+        val subType: String?,
 
         val zoneId: Int?,
         val auditId: Int?

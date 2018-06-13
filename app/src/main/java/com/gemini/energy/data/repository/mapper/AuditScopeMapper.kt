@@ -12,6 +12,7 @@ class AuditScopeMapper {
                 auditScope.id,
                 auditScope.name,
                 auditScope.type,
+                auditScope.subType,
 
                 auditScope.zoneId,
                 auditScope.auditId,

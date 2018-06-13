@@ -43,6 +43,7 @@ class SystemMapper {
             auditScopeParent.auditParentId,
             auditScopeParent.name,
             auditScopeParent.type,
+            auditScopeParent.subType,
 
             auditScopeParent.zoneId,
             auditScopeParent.auditId,

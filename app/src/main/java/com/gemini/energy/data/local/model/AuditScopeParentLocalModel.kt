@@ -17,6 +17,7 @@ data class AuditScopeParentLocalModel(
         var auditParentId: Int?,
         var name: String?,
         var type: String?,
+        var subType: String?,
 
         @ColumnInfo(name="zone_id")
         var zoneId: Int?,
