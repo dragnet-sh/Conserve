@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.zone.dialog
+package com.gemini.energy.presentation.type.dialog
 
 import android.app.Application
 import android.content.Context

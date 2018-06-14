@@ -10,11 +10,11 @@
 
         <variable
             name="viewModel"
-            type="com.gemini.energy.presentation.zone.list.TypeListViewModel" />
+            type="com.gemini.energy.presentation.type.list.TypeListViewModel" />
 
         <variable
             name="callbacks"
-            type="com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter.OnTypeClickListener" />
+            type="com.gemini.energy.presentation.type.list.adapter.TypeListAdapter.OnTypeClickListener" />
 
         <variable
             name="fabClick"

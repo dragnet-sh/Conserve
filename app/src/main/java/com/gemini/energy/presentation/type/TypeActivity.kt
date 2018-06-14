@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.zone
+package com.gemini.energy.presentation.type
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -14,10 +14,10 @@ import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.util.EZoneType
-import com.gemini.energy.presentation.zone.adapter.TypePagerAdapter
-import com.gemini.energy.presentation.zone.feature.FeatureDataFragment
-import com.gemini.energy.presentation.zone.list.TypeListFragment
-import com.gemini.energy.presentation.zone.list.model.TypeModel
+import com.gemini.energy.presentation.type.adapter.TypePagerAdapter
+import com.gemini.energy.presentation.type.feature.FeatureDataFragment
+import com.gemini.energy.presentation.type.list.TypeListFragment
+import com.gemini.energy.presentation.type.list.model.TypeModel
 import kotlinx.android.synthetic.main.activity_home_detail.*
 
 class TypeActivity : BaseActivity(),

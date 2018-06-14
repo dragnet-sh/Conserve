@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneListItemBinding
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
-import com.gemini.energy.presentation.zone.TypeActivity
+import com.gemini.energy.presentation.type.TypeActivity
 import io.reactivex.Observable
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable

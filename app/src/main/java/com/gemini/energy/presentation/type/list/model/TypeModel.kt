@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.zone.list.model
+package com.gemini.energy.presentation.type.list.model
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

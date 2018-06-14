@@ -19,10 +19,10 @@ import com.gemini.energy.presentation.audit.list.AuditListViewModel
 import com.gemini.energy.presentation.base.Crossfader
 import com.gemini.energy.presentation.base.GmailStyleCrossFadeSlidingPaneLayout
 import com.gemini.energy.presentation.util.Navigator
-import com.gemini.energy.presentation.zone.dialog.TypeCreateViewModel
-import com.gemini.energy.presentation.zone.feature.FeatureDataFragment
-import com.gemini.energy.presentation.zone.list.TypeListFragment
-import com.gemini.energy.presentation.zone.list.TypeListViewModel
+import com.gemini.energy.presentation.type.dialog.TypeCreateViewModel
+import com.gemini.energy.presentation.type.feature.FeatureDataFragment
+import com.gemini.energy.presentation.type.list.TypeListFragment
+import com.gemini.energy.presentation.type.list.TypeListViewModel
 import com.mobsandgeeks.saripaar.Validator
 import dagger.Module
 import dagger.Provides

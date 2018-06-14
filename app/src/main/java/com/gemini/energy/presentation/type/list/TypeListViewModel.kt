@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.zone.list
+package com.gemini.energy.presentation.type.list
 
 import android.app.Application
 import android.content.Context
@@ -10,8 +10,8 @@ import com.gemini.energy.R
 import com.gemini.energy.domain.entity.AuditScopeParent
 import com.gemini.energy.domain.interactor.ZoneTypeGetAllUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel
-import com.gemini.energy.presentation.zone.list.mapper.TypeMapper
-import com.gemini.energy.presentation.zone.list.model.TypeModel
+import com.gemini.energy.presentation.type.list.mapper.TypeMapper
+import com.gemini.energy.presentation.type.list.model.TypeModel
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 

@@ -9,7 +9,7 @@
 
         <variable
             name="type"
-            type="com.gemini.energy.presentation.zone.list.model.TypeModel" />
+            type="com.gemini.energy.presentation.type.list.model.TypeModel" />
 
         <variable
             name="showClose"

@@ -2,7 +2,7 @@ package com.gemini.energy
 
 import com.gemini.energy.internal.injection.DaggerApplication
 import com.gemini.energy.presentation.util.EAction
-import com.gemini.energy.presentation.zone.list.model.TypeModel
+import com.gemini.energy.presentation.type.list.model.TypeModel
 import io.reactivex.plugins.RxJavaPlugins
 import timber.log.Timber
 

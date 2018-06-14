@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.zone.feature
+package com.gemini.energy.presentation.type.feature
 
 import dagger.android.support.DaggerFragment
 

@@ -1,8 +1,8 @@
-package com.gemini.energy.presentation.zone.list.adapter
+package com.gemini.energy.presentation.type.list.adapter
 
 import android.databinding.BindingAdapter
 import android.support.v7.widget.RecyclerView
-import com.gemini.energy.presentation.zone.list.model.TypeModel
+import com.gemini.energy.presentation.type.list.model.TypeModel
 
 
 object ViewBindingAdapter {

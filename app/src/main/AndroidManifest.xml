@@ -18,7 +18,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".presentation.zone.TypeActivity"/>
+        <activity android:name=".presentation.type.TypeActivity"/>
 
     </application>
 

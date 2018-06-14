@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.zone.list.adapter
+package com.gemini.energy.presentation.type.list.adapter
 
 import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListItemBinding
-import com.gemini.energy.presentation.zone.list.model.TypeModel
+import com.gemini.energy.presentation.type.list.model.TypeModel
 
 
 class TypeListAdapter(private val items: List<TypeModel>, private val callbacks: OnTypeClickListener? = null) :

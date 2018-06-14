@@ -22,7 +22,7 @@ import com.gemini.energy.presentation.audit.detail.zone.list.adapter.ZoneListAda
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
-import com.gemini.energy.presentation.zone.TypeActivity
+import com.gemini.energy.presentation.type.TypeActivity
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 

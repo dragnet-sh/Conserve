@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.zone.list
+package com.gemini.energy.presentation.type.list
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
@@ -20,11 +20,11 @@ import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.util.EZoneType
-import com.gemini.energy.presentation.zone.TypeActivity
-import com.gemini.energy.presentation.zone.dialog.TypeCreateViewModel
-import com.gemini.energy.presentation.zone.dialog.TypeDialogFragment
-import com.gemini.energy.presentation.zone.list.adapter.TypeListAdapter
-import com.gemini.energy.presentation.zone.list.model.TypeModel
+import com.gemini.energy.presentation.type.TypeActivity
+import com.gemini.energy.presentation.type.dialog.TypeCreateViewModel
+import com.gemini.energy.presentation.type.dialog.TypeDialogFragment
+import com.gemini.energy.presentation.type.list.adapter.TypeListAdapter
+import com.gemini.energy.presentation.type.list.model.TypeModel
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 

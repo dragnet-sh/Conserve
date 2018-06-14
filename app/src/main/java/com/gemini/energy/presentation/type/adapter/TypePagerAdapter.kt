@@ -1,4 +1,4 @@
-package com.gemini.energy.presentation.zone.adapter
+package com.gemini.energy.presentation.type.adapter
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentPagerAdapter
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.util.EZoneType
-import com.gemini.energy.presentation.zone.list.TypeListFragment
+import com.gemini.energy.presentation.type.list.TypeListFragment
 
 class TypePagerAdapter(fm: FragmentManager, private val zone: ZoneModel, private val audit: AuditModel)
     : FragmentPagerAdapter(fm) {

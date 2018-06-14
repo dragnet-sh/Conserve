@@ -1,8 +1,8 @@
-package com.gemini.energy.presentation.zone.list.mapper
+package com.gemini.energy.presentation.type.list.mapper
 
 import android.content.Context
 import com.gemini.energy.domain.entity.AuditScopeParent
-import com.gemini.energy.presentation.zone.list.model.TypeModel
+import com.gemini.energy.presentation.type.list.model.TypeModel
 
 class TypeMapper(private val context: Context) {
 
