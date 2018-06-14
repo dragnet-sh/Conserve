@@ -1,0 +1,59 @@
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "Ice Maker",
+      "elements": [
+        {
+          "index": 1,
+          "param": "Ice Harvest Rate",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "101"
+        },
+        {
+          "index": 2,
+          "param": "Energy Use Rate",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "102"
+        },
+        {
+          "index": 3,
+          "param": "Ice Type",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:Cube,02:Continuous",
+          "id": "103"
+        },
+        {
+          "index": 4,
+          "param": "Machine Type",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "104"
+        },
+        {
+          "index": 5,
+          "param": "Model Number",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "105"
+        },
+        {
+          "index": 6,
+          "param": "Company",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "106"
+        }
+      ],
+      "id": "10"
+    }
+  ]
+}

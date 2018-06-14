@@ -1,0 +1,152 @@
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "HVAC (General Info)",
+      "elements": [
+        {
+          "index": 1,
+          "param": "Type",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "101"
+        },
+        {
+          "index": 2,
+          "param": "Make",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "102"
+        },
+        {
+          "index": 3,
+          "param": "Model #",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "103"
+        },
+        {
+          "index": 4,
+          "param": "EER",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "104"
+        },
+        {
+          "index": 5,
+          "param": "SEER",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "105"
+        },
+        {
+          "index": 6,
+          "param": "HSPF",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "106"
+        }
+      ],
+      "id": "10"
+    },
+    {
+      "index": 7,
+      "section": "Cooling / Heating",
+      "elements": [
+        {
+          "index": 7,
+          "param": "Cooling Capacity (Btu/hr)",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "111"
+        },
+        {
+          "index": 8,
+          "param": "Heating Capacity (Btu/hr)",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "112"
+        },
+        {
+          "index": 9,
+          "param": "Heating Type",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "113"
+        },
+        {
+          "index": 10,
+          "param": "Heating Power",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "114"
+        }
+      ],
+      "id": "11"
+    },
+    {
+      "index": 11,
+      "section": "Hours / Peak",
+      "elements": [
+        {
+          "index": 11,
+          "param": "Hours (%)",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "121"
+        },
+        {
+          "index": 12,
+          "param": "Off Peak Hours",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "122"
+        },
+        {
+          "index": 13,
+          "param": "Part Peak Hours",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "123"
+        },
+        {
+          "index": 14,
+          "param": "Peak Hours",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "124"
+        }
+      ],
+      "id": "12"
+    },
+    {
+      "index": 15,
+      "section": "Installation",
+      "elements": [
+        {
+          "index": 15,
+          "param": "Year Installed",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "131"
+        }
+      ],
+      "id": "13"
+    }
+  ]
+}

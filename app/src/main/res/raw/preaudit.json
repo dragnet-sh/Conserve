@@ -6,25 +6,25 @@
       {
         "index": 1,
         "param": "Name",
-        "data-type": "pickerinputrow",
+        "dataType": "pickerinputrow",
         "validation": "",
-        "default-values": "Anthony, Ron, Johnny, Eli",
+        "defaultValues": "01:Anthony,02:Ron,03:Johnny,04:Eli",
         "id": "101"
       },
       {
         "index": 2,
         "param": "Email",
-        "data-type": "emailrow",
+        "dataType": "emailrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "102"
       },
       {
         "index": 3,
         "param": "Phone Number",
-        "data-type": "phonerow",
+        "dataType": "phonerow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "103"
       }
     ],
@@ -37,41 +37,41 @@
       {
         "index": 5,
         "param": "Name",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "111"
       },
       {
         "index": 6,
         "param": "Position",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "112"
       },
       {
         "index": 7,
         "param": "Email",
-        "data-type": "emailrow",
+        "dataType": "emailrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "113"
       },
       {
         "index": 8,
         "param": "Phone Number",
-        "data-type": "phonerow",
+        "dataType": "phonerow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "114"
       },
       {
         "index": 9,
         "param": "Business Name",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "115"
       }
     ],
@@ -84,9 +84,9 @@
       {
         "index": 11,
         "param": "Address",
-        "data-type": "textarearow",
+        "dataType": "textarearow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "121"
       }
     ],
@@ -99,33 +99,33 @@
       {
         "index": 13,
         "param": "Name",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "131"
       },
       {
         "index": 14,
         "param": "Position",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "132"
       },
       {
         "index": 15,
         "param": "Email",
-        "data-type": "emailrow",
+        "dataType": "emailrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "133"
       },
       {
         "index": 16,
         "param": "Phone Number",
-        "data-type": "phonerow",
+        "dataType": "phonerow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "134"
       }
     ],
@@ -138,65 +138,65 @@
       {
         "index": 18,
         "param": "Number of Vacation days",
-        "data-type": "introw",
+        "dataType": "introw",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "141"
       },
       {
         "index": 19,
         "param": "Monday Operating Hours",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "142"
       },
       {
         "index": 20,
         "param": "Tuesday Operating Hours",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "143"
       },
       {
         "index": 21,
         "param": "Wednesday Operating Hours",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "144"
       },
       {
         "index": 22,
         "param": "Thursday Operating Hours",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "145"
       },
       {
         "index": 23,
         "param": "Friday Operating Hours",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "146"
       },
       {
         "index": 24,
         "param": "Saturday Operating Hours",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "147"
       },
       {
         "index": 25,
         "param": "Sunday Operating Hours",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "148"
       }
     ],
@@ -209,9 +209,9 @@
       {
         "index": 27,
         "param": "Total",
-        "data-type": "decimalrow",
+        "dataType": "decimalrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "151"
       }
     ],
@@ -224,33 +224,33 @@
       {
         "index": 29,
         "param": "Building Year",
-        "data-type": "introw",
+        "dataType": "introw",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "161"
       },
       {
         "index": 30,
         "param": "Lighting Year",
-        "data-type": "introw",
+        "dataType": "introw",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "162"
       },
       {
         "index": 31,
         "param": "HVAC Year",
-        "data-type": "introw",
+        "dataType": "introw",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "163"
       },
       {
         "index": 32,
         "param": "Kitchen Equipment",
-        "data-type": "introw",
+        "dataType": "introw",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "164"
       }
     ],
@@ -263,25 +263,25 @@
       {
         "index": 34,
         "param": "Lighting",
-        "data-type": "introw",
+        "dataType": "introw",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "171"
       },
       {
         "index": 35,
         "param": "HVAC",
-        "data-type": "introw",
+        "dataType": "introw",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "172"
       },
       {
         "index": 36,
         "param": "Kitchen Equipment",
-        "data-type": "introw",
+        "dataType": "introw",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "173"
       }
     ],
@@ -294,33 +294,33 @@
       {
         "index": 38,
         "param": "Facility Type",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "181"
       },
       {
         "index": 39,
         "param": "Utility Company",
-        "data-type": "pickerinputrow",
+        "dataType": "pickerinputrow",
         "validation": "",
-        "default-values": "PGE",
+        "defaultValues": "PGE",
         "id": "182"
       },
       {
         "index": 40,
         "param": "Gas Rate Structure",
-        "data-type": "pickerinputrow",
+        "dataType": "pickerinputrow",
         "validation": "",
-        "default-values": "G-NR1",
+        "defaultValues": "G-NR1",
         "id": "183"
       },
       {
         "index": 41,
         "param": "Electric Rate Structure",
-        "data-type": "pickerinputrow",
+        "dataType": "pickerinputrow",
         "validation": "",
-        "default-values": "A-1, A-1 TOU, A-6 TOU, A-10, A-10 TOU, E-19 TOU",
+        "defaultValues": "A-1, A-1 TOU, A-6 TOU, A-10, A-10 TOU, E-19 TOU",
         "id": "184"
       }
     ],
@@ -333,17 +333,17 @@
       {
         "index": 43,
         "param": "Where is your package unit",
-        "data-type": "textrow",
+        "dataType": "textrow",
         "validation": "",
-        "default-values": "",
+        "defaultValues": "",
         "id": "191"
       },
       {
         "index": 44,
         "param": "Are you able to provide access to all areas including the roof?",
-        "data-type": "pickerinputrow",
+        "dataType": "pickerinputrow",
         "validation": "",
-        "default-values": "Yes, No",
+        "defaultValues": "Yes, No",
         "id": "192"
       }
     ],

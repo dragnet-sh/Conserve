@@ -26,6 +26,7 @@ class FormBuilder {
             return when (type) {
                 BaseRowType.IntRow -> IntRow()
                 BaseRowType.TextRow -> TextRow()
+                BaseRowType.DecimalRow -> IntRow()
                 BaseRowType.PickerInputRow -> PickerInputRow()
             }
         }
@@ -35,6 +36,7 @@ class FormBuilder {
 
         TextRow("textrow"),
         IntRow("introw"),
+        DecimalRow("decimalrow"),
         PickerInputRow("pickerinputrow");
 
         companion object {

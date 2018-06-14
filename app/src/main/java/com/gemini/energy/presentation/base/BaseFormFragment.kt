@@ -12,8 +12,13 @@ import com.thejuki.kformmaster.model.BaseFormElement
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_preaudit.*
 
-open abstract class BaseFormFragment : DaggerFragment() {
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+abstract class BaseFormFragment : DaggerFragment() {
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_preaudit, container, false)
+    }
+
+    fun loadForm() {
         context?.let {
             val formBuilder = FormBuildHelper(it, cacheForm = true)
             formBuilder.attachRecyclerView(it, recyclerView, autoMeasureEnabled = true)
@@ -34,10 +39,6 @@ open abstract class BaseFormFragment : DaggerFragment() {
 
             formBuilder.addFormElements(elements)
         }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_preaudit, container, false)
     }
 
     abstract fun resourceId(): Int

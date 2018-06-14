@@ -1,0 +1,59 @@
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "Steam Cooker",
+      "elements": [
+        {
+          "index": 1,
+          "param": "Production Capacity (lb/h)",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "101"
+        },
+        {
+          "index": 2,
+          "param": "Pan Capacity",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:3 pan,02:4 pan,03:5 pan,04:6 pan,05:8 pan,06:10 pan,07:12 pan",
+          "id": "102"
+        },
+        {
+          "index": 3,
+          "param": "Fuel Type",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:Gas,02:Electric",
+          "id": "103"
+        },
+        {
+          "index": 4,
+          "param": "Steamer Type",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:Steam Generator,02:Boilerless",
+          "id": "104"
+        },
+        {
+          "index": 5,
+          "param": "Model Number",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "105"
+        },
+        {
+          "index": 6,
+          "param": "Company",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "106"
+        }
+      ],
+      "id": "10"
+    }
+  ]
+}

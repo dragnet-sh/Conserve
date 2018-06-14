@@ -1,0 +1,43 @@
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "Rack Oven",
+      "elements": [
+        {
+          "index": 1,
+          "param": "Production Capacity (lbs/h)",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "101"
+        },
+        {
+          "index": 2,
+          "param": "Size",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:Single,02:Double",
+          "id": "102"
+        },
+        {
+          "index": 3,
+          "param": "Model Number",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "103"
+        },
+        {
+          "index": 4,
+          "param": "Company",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "104"
+        }
+      ],
+      "id": "10"
+    }
+  ]
+}

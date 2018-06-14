@@ -1,0 +1,114 @@
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "Motors (General Info)",
+      "elements": [
+        {
+          "index": 1,
+          "param": "Make",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "101"
+        },
+        {
+          "index": 2,
+          "param": "Model",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "102"
+        },
+        {
+          "index": 3,
+          "param": "Horsepower (HP)",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "103"
+        },
+        {
+          "index": 4,
+          "param": "Nameplate Rotational Speed (NRS)",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "104"
+        },
+        {
+          "index": 5,
+          "param": "Measured Rotational Speed (MRS)",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "105"
+        },
+        {
+          "index": 6,
+          "param": "Synchronous Rotational Speed (SRS)",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "106"
+        },
+        {
+          "index": 7,
+          "param": "Efficiency",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "107"
+        },
+        {
+          "index": 8,
+          "param": "Enclosure Type",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:total enclosed,02:open drip",
+          "id": "108"
+        }
+      ],
+      "id": "10"
+    },
+    {
+      "index": 9,
+      "section": "Hours / Peak",
+      "elements": [
+        {
+          "index": 9,
+          "param": "Hours (%)",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "111"
+        },
+        {
+          "index": 10,
+          "param": "Peak Hours",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "112"
+        },
+        {
+          "index": 11,
+          "param": "Part Peak Hours",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "113"
+        },
+        {
+          "index": 12,
+          "param": "Off Peak Hours",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "114"
+        }
+      ],
+      "id": "11"
+    }
+  ]
+}

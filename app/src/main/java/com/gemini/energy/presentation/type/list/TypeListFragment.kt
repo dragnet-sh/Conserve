@@ -18,6 +18,7 @@ import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
+import com.gemini.energy.presentation.type.SharedViewModel
 import com.gemini.energy.presentation.type.TypeActivity
 import com.gemini.energy.presentation.type.dialog.TypeCreateViewModel
 import com.gemini.energy.presentation.type.dialog.TypeDialogFragment
@@ -72,6 +73,7 @@ class TypeListFragment : DaggerFragment(),
     * */
     private var typeId: Int? = null
 
+    private lateinit var sharedViewModel: SharedViewModel
 
     /*
     * Fragment Life Cycle Methods
@@ -81,6 +83,8 @@ class TypeListFragment : DaggerFragment(),
 
         setupArguments()
         setupListeners()
+
+        sharedViewModel = ViewModelProviders.of(activity!!).get(SharedViewModel::class.java)
     }
 
 
@@ -186,6 +190,10 @@ class TypeListFragment : DaggerFragment(),
             setTypeModel(typeModel)
             val callbacks = activity as OnTypeSelectedListener
             callbacks.onTypeSelected(typeModel)
+
+            Log.d(TAG, "Setting Up Shared View Model")
+            Log.d(TAG, typeModel.toString())
+            sharedViewModel.setType(typeModel)
 
         }
 
