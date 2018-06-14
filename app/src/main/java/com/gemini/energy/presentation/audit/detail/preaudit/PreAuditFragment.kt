@@ -1,44 +1,12 @@
 package com.gemini.energy.presentation.audit.detail.preaudit
 
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import com.gemini.energy.R
-import com.gemini.energy.presentation.form.FormBuilder
-import com.gemini.energy.presentation.form.FormMapper
-import com.thejuki.kformmaster.helper.FormBuildHelper
-import com.thejuki.kformmaster.model.BaseFormElement
-import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_preaudit.*
+import com.gemini.energy.presentation.base.BaseFormFragment
 
-class PreAuditFragment : DaggerFragment()  {
+class PreAuditFragment : BaseFormFragment()  {
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        context?.let {
-            val formBuilder = FormBuildHelper(it, cacheForm = true)
-            formBuilder.attachRecyclerView(it, recyclerView, autoMeasureEnabled = true)
-
-            val elements: MutableList<BaseFormElement<*>> = mutableListOf()
-            val mapper = FormMapper(it)
-            val model = mapper.decodeJSON()
-
-            val gFormBuilder = FormBuilder()
-            val gForm = mapper.mapSectionIdsToElements(model)
-            val gMapSId = mapper.mapSectionIdsToName(model)
-
-            for((sectionId, gElements) in gForm) {
-                gMapSId[sectionId]?.let {
-                    elements.addAll(gFormBuilder.build(it, gElements))
-                }
-            }
-
-            formBuilder.addFormElements(elements)
-        }
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_preaudit, container, false)
+    override fun resourceId(): Int {
+        return R.raw.preaudit_sample
     }
 
     companion object {

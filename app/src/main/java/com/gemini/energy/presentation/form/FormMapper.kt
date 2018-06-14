@@ -7,7 +7,7 @@ import com.gemini.energy.presentation.form.model.GElements
 import com.gemini.energy.presentation.form.model.GEnergyFormModel
 import com.squareup.moshi.Moshi
 
-class FormMapper(private val context: Context) {
+class FormMapper(private val context: Context, private val rawId: Int) {
 
     companion object {
         private const val TAG = "FormElementMapper"
@@ -15,7 +15,7 @@ class FormMapper(private val context: Context) {
 
     fun decodeJSON(): GEnergyFormModel? {
 
-        val json = context.resources.openRawResource(R.raw.preaudit_sample)
+        val json = context.resources.openRawResource(rawId)
                 .bufferedReader().use { it.readText() }
 
         val moshi = Moshi.Builder().build()
