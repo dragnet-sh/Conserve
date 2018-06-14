@@ -18,13 +18,13 @@ import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
-import com.gemini.energy.presentation.util.EAction
-import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.presentation.type.TypeActivity
 import com.gemini.energy.presentation.type.dialog.TypeCreateViewModel
 import com.gemini.energy.presentation.type.dialog.TypeDialogFragment
 import com.gemini.energy.presentation.type.list.adapter.TypeListAdapter
 import com.gemini.energy.presentation.type.list.model.TypeModel
+import com.gemini.energy.presentation.util.EAction
+import com.gemini.energy.presentation.util.EZoneType
 import dagger.android.support.DaggerFragment
 import javax.inject.Inject
 
@@ -113,7 +113,7 @@ class TypeListFragment : DaggerFragment(),
             typeId?.let { typeId ->
                 typeListViewModel.loadZoneTypeList(
                         zone.id!!,
-                        getType(typeId)
+                        getType(typeId)?.value!!
                 )
             }
         }
@@ -165,7 +165,7 @@ class TypeListFragment : DaggerFragment(),
 
                 Log.d(TAG, "<<<<< TYPE ID >>>>>")
                 Log.d(TAG, typeId.toString())
-                Log.d(TAG, getType(typeId!!))
+                Log.d(TAG, getType(typeId!!)?.value!!)
             }
 
             val intent = Intent(activity, TypeActivity::class.java)
@@ -240,17 +240,8 @@ class TypeListFragment : DaggerFragment(),
         this.typeId = typeId
     }
 
-    private fun getType(pagerIndex: Int): String {
-        return when(pagerIndex) {
-            0 -> EZoneType.Plugload.value
-            1 -> EZoneType.HVAC.value
-            2 -> EZoneType.Lighting.value
-            3 -> EZoneType.Motors.value
-            else -> EZoneType.Others.value
-        }
-    }
-
     companion object {
+        private fun getType(pagerIndex: Int) = EZoneType.get(pagerIndex)
 
         fun newInstance(type: Int, zone: ZoneModel, audit: AuditModel): TypeListFragment {
             val fragment = TypeListFragment()

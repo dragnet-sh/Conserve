@@ -119,13 +119,8 @@ class TypeActivity : BaseActivity(),
     * Loading the Audit List Fragment
     * */
     private fun setupZoneList() {
-        val zoneListFragment = ZoneListFragment.newInstance()
-
-        //ToDo : Maybe move this bundling to the Fragment itself
-        zoneListFragment.arguments = Bundle().apply {
-            this.putInt("auditId", zoneModel?.auditId!!)
-            this.putString("auditTag", "n/a")
-        }
+        val zoneListFragment =
+                ZoneListFragment.newInstance(zoneModel?.auditId!!, "n/a")
 
         supportFragmentManager
                 .beginTransaction()

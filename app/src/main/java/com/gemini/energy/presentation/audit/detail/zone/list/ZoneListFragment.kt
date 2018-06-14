@@ -176,8 +176,15 @@ class ZoneListFragment : DaggerFragment(),
     * Static Content
     * */
     companion object {
-        fun newInstance(): ZoneListFragment {
-            return ZoneListFragment()
+        fun newInstance(auditId: Int? = null, auditTag: String? = null): ZoneListFragment {
+            val fragment = ZoneListFragment()
+
+            fragment.arguments = Bundle().apply {
+                auditId?.let {this.putInt("auditId", it)}
+                auditTag?.let {this.putString("auditTag", it)}
+            }
+
+            return fragment
         }
 
         private const val TAG = "ZoneListFragment"
