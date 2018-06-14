@@ -2,16 +2,14 @@ package com.gemini.energy.presentation.zone.dialog
 
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.gemini.energy.App
 import com.gemini.energy.R
-import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.util.EApplianceType
+import com.gemini.energy.presentation.util.ELightingType
 import com.gemini.energy.presentation.util.EZoneType
-import com.gemini.energy.presentation.zone.list.model.TypeModel
 import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
@@ -40,7 +38,9 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         validator = Validator(this)
         validator.setValidationListener(this)
 
-        this.typeId = arguments?.getInt("typeId")
+        typeId = arguments?.getInt("typeId")
+        scopeType = getType(typeId ?: 0)!!.value
+        scopeSubType = "none"
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -53,9 +53,6 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         view.findViewById<Button>(R.id.btn_save_scope).setOnClickListener { validator.validate() }
 
         scopeName = view.findViewById(R.id.edt_create_audit_scope_parent_name)
-        scopeType = getType(typeId ?: 0)
-        scopeSubType = "none"
-
         scopeSpinner = view.findViewById(R.id.spin_audit_scope) as Spinner
 
         val scopeOptions  = getScopeOptions()
@@ -95,32 +92,18 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
     /*
     * Options depend on the Type | Parent or Child | Zone
     * */
-    private fun getScopeOptions(): Array<String> {
+    private fun getScopeOptions(): List<String> {
 
         return (when(getType(typeId!!)) {
 
-            EZoneType.Lighting.value -> arrayOf("Lighting Option 1", "Lighting Option 2", "Lighting Option 3")
-            EZoneType.Motors.value -> arrayOf()
-            EZoneType.Plugload.value -> arrayOf("CombinationOven", "ConvectionOven", "ConveyorOven", "Fryer",
-                    "IceMaker", "RackOven", "Refrigerator", "SteamCooker")
-            EZoneType.HVAC.value -> arrayOf()
-            EZoneType.Others.value -> arrayOf()
-
-            else -> arrayOf()
+            EZoneType.Lighting -> ELightingType.options()
+            EZoneType.Plugload -> EApplianceType.options()
+            else -> listOf()
 
         })
     }
 
-
-    private fun getType(pagerIndex: Int): String {
-        return when(pagerIndex) {
-            0 -> EZoneType.Plugload.value
-            1 -> EZoneType.HVAC.value
-            2 -> EZoneType.Lighting.value
-            3 -> EZoneType.Motors.value
-            else -> EZoneType.Others.value
-        }
-    }
+    private fun getType(pagerIndex: Int) = EZoneType.get(pagerIndex)
 
     companion object {
 
@@ -133,7 +116,6 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
             return fragment
         }
 
-        private val app = App.instance
         private const val TAG = "TypeDialogFragment"
     }
 

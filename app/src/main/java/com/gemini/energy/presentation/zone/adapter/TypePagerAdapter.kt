@@ -20,13 +20,7 @@ class TypePagerAdapter(fm: FragmentManager, private val zone: ZoneModel, private
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return when(position) {
-            0 -> EZoneType.Plugload.value
-            1 -> EZoneType.HVAC.value
-            2 -> EZoneType.Lighting.value
-            3 -> EZoneType.Motors.value
-            else -> EZoneType.Others.value
-        }
+        return EZoneType.get(position)?.value
     }
 
     companion object {

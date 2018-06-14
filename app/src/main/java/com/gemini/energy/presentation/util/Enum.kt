@@ -7,14 +7,17 @@ enum class EZoneType(val value: String) {
 
     Plugload("Plugload"),
     HVAC("HVAC"),
-    Motors("Motors"),
     Lighting("Lighting"),
+    Motors("Motors"),
     Others("Others");
 
     companion object {
-        private val map = EZoneType.values().associateBy(EZoneType::value)
-        fun get(type: String) = map[type]
-        fun count() = map.size
+        private val valueMap = EZoneType.values().associateBy(EZoneType::value)
+        private val ordinalMap = EZoneType.values().associateBy(EZoneType::ordinal)
+
+        fun get(type: String) = valueMap[type]
+        fun get(id: Int) = ordinalMap[id]
+        fun count() = valueMap.size
     }
 
 }
@@ -36,18 +39,42 @@ enum class EAction(val value: String) {
 * */
 enum class EApplianceType(val value: String) {
 
-    CombinationOven("CombinationOven"),
-    ConvectionOven("ConvectionOven"),
-    ConveyorOven("ConveyorOven"),
+    CombinationOven("Combination Oven"),
+    ConvectionOven("Convection Oven"),
+    ConveyorOven("Conveyor Oven"),
     Fryer("Fryer"),
-    IceMaker("IceMaker"),
-    RackOven("RackOven"),
+    IceMaker("Ice Maker"),
+    RackOven("Rack Oven"),
     Refrigerator("Refrigerator"),
-    SteamCooker("SteamCooker");
+    SteamCooker("Steam Cooker");
 
     companion object {
-        private val map = EApplianceType.values().associateBy(EApplianceType::value)
+        private val map = EApplianceType.values()
+                .associateBy(EApplianceType::value)
+
         fun get(type: String) = map[type]
-        fun count() = map.size
+        fun options() = EApplianceType.values().map { it.value }.sorted()
     }
+
+}
+
+
+/*
+* Plugload - Lighting Type
+* */
+enum class ELightingType(val value: String) {
+
+    Halogen("Halogen"),
+    CFL("CFL"),
+    LinearFluorescent("Linear Fluorescent"),
+    Incandescent("Incandescent");
+
+    companion object {
+        private val map = ELightingType.values()
+                .associateBy(ELightingType::value)
+
+        fun get(type: String) = map[type]
+        fun options() = ELightingType.values().map { it.value }.sorted()
+    }
+
 }
