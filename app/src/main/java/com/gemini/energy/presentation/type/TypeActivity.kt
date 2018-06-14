@@ -12,6 +12,7 @@ import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
+import com.gemini.energy.presentation.type.adapter.FeaturePagerAdapter
 import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.presentation.type.adapter.TypePagerAdapter
@@ -94,27 +95,14 @@ class TypeActivity : BaseActivity(),
         }
 
         if (app.isParent()) {
-
             binder.viewPager.adapter = TypePagerAdapter(
                     supportFragmentManager, zoneModel!!, auditModel!!
             )
+        }
 
-        } else {
-
-            binder.viewPager.adapter = object : FragmentPagerAdapter(supportFragmentManager) {
-                override fun getItem(position: Int): Fragment {
-                    return FeatureDataFragment()
-                }
-
-                override fun getCount(): Int {
-                    return 1
-                }
-
-                override fun getPageTitle(position: Int): CharSequence? {
-                    return getType(typeId ?: 0)
-                }
-            }
-
+        if (app.isChild()) {
+            binder.viewPager.adapter = FeaturePagerAdapter(
+                    supportFragmentManager, typeId ?: 0)
         }
 
     }
@@ -244,16 +232,6 @@ class TypeActivity : BaseActivity(),
         }
 
         return true
-    }
-
-    private fun getType(pagerIndex: Int): String {
-        return when(pagerIndex) {
-            0 -> EZoneType.Plugload.value
-            1 -> EZoneType.HVAC.value
-            2 -> EZoneType.Lighting.value
-            3 -> EZoneType.Motors.value
-            else -> EZoneType.Others.value
-        }
     }
 
     companion object {
