@@ -10,12 +10,12 @@ import com.gemini.energy.presentation.form.FormMapper
 import com.thejuki.kformmaster.helper.FormBuildHelper
 import com.thejuki.kformmaster.model.BaseFormElement
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.fragment_preaudit.*
+import kotlinx.android.synthetic.main.fragment_form.*
 
 abstract class BaseFormFragment : DaggerFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_preaudit, container, false)
+        return inflater.inflate(R.layout.fragment_form, container, false)
     }
 
     fun loadForm() {

@@ -43,7 +43,6 @@ class FeatureDataFragment : BaseFormFragment() {
             else if (model.type == EZoneType.HVAC.value) {rawId = R.raw.hvac}
             else if (model.type == EZoneType.Motors.value) {rawId = R.raw.motors}
             else if (model.type == EZoneType.Lighting.value) {rawId = R.raw.lighting}
-
         }
 
         return rawId
