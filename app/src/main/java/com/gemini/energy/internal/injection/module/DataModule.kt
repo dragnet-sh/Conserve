@@ -20,7 +20,7 @@ import com.gemini.energy.data.repository.PreAuditRepository
 import com.gemini.energy.data.repository.TypeRepository
 import com.gemini.energy.data.repository.ZoneRepository
 import com.gemini.energy.data.repository.mapper.AuditMapper
-import com.gemini.energy.data.repository.mapper.AuditScopeMapper
+import com.gemini.energy.data.repository.mapper.TypeMapper
 import com.gemini.energy.data.repository.mapper.PreAuditMapper
 import com.gemini.energy.data.repository.mapper.ZoneMapper
 import com.gemini.energy.domain.gateway.AuditGateway
@@ -78,7 +78,7 @@ internal class DataModule {
 
     @Provides
     @Singleton
-    internal fun provideAuditScopeMapper() = AuditScopeMapper()
+    internal fun provideAuditScopeMapper() = TypeMapper()
 
 
     /*End of Mapper*/
@@ -161,7 +161,7 @@ internal class DataModule {
     @Singleton
     internal fun provideAuditScopeRepository(typeLocalDataSource: TypeLocalDataSource,
                                              auditScopeRemoteDataSource: TypeRemoteDataSource,
-                                             auditScopeMapper: AuditScopeMapper) =
+                                             auditScopeMapper: TypeMapper) =
             TypeRepository(typeLocalDataSource, auditScopeRemoteDataSource, auditScopeMapper)
     /*End of Repository*/
 
