@@ -1,352 +1,354 @@
-[
-  {
-    "index": 1,
-    "section": "Auditor Info",
-    "elements": [
-      {
-        "index": 1,
-        "param": "Name",
-        "dataType": "pickerinputrow",
-        "validation": "",
-        "defaultValues": "01:Anthony,02:Ron,03:Johnny,04:Eli",
-        "id": "101"
-      },
-      {
-        "index": 2,
-        "param": "Email",
-        "dataType": "emailrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "102"
-      },
-      {
-        "index": 3,
-        "param": "Phone Number",
-        "dataType": "phonerow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "103"
-      }
-    ],
-    "id": "10"
-  },
-  {
-    "index": 5,
-    "section": "General Client Info",
-    "elements": [
-      {
-        "index": 5,
-        "param": "Name",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "111"
-      },
-      {
-        "index": 6,
-        "param": "Position",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "112"
-      },
-      {
-        "index": 7,
-        "param": "Email",
-        "dataType": "emailrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "113"
-      },
-      {
-        "index": 8,
-        "param": "Phone Number",
-        "dataType": "phonerow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "114"
-      },
-      {
-        "index": 9,
-        "param": "Business Name",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "115"
-      }
-    ],
-    "id": "11"
-  },
-  {
-    "index": 11,
-    "section": "Client Business Address",
-    "elements": [
-      {
-        "index": 11,
-        "param": "Address",
-        "dataType": "textarearow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "121"
-      }
-    ],
-    "id": "12"
-  },
-  {
-    "index": 13,
-    "section": "Interviewee",
-    "elements": [
-      {
-        "index": 13,
-        "param": "Name",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "131"
-      },
-      {
-        "index": 14,
-        "param": "Position",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "132"
-      },
-      {
-        "index": 15,
-        "param": "Email",
-        "dataType": "emailrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "133"
-      },
-      {
-        "index": 16,
-        "param": "Phone Number",
-        "dataType": "phonerow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "134"
-      }
-    ],
-    "id": "13"
-  },
-  {
-    "index": 18,
-    "section": "Operation Hours",
-    "elements": [
-      {
-        "index": 18,
-        "param": "Number of Vacation days",
-        "dataType": "introw",
-        "validation": "",
-        "defaultValues": "",
-        "id": "141"
-      },
-      {
-        "index": 19,
-        "param": "Monday Operating Hours",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "142"
-      },
-      {
-        "index": 20,
-        "param": "Tuesday Operating Hours",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "143"
-      },
-      {
-        "index": 21,
-        "param": "Wednesday Operating Hours",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "144"
-      },
-      {
-        "index": 22,
-        "param": "Thursday Operating Hours",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "145"
-      },
-      {
-        "index": 23,
-        "param": "Friday Operating Hours",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "146"
-      },
-      {
-        "index": 24,
-        "param": "Saturday Operating Hours",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "147"
-      },
-      {
-        "index": 25,
-        "param": "Sunday Operating Hours",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "148"
-      }
-    ],
-    "id": "14"
-  },
-  {
-    "index": 27,
-    "section": "Area",
-    "elements": [
-      {
-        "index": 27,
-        "param": "Total",
-        "dataType": "decimalrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "151"
-      }
-    ],
-    "id": "15"
-  },
-  {
-    "index": 29,
-    "section": "Age",
-    "elements": [
-      {
-        "index": 29,
-        "param": "Building Year",
-        "dataType": "introw",
-        "validation": "",
-        "defaultValues": "",
-        "id": "161"
-      },
-      {
-        "index": 30,
-        "param": "Lighting Year",
-        "dataType": "introw",
-        "validation": "",
-        "defaultValues": "",
-        "id": "162"
-      },
-      {
-        "index": 31,
-        "param": "HVAC Year",
-        "dataType": "introw",
-        "validation": "",
-        "defaultValues": "",
-        "id": "163"
-      },
-      {
-        "index": 32,
-        "param": "Kitchen Equipment",
-        "dataType": "introw",
-        "validation": "",
-        "defaultValues": "",
-        "id": "164"
-      }
-    ],
-    "id": "16"
-  },
-  {
-    "index": 34,
-    "section": "Maintenace Interval",
-    "elements": [
-      {
-        "index": 34,
-        "param": "Lighting",
-        "dataType": "introw",
-        "validation": "",
-        "defaultValues": "",
-        "id": "171"
-      },
-      {
-        "index": 35,
-        "param": "HVAC",
-        "dataType": "introw",
-        "validation": "",
-        "defaultValues": "",
-        "id": "172"
-      },
-      {
-        "index": 36,
-        "param": "Kitchen Equipment",
-        "dataType": "introw",
-        "validation": "",
-        "defaultValues": "",
-        "id": "173"
-      }
-    ],
-    "id": "17"
-  },
-  {
-    "index": 38,
-    "section": "Others",
-    "elements": [
-      {
-        "index": 38,
-        "param": "Facility Type",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "181"
-      },
-      {
-        "index": 39,
-        "param": "Utility Company",
-        "dataType": "pickerinputrow",
-        "validation": "",
-        "defaultValues": "PGE",
-        "id": "182"
-      },
-      {
-        "index": 40,
-        "param": "Gas Rate Structure",
-        "dataType": "pickerinputrow",
-        "validation": "",
-        "defaultValues": "G-NR1",
-        "id": "183"
-      },
-      {
-        "index": 41,
-        "param": "Electric Rate Structure",
-        "dataType": "pickerinputrow",
-        "validation": "",
-        "defaultValues": "A-1, A-1 TOU, A-6 TOU, A-10, A-10 TOU, E-19 TOU",
-        "id": "184"
-      }
-    ],
-    "id": "18"
-  },
-  {
-    "index": 43,
-    "section": "Additions",
-    "elements": [
-      {
-        "index": 43,
-        "param": "Where is your package unit",
-        "dataType": "textrow",
-        "validation": "",
-        "defaultValues": "",
-        "id": "191"
-      },
-      {
-        "index": 44,
-        "param": "Are you able to provide access to all areas including the roof?",
-        "dataType": "pickerinputrow",
-        "validation": "",
-        "defaultValues": "Yes, No",
-        "id": "192"
-      }
-    ],
-    "id": "19"
-  }
-]
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "Auditor Info",
+      "elements": [
+        {
+          "index": 1,
+          "param": "Name",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:Anthony,02:Ron,03:Johnny,04:Eli",
+          "id": "101"
+        },
+        {
+          "index": 2,
+          "param": "Email",
+          "dataType": "emailrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "102"
+        },
+        {
+          "index": 3,
+          "param": "Phone Number",
+          "dataType": "phonerow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "103"
+        }
+      ],
+      "id": "10"
+    },
+    {
+      "index": 5,
+      "section": "General Client Info",
+      "elements": [
+        {
+          "index": 5,
+          "param": "Name",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "111"
+        },
+        {
+          "index": 6,
+          "param": "Position",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "112"
+        },
+        {
+          "index": 7,
+          "param": "Email",
+          "dataType": "emailrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "113"
+        },
+        {
+          "index": 8,
+          "param": "Phone Number",
+          "dataType": "phonerow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "114"
+        },
+        {
+          "index": 9,
+          "param": "Business Name",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "115"
+        }
+      ],
+      "id": "11"
+    },
+    {
+      "index": 11,
+      "section": "Client Business Address",
+      "elements": [
+        {
+          "index": 11,
+          "param": "Address",
+          "dataType": "textarearow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "121"
+        }
+      ],
+      "id": "12"
+    },
+    {
+      "index": 13,
+      "section": "Interviewee",
+      "elements": [
+        {
+          "index": 13,
+          "param": "Name",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "131"
+        },
+        {
+          "index": 14,
+          "param": "Position",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "132"
+        },
+        {
+          "index": 15,
+          "param": "Email",
+          "dataType": "emailrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "133"
+        },
+        {
+          "index": 16,
+          "param": "Phone Number",
+          "dataType": "phonerow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "134"
+        }
+      ],
+      "id": "13"
+    },
+    {
+      "index": 18,
+      "section": "Operation Hours",
+      "elements": [
+        {
+          "index": 18,
+          "param": "Number of Vacation days",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "141"
+        },
+        {
+          "index": 19,
+          "param": "Monday Operating Hours",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "142"
+        },
+        {
+          "index": 20,
+          "param": "Tuesday Operating Hours",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "143"
+        },
+        {
+          "index": 21,
+          "param": "Wednesday Operating Hours",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "144"
+        },
+        {
+          "index": 22,
+          "param": "Thursday Operating Hours",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "145"
+        },
+        {
+          "index": 23,
+          "param": "Friday Operating Hours",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "146"
+        },
+        {
+          "index": 24,
+          "param": "Saturday Operating Hours",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "147"
+        },
+        {
+          "index": 25,
+          "param": "Sunday Operating Hours",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "148"
+        }
+      ],
+      "id": "14"
+    },
+    {
+      "index": 27,
+      "section": "Area",
+      "elements": [
+        {
+          "index": 27,
+          "param": "Total",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "151"
+        }
+      ],
+      "id": "15"
+    },
+    {
+      "index": 29,
+      "section": "Age",
+      "elements": [
+        {
+          "index": 29,
+          "param": "Building Year",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "161"
+        },
+        {
+          "index": 30,
+          "param": "Lighting Year",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "162"
+        },
+        {
+          "index": 31,
+          "param": "HVAC Year",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "163"
+        },
+        {
+          "index": 32,
+          "param": "Kitchen Equipment",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "164"
+        }
+      ],
+      "id": "16"
+    },
+    {
+      "index": 34,
+      "section": "Maintenace Interval",
+      "elements": [
+        {
+          "index": 34,
+          "param": "Lighting",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "171"
+        },
+        {
+          "index": 35,
+          "param": "HVAC",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "172"
+        },
+        {
+          "index": 36,
+          "param": "Kitchen Equipment",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "173"
+        }
+      ],
+      "id": "17"
+    },
+    {
+      "index": 38,
+      "section": "Others",
+      "elements": [
+        {
+          "index": 38,
+          "param": "Facility Type",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "181"
+        },
+        {
+          "index": 39,
+          "param": "Utility Company",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:PGE",
+          "id": "182"
+        },
+        {
+          "index": 40,
+          "param": "Gas Rate Structure",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:G-NR1",
+          "id": "183"
+        },
+        {
+          "index": 41,
+          "param": "Electric Rate Structure",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:A-1,02:A-1 TOU,03:A-6 TOU,04:A-10,05:A-10 TOU,06:E-19 TOU",
+          "id": "184"
+        }
+      ],
+      "id": "18"
+    },
+    {
+      "index": 43,
+      "section": "Additions",
+      "elements": [
+        {
+          "index": 43,
+          "param": "Where is your package unit",
+          "dataType": "textrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "191"
+        },
+        {
+          "index": 44,
+          "param": "Are you able to provide access to all areas including the roof?",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:Yes,02:No",
+          "id": "192"
+        }
+      ],
+      "id": "19"
+    }
+  ]
+}

@@ -28,6 +28,9 @@ class FormBuilder {
                 BaseRowType.TextRow -> TextRow()
                 BaseRowType.DecimalRow -> IntRow()
                 BaseRowType.PickerInputRow -> PickerInputRow()
+                BaseRowType.EmailRow -> EmailRow()
+                BaseRowType.PhoneRow -> PhoneRow()
+                BaseRowType.TextAreaRow -> TextRow()
             }
         }
     }
@@ -37,7 +40,10 @@ class FormBuilder {
         TextRow("textrow"),
         IntRow("introw"),
         DecimalRow("decimalrow"),
-        PickerInputRow("pickerinputrow");
+        PickerInputRow("pickerinputrow"),
+        PhoneRow("phonerow"),
+        EmailRow("emailrow"),
+        TextAreaRow("textarearow");
 
         companion object {
             private val map = BaseRowType.values().associateBy(BaseRowType::value)

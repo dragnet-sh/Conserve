@@ -12,7 +12,7 @@ class PreAuditFragment : BaseFormFragment()  {
     }
 
     override fun resourceId(): Int {
-        return R.raw.preaudit_sample
+        return R.raw.preaudit
     }
 
     companion object {

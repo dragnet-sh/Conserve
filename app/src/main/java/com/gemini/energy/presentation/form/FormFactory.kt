@@ -59,5 +59,21 @@ class PickerInputRow : FormFactory() {
     }
 }
 
+class EmailRow: FormFactory() {
+    override fun create(gElements: GElements): BaseFormElement<*> {
+        return FormEmailEditTextElement(gElements.id!!).apply {
+            this.title = gElements.param
+            this.hint = gElements.defaultValues
+        }
+    }
+}
 
+class PhoneRow: FormFactory() {
+    override fun create(gElements: GElements): BaseFormElement<*> {
+        return FormPhoneEditTextElement(gElements.id!!).apply {
+            this.title = gElements.param
+            this.hint = gElements.defaultValues
+        }
+    }
+}
 
