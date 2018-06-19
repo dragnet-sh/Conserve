@@ -3,7 +3,7 @@ package com.gemini.energy.data.gateway
 import com.gemini.energy.data.gateway.mapper.SystemMapper
 import com.gemini.energy.data.repository.AuditRepository
 import com.gemini.energy.data.repository.PreAuditRepository
-import com.gemini.energy.data.repository.ScopeRepository
+import com.gemini.energy.data.repository.TypeRepository
 import com.gemini.energy.data.repository.ZoneRepository
 import com.gemini.energy.domain.entity.*
 import com.gemini.energy.domain.gateway.AuditGateway
@@ -13,7 +13,7 @@ class AuditGatewayImpl(
         private val auditRepository: AuditRepository,
         private val preAuditRepository: PreAuditRepository,
         private val zoneRepository: ZoneRepository,
-        private val auditScopeRepository: ScopeRepository) : AuditGateway {
+        private val typeRepository: TypeRepository) : AuditGateway {
 
     private val mapper = SystemMapper()
 
@@ -43,19 +43,14 @@ class AuditGatewayImpl(
     override fun savePreAudit(preAudit: List<PreAudit>): Observable<Unit> = preAuditRepository.save(preAudit)
 
 
-    /*Audit Scope Parent*/
-    override fun getAuditScopeParentList(zoneId: Int, type: String): Observable<List<AuditScopeParent>> =
-        auditScopeRepository.getAllParentByZone(zoneId, type)
+    /*Audit Zone Type*/
+    override fun getAuditScopeList(zoneId: Int, type: String): Observable<List<Type>> =
+        typeRepository.getAllTypeByZone(zoneId, type)
                 .map { it.map { mapper.toEntity(it) } }
 
-    override fun saveAuditScopeParent(auditScope: AuditScopeParent) = auditScopeRepository.saveParent(auditScope)
+    override fun saveAuditScope(auditScope: Type) = typeRepository.save(auditScope)
 
 
-    /*Audit Scope Child*/
-    override fun getAuditScopeChildList(parentId: Int): Observable<List<AuditScopeChild>> =
-        auditScopeRepository.getAllChildByParent(parentId)
-                .map { it.map { mapper.toEntity(it) } }
-
-    override fun saveAuditScopeChild(auditScope: AuditScopeChild) = auditScopeRepository.saveChild(auditScope)
+    /*Feature Data*/
 
 }

@@ -4,16 +4,16 @@ import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Insert
 import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
-import com.gemini.energy.data.local.model.AuditScopeChildLocalModel
+import com.gemini.energy.data.local.model.AuditZoneTypeLocalModel
 import io.reactivex.Maybe
 
 @Dao
-interface AuditScopeChildDao {
+interface AuditZoneTypeDao {
 
-    @Query("SELECT * FROM AuditScopeChild WHERE parent_id = :id")
-    fun getAllByParent(id: Int): Maybe<List<AuditScopeChildLocalModel>>
+    @Query("SELECT * FROM AuditZoneType WHERE zone_id = :id AND type = :type")
+    fun getAllTypeByZone(id: Int, type: String): Maybe<List<AuditZoneTypeLocalModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(auditScope: AuditScopeChildLocalModel)
+    fun insert(auditScope: AuditZoneTypeLocalModel)
 
 }

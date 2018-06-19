@@ -4,8 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.util.Log
 import com.gemini.energy.R
-import com.gemini.energy.domain.entity.AuditScopeParent
-import com.gemini.energy.domain.entity.Zone
+import com.gemini.energy.domain.entity.Type
 import com.gemini.energy.domain.interactor.ZoneTypeSaveUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.internal.util.SingleLiveData
@@ -25,10 +24,10 @@ class TypeCreateViewModel(context: Context, private val zoneTypeCreateUseCase: Z
 
     fun createZoneType(zoneId: Int, zoneType: String, zoneSubType: String?, zoneTypeTag: String, auditId: Int) {
         val date = Date()
-        addDisposable(save(AuditScopeParent(null, zoneTypeTag, zoneType, zoneSubType, zoneId, auditId, date, date)))
+        addDisposable(save(Type(null, zoneTypeTag, zoneType, zoneSubType, zoneId, auditId, date, date)))
     }
 
-    private fun save(scope: AuditScopeParent): Disposable {
+    private fun save(scope: Type): Disposable {
         return zoneTypeCreateUseCase.execute(scope)
                 .subscribeWith(object : DisposableObserver<Unit>() {
 

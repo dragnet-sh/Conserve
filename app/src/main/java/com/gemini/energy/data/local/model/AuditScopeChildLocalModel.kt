@@ -7,7 +7,7 @@ import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
 @Entity(tableName = "AuditScopeChild", foreignKeys = [(ForeignKey(
-        entity = AuditScopeParentLocalModel::class,
+        entity = AuditZoneTypeLocalModel::class,
         parentColumns = ["id"],
         childColumns = ["parent_id"]))])
 

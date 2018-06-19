@@ -6,12 +6,12 @@ import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = "AuditScopeParent", foreignKeys = [(ForeignKey(
+@Entity(tableName = "AuditZoneType", foreignKeys = [(ForeignKey(
         entity = ZoneLocalModel::class,
         parentColumns = ["id"],
         childColumns = ["zone_id"]))])
 
-data class AuditScopeParentLocalModel(
+data class AuditZoneTypeLocalModel(
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "id")
         var auditParentId: Int?,

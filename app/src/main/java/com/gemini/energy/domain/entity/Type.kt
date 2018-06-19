@@ -2,12 +2,12 @@ package com.gemini.energy.domain.entity
 
 import java.util.*
 
-data class AuditScopeChild(
+data class Type(
     val id: Int?,
     val name: String?,
     val type: String?,
+    var subType: String?,
 
-    val parentId: Int?,
     val zoneId: Int?,
     val auditId: Int?,
 

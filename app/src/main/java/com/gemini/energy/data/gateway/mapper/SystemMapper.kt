@@ -39,7 +39,7 @@ class SystemMapper {
             preAudit.updatedAt
     )
 
-    fun toEntity(auditScopeParent: AuditScopeParentLocalModel) = AuditScopeParent(
+    fun toEntity(auditScopeParent: AuditZoneTypeLocalModel) = Type(
             auditScopeParent.auditParentId,
             auditScopeParent.name,
             auditScopeParent.type,
@@ -50,19 +50,6 @@ class SystemMapper {
 
             auditScopeParent.createdAt,
             auditScopeParent.updatedAt
-    )
-
-    fun toEntity(auditScopeChild: AuditScopeChildLocalModel) = AuditScopeChild (
-            auditScopeChild.auditChildId,
-            auditScopeChild.name,
-            auditScopeChild.type,
-
-            auditScopeChild.auditParentId,
-            auditScopeChild.zoneId,
-            auditScopeChild.auditId,
-
-            auditScopeChild.createdAt,
-            auditScopeChild.updatedAt
     )
 
 }

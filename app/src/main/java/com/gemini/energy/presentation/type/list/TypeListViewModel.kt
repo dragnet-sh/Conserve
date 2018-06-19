@@ -7,7 +7,7 @@ import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.util.Log
 import com.gemini.energy.R
-import com.gemini.energy.domain.entity.AuditScopeParent
+import com.gemini.energy.domain.entity.Type
 import com.gemini.energy.domain.interactor.ZoneTypeGetAllUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.presentation.type.list.mapper.TypeMapper
@@ -29,13 +29,13 @@ class TypeListViewModel(context: Context, private val zoneTypeGetAllUseCase: Zon
 
     private fun getAll(zoneId: Int, zoneType: String): Disposable {
         return zoneTypeGetAllUseCase.execute(listOf(zoneId, zoneType))
-                .subscribeWith(object : DisposableObserver<List<AuditScopeParent>>() {
+                .subscribeWith(object : DisposableObserver<List<Type>>() {
 
                     override fun onStart() {
                         loading.set(true)
                     }
 
-                    override fun onNext(t: List<AuditScopeParent>) {
+                    override fun onNext(t: List<Type>) {
                         loading.set(false)
                         result.clear()
                         result.addAll(mapper.toModel(t))

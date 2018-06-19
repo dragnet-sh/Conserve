@@ -3,20 +3,23 @@ package com.gemini.energy.internal.injection.module
 import android.content.Context
 import com.gemini.energy.data.gateway.AuditGatewayImpl
 import com.gemini.energy.data.local.AuditLocalDataSource
-import com.gemini.energy.data.local.AuditScopeLocalDataSource
 import com.gemini.energy.data.local.PreAuditLocalDataSource
+import com.gemini.energy.data.local.TypeLocalDataSource
 import com.gemini.energy.data.local.ZoneLocalDataSource
-import com.gemini.energy.data.local.dao.*
-import com.gemini.energy.data.remote.AuditRemoteDataSource
-import com.gemini.energy.data.repository.AuditRepository
-import com.gemini.energy.data.repository.mapper.AuditMapper
+import com.gemini.energy.data.local.dao.AuditDao
+import com.gemini.energy.data.local.dao.AuditZoneTypeDao
+import com.gemini.energy.data.local.dao.PreAuditDao
+import com.gemini.energy.data.local.dao.ZoneDao
 import com.gemini.energy.data.local.system.AuditDatabase
-import com.gemini.energy.data.remote.AuditScopeRemoteDataSource
+import com.gemini.energy.data.remote.AuditRemoteDataSource
 import com.gemini.energy.data.remote.PreAuditRemoteDataSource
+import com.gemini.energy.data.remote.TypeRemoteDataSource
 import com.gemini.energy.data.remote.ZoneRemoteDataSource
+import com.gemini.energy.data.repository.AuditRepository
 import com.gemini.energy.data.repository.PreAuditRepository
-import com.gemini.energy.data.repository.ScopeRepository
+import com.gemini.energy.data.repository.TypeRepository
 import com.gemini.energy.data.repository.ZoneRepository
+import com.gemini.energy.data.repository.mapper.AuditMapper
 import com.gemini.energy.data.repository.mapper.AuditScopeMapper
 import com.gemini.energy.data.repository.mapper.PreAuditMapper
 import com.gemini.energy.data.repository.mapper.ZoneMapper
@@ -51,11 +54,7 @@ internal class DataModule {
 
     @Provides
     @Singleton
-    internal fun provideAuditEntityParentDao(auditDatabase: AuditDatabase): AuditScopeParentDao = auditDatabase.auditScopeParentDao()
-
-    @Provides
-    @Singleton
-    internal fun provideAuditEntityChildDao(auditDatabase: AuditDatabase): AuditScopeChildDao = auditDatabase.auditScopeChildDao()
+    internal fun provideAuditZoneTypeDao(auditDatabase: AuditDatabase): AuditZoneTypeDao = auditDatabase.auditScopeDao()
 
     /*End of DAO*/
 
@@ -101,7 +100,7 @@ internal class DataModule {
 
     @Provides
     @Singleton
-    internal fun provideAuditScopeRemoteDataSource() = AuditScopeRemoteDataSource()
+    internal fun provideAuditScopeRemoteDataSource() = TypeRemoteDataSource()
 
     /*End of Remote Data Source*/
 
@@ -126,9 +125,8 @@ internal class DataModule {
 
     @Provides
     @Singleton
-    internal fun provideAuditScopeLocalDataSource(auditScopeParentDao: AuditScopeParentDao,
-                                                  auditScopeChildDao: AuditScopeChildDao) =
-            AuditScopeLocalDataSource(auditScopeParentDao, auditScopeChildDao)
+    internal fun provideAuditScopeLocalDataSource(auditScopeDao: AuditZoneTypeDao) =
+            TypeLocalDataSource(auditScopeDao)
 
     /*End of Local Data Source*/
 
@@ -161,10 +159,10 @@ internal class DataModule {
 
     @Provides
     @Singleton
-    internal fun provideAuditScopeRepository(auditScopeLocalDataSource: AuditScopeLocalDataSource,
-                                             auditScopeRemoteDataSource: AuditScopeRemoteDataSource,
+    internal fun provideAuditScopeRepository(typeLocalDataSource: TypeLocalDataSource,
+                                             auditScopeRemoteDataSource: TypeRemoteDataSource,
                                              auditScopeMapper: AuditScopeMapper) =
-            ScopeRepository(auditScopeLocalDataSource, auditScopeRemoteDataSource, auditScopeMapper)
+            TypeRepository(typeLocalDataSource, auditScopeRemoteDataSource, auditScopeMapper)
     /*End of Repository*/
 
 
@@ -174,7 +172,7 @@ internal class DataModule {
             auditRepository: AuditRepository,
             preAuditRepository: PreAuditRepository,
             zoneRepository: ZoneRepository,
-            auditScopeRepository: ScopeRepository): AuditGateway {
-        return AuditGatewayImpl(auditRepository, preAuditRepository, zoneRepository, auditScopeRepository)
+            auditTypeRepository: TypeRepository): AuditGateway {
+        return AuditGatewayImpl(auditRepository, preAuditRepository, zoneRepository, auditTypeRepository)
     }
 }

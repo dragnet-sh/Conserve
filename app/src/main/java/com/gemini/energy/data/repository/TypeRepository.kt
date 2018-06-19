@@ -1,0 +1,23 @@
+package com.gemini.energy.data.repository
+
+import com.gemini.energy.data.local.TypeLocalDataSource
+import com.gemini.energy.data.local.model.AuditZoneTypeLocalModel
+import com.gemini.energy.data.remote.TypeRemoteDataSource
+import com.gemini.energy.data.repository.mapper.AuditScopeMapper
+import com.gemini.energy.domain.entity.Type
+import io.reactivex.Observable
+
+class TypeRepository(
+        private val typeLocalDataSource: TypeLocalDataSource,
+        private val typeRemoteDataSource: TypeRemoteDataSource,
+        private val auditScopeMapper: AuditScopeMapper) {
+
+    fun getAllTypeByZone(id: Int, type: String): Observable<List<AuditZoneTypeLocalModel>> {
+        return typeLocalDataSource.getAllTypeByZone(id, type)
+    }
+
+    fun save(auditScope: Type): Observable<Unit> {
+        return typeLocalDataSource.save(auditScopeMapper.toLocal(auditScope))
+    }
+
+}

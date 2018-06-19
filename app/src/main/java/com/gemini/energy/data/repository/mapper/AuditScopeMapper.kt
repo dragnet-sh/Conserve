@@ -1,14 +1,12 @@
 package com.gemini.energy.data.repository.mapper
 
-import com.gemini.energy.data.local.model.AuditScopeChildLocalModel
-import com.gemini.energy.data.local.model.AuditScopeParentLocalModel
-import com.gemini.energy.domain.entity.AuditScopeChild
-import com.gemini.energy.domain.entity.AuditScopeParent
+import com.gemini.energy.data.local.model.AuditZoneTypeLocalModel
+import com.gemini.energy.domain.entity.Type
 
 class AuditScopeMapper {
 
-    fun toLocal(auditScope: AuditScopeParent): AuditScopeParentLocalModel {
-        return AuditScopeParentLocalModel(
+    fun toLocal(auditScope: Type): AuditZoneTypeLocalModel {
+        return AuditZoneTypeLocalModel(
                 auditScope.id,
                 auditScope.name,
                 auditScope.type,
@@ -22,19 +20,4 @@ class AuditScopeMapper {
         )
     }
 
-
-    fun toLocal(auditScope: AuditScopeChild): AuditScopeChildLocalModel {
-        return AuditScopeChildLocalModel(
-                auditScope.id,
-                auditScope.name,
-                auditScope.type,
-
-                auditScope.parentId,
-                auditScope.zoneId,
-                auditScope.auditId,
-
-                auditScope.createdAt,
-                auditScope.updatedAt
-        )
-    }
 }

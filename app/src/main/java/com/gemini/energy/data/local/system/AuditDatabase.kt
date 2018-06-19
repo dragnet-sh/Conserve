@@ -13,12 +13,11 @@ import com.gemini.energy.data.local.util.Converters
             AuditLocalModel::class,
             ZoneLocalModel::class,
             PreAuditLocalModel::class,
-            AuditScopeParentLocalModel::class,
-            AuditScopeChildLocalModel::class
+            AuditZoneTypeLocalModel::class
 
         ],
 
-        version = 7, exportSchema = false)
+        version = 8, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class AuditDatabase : RoomDatabase() {
@@ -26,8 +25,7 @@ abstract class AuditDatabase : RoomDatabase() {
     abstract fun auditDao(): AuditDao
     abstract fun preAuditDao(): PreAuditDao
     abstract fun zoneDao(): ZoneDao
-    abstract fun auditScopeParentDao(): AuditScopeParentDao
-    abstract fun auditScopeChildDao(): AuditScopeChildDao
+    abstract fun auditScopeDao(): AuditZoneTypeDao
 
     companion object {
         fun newInstance(context: Context): AuditDatabase {
