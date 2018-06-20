@@ -78,3 +78,24 @@ enum class ELightingType(val value: String) {
     }
 
 }
+
+
+/*
+* Base Row Type
+* */
+enum class BaseRowType(val value: String) {
+
+    TextRow("textrow"),
+    IntRow("introw"),
+    DecimalRow("decimalrow"),
+    PickerInputRow("pickerinputrow"),
+    PhoneRow("phonerow"),
+    EmailRow("emailrow"),
+    TextAreaRow("textarearow");
+
+    companion object {
+        private val map = BaseRowType.values().associateBy(BaseRowType::value)
+        fun get(type: String) = map[type]
+    }
+
+}

@@ -1,6 +1,7 @@
 package com.gemini.energy.presentation.form
 
 import com.gemini.energy.presentation.form.model.GElements
+import com.gemini.energy.presentation.util.BaseRowType
 import com.thejuki.kformmaster.model.BaseFormElement
 import com.thejuki.kformmaster.model.FormHeader
 
@@ -34,23 +35,5 @@ class FormBuilder {
             }
         }
     }
-
-    enum class BaseRowType(val value: String) {
-
-        TextRow("textrow"),
-        IntRow("introw"),
-        DecimalRow("decimalrow"),
-        PickerInputRow("pickerinputrow"),
-        PhoneRow("phonerow"),
-        EmailRow("emailrow"),
-        TextAreaRow("textarearow");
-
-        companion object {
-            private val map = BaseRowType.values().associateBy(BaseRowType::value)
-            fun get(type: String) = map[type]
-        }
-
-    }
-
 }
 

@@ -43,8 +43,6 @@ class PickerInputRow : FormFactory() {
                 }
             }
 
-            println(listOptionItem)
-
             this.options = listOptionItem
             this.title = gElement.param
         }
