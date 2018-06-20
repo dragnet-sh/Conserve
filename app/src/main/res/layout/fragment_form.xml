@@ -5,20 +5,17 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:id="@+id/form_layout"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"
+            android:orientation="vertical"
+            android:background="@color/cardview_light_background"
+            android:descendantFocusability="beforeDescendants"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
-        <Button
-            android:layout_marginTop="30dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="Save"/>
 
     </LinearLayout>
 

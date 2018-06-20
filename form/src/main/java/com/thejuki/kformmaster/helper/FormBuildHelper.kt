@@ -8,6 +8,7 @@ import com.github.vivchar.rendererrecyclerviewadapter.RendererRecyclerViewAdapte
 import com.github.vivchar.rendererrecyclerviewadapter.binder.ViewBinder
 import com.thejuki.kformmaster.listener.OnFormElementValueChangedListener
 import com.thejuki.kformmaster.model.BaseFormElement
+import com.thejuki.kformmaster.model.FormButtonElement
 import com.thejuki.kformmaster.model.FormHeader
 import com.thejuki.kformmaster.view.*
 import java.text.Normalizer
@@ -162,7 +163,19 @@ class FormBuildHelper
                 it.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                     override fun getSpanSize(position: Int): Int {
                         //ToDo: Write your custom logic so how the span size is calculated !!
-                        return if (formAdapter.getType(position) == FormHeader::class.java) 2 else 1
+
+                        val spanSize = if (
+                                (formAdapter.getType(position) == FormHeader::class.java) ||
+                                (formAdapter.getType(position) == FormButtonElement::class.java)) {
+
+                            2
+
+                        } else {
+                            1
+                        }
+
+                        return spanSize
+
                     }
                 }
             }

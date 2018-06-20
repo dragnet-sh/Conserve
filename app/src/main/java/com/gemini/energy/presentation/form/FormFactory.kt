@@ -76,4 +76,3 @@ class PhoneRow: FormFactory() {
         }
     }
 }
-
