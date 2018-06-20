@@ -24,22 +24,7 @@ class SystemMapper {
             zone.updatedAt
     )
 
-    fun toEntity(preAudit: PreAuditLocalModel) = PreAudit (
-            preAudit.id,
-            preAudit.formId,
-            preAudit.type,
-
-            preAudit.valueDouble,
-            preAudit.valueInt,
-            preAudit.valueString,
-
-            preAudit.auditId,
-
-            preAudit.createdAt,
-            preAudit.updatedAt
-    )
-
-    fun toEntity(auditScopeParent: AuditZoneTypeLocalModel) = Type(
+    fun toEntity(auditScopeParent: TypeLocalModel) = Type(
             auditScopeParent.auditParentId,
             auditScopeParent.name,
             auditScopeParent.type,

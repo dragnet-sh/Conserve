@@ -3,12 +3,10 @@ package com.gemini.energy.internal.injection.module
 import android.content.Context
 import com.gemini.energy.data.gateway.AuditGatewayImpl
 import com.gemini.energy.data.local.AuditLocalDataSource
-import com.gemini.energy.data.local.PreAuditLocalDataSource
 import com.gemini.energy.data.local.TypeLocalDataSource
 import com.gemini.energy.data.local.ZoneLocalDataSource
 import com.gemini.energy.data.local.dao.AuditDao
-import com.gemini.energy.data.local.dao.AuditZoneTypeDao
-import com.gemini.energy.data.local.dao.PreAuditDao
+import com.gemini.energy.data.local.dao.TypeDao
 import com.gemini.energy.data.local.dao.ZoneDao
 import com.gemini.energy.data.local.system.AuditDatabase
 import com.gemini.energy.data.remote.AuditRemoteDataSource
@@ -16,12 +14,10 @@ import com.gemini.energy.data.remote.PreAuditRemoteDataSource
 import com.gemini.energy.data.remote.TypeRemoteDataSource
 import com.gemini.energy.data.remote.ZoneRemoteDataSource
 import com.gemini.energy.data.repository.AuditRepository
-import com.gemini.energy.data.repository.PreAuditRepository
 import com.gemini.energy.data.repository.TypeRepository
 import com.gemini.energy.data.repository.ZoneRepository
 import com.gemini.energy.data.repository.mapper.AuditMapper
 import com.gemini.energy.data.repository.mapper.TypeMapper
-import com.gemini.energy.data.repository.mapper.PreAuditMapper
 import com.gemini.energy.data.repository.mapper.ZoneMapper
 import com.gemini.energy.domain.gateway.AuditGateway
 import dagger.Module
@@ -45,16 +41,12 @@ internal class DataModule {
 
     @Provides
     @Singleton
-    internal fun providePreAuditDao(auditDatabase: AuditDatabase): PreAuditDao = auditDatabase.preAuditDao()
-
-    @Provides
-    @Singleton
     internal fun provideZoneDao(auditDatabase: AuditDatabase): ZoneDao = auditDatabase.zoneDao()
 
 
     @Provides
     @Singleton
-    internal fun provideAuditZoneTypeDao(auditDatabase: AuditDatabase): AuditZoneTypeDao = auditDatabase.auditScopeDao()
+    internal fun provideAuditZoneTypeDao(auditDatabase: AuditDatabase): TypeDao = auditDatabase.auditScopeDao()
 
     /*End of DAO*/
 
@@ -64,11 +56,6 @@ internal class DataModule {
     @Provides
     @Singleton
     internal fun provideAuditMapper() = AuditMapper()
-
-
-    @Provides
-    @Singleton
-    internal fun providePreAuditMapper() = PreAuditMapper()
 
 
     @Provides
@@ -115,17 +102,12 @@ internal class DataModule {
 
     @Provides
     @Singleton
-    internal fun providePreAuditLocalDataSource(preAuditDao: PreAuditDao): PreAuditLocalDataSource =
-            PreAuditLocalDataSource(preAuditDao)
-
-    @Provides
-    @Singleton
     internal fun provideZoneLocalDataSource(zoneDao: ZoneDao) = ZoneLocalDataSource(zoneDao)
 
 
     @Provides
     @Singleton
-    internal fun provideAuditScopeLocalDataSource(auditScopeDao: AuditZoneTypeDao) =
+    internal fun provideAuditScopeLocalDataSource(auditScopeDao: TypeDao) =
             TypeLocalDataSource(auditScopeDao)
 
     /*End of Local Data Source*/
@@ -140,13 +122,6 @@ internal class DataModule {
                                         auditMapper: AuditMapper): AuditRepository {
         return AuditRepository(auditLocalDataSource, auditRemoteDataSource, auditMapper)
     }
-
-    @Provides
-    @Singleton
-    internal fun providePreAuditRepository(preAuditLocalDataSource: PreAuditLocalDataSource,
-                                           preAuditRemoteDataSource: PreAuditRemoteDataSource,
-                                           preAuditMapper: PreAuditMapper) =
-            PreAuditRepository(preAuditLocalDataSource, preAuditRemoteDataSource, preAuditMapper)
 
 
     @Provides
@@ -170,9 +145,8 @@ internal class DataModule {
     @Singleton
     internal fun provideAuditGateway(
             auditRepository: AuditRepository,
-            preAuditRepository: PreAuditRepository,
             zoneRepository: ZoneRepository,
             auditTypeRepository: TypeRepository): AuditGateway {
-        return AuditGatewayImpl(auditRepository, preAuditRepository, zoneRepository, auditTypeRepository)
+        return AuditGatewayImpl(auditRepository, zoneRepository, auditTypeRepository)
     }
 }

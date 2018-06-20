@@ -1,12 +1,12 @@
 package com.gemini.energy.data.repository.mapper
 
-import com.gemini.energy.data.local.model.AuditZoneTypeLocalModel
+import com.gemini.energy.data.local.model.TypeLocalModel
 import com.gemini.energy.domain.entity.Type
 
 class TypeMapper {
 
-    fun toLocal(auditScope: Type): AuditZoneTypeLocalModel {
-        return AuditZoneTypeLocalModel(
+    fun toLocal(auditScope: Type): TypeLocalModel {
+        return TypeLocalModel(
                 auditScope.id,
                 auditScope.name,
                 auditScope.type,
