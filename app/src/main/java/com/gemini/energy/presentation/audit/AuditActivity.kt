@@ -1,12 +1,16 @@
 package com.gemini.energy.presentation.audit
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import com.gemini.energy.R
 import com.gemini.energy.databinding.ActivityHomeDetailBinding
 import com.gemini.energy.presentation.audit.detail.adapter.DetailPagerAdapter
+import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
 import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
 import com.gemini.energy.presentation.audit.list.AuditListFragment
@@ -24,8 +28,13 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     @Inject
     lateinit var navigator: Navigator
 
+    private lateinit var sharedViewModel: SharedViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        sharedViewModel = ViewModelProviders.of(this).get(SharedViewModel::class.java)
+        sharedViewModel.getAudit().observe(this,
+                Observer<AuditModel> { })
 
         super.binder?.let {
             setupContent(it)
@@ -86,6 +95,7 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
             override fun onNext(t: AuditModel) {
                 setAuditHeader(t)
                 refreshZoneViewModel(t)
+                refreshPreAudit(t)
             }
 
             override fun onError(e: Throwable) {}
@@ -99,6 +109,14 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     private fun refreshZoneViewModel(auditModel: AuditModel) {
         val tag = "${ANDROID_SWITCHER}:${view_pager.id}:${ZONE_LIST_FRAGMENT_INDEX}"
         val fragment = supportFragmentManager.findFragmentByTag(tag) as ZoneListFragment?
+        fragment?.let {
+            fragment.setAuditModel(auditModel)
+        }
+    }
+
+    private fun refreshPreAudit(auditModel: AuditModel) {
+        val tag = "${ANDROID_SWITCHER}:${view_pager.id}:${PREAUDIT_FRAGMENT_INDEX}"
+        val fragment = supportFragmentManager.findFragmentByTag(tag) as PreAuditFragment?
         fragment?.let {
             fragment.setAuditModel(auditModel)
         }
@@ -122,6 +140,7 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
 
         private const val ANDROID_SWITCHER = "android:switcher"
         private const val ZONE_LIST_FRAGMENT_INDEX = 1
+        private const val PREAUDIT_FRAGMENT_INDEX = 0
 
         private var disposables = CompositeDisposable()
     }

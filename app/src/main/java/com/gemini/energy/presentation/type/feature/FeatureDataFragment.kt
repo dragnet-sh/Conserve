@@ -4,6 +4,8 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import com.gemini.energy.R
+import com.gemini.energy.data.local.model.AuditLocalModel
+import com.gemini.energy.data.local.model.ZoneLocalModel
 import com.gemini.energy.presentation.base.BaseFormFragment
 import com.gemini.energy.presentation.type.SharedViewModel
 import com.gemini.energy.presentation.type.list.model.TypeModel
@@ -57,4 +59,11 @@ class FeatureDataFragment : BaseFormFragment() {
         private const val TAG = "FeatureDataFragment"
     }
 
+    override fun getAuditId(): Int? {
+        return null
+    }
+
+    override fun getZoneId(): Int? {
+        return null
+    }
 }

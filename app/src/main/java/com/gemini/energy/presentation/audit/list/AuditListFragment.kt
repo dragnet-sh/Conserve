@@ -7,6 +7,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -69,6 +70,10 @@ class AuditListFragment : DaggerFragment(),
                 R.layout.fragment_audit_list, container, false)
 
         binder.viewModel = auditListViewModel
+
+        // *** Handler to Execute the Callback *** //
+        // *** onAuditClick *** //
+        // *** This gets passed on to the Adapter via ViewBindingAdapter *** //
         binder.callbacks = this
 
         binder.recyclerView.addItemDecoration(

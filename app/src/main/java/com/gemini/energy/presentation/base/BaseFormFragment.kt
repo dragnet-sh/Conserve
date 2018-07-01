@@ -6,6 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gemini.energy.R
+import com.gemini.energy.data.local.model.AuditLocalModel
+import com.gemini.energy.data.local.model.ZoneLocalModel
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.form.FormBuilder
 import com.gemini.energy.presentation.form.FormMapper
 import com.gemini.energy.presentation.form.PickerInputRow
@@ -65,6 +68,11 @@ abstract class BaseFormFragment : DaggerFragment() {
         val formIds = mapper.sortedFormElementIds(model)
         val gFormElements = mapper.mapIdToElements(model)
 
+        Log.d(TAG, "----------------------------")
+        Log.d(TAG, "Audit Id")
+        Log.d(TAG, getAuditId().toString())
+        Log.d(TAG, "----------------------------")
+
         formIds.forEach {
             val gElement = gFormElements[it] as GElements
             val eBaseRowType = BaseRowType.get(gElement.dataType!!)
@@ -90,6 +98,8 @@ abstract class BaseFormFragment : DaggerFragment() {
     }
 
     abstract fun resourceId(): Int
+    abstract fun getAuditId(): Int?
+    abstract fun getZoneId(): Int?
 
     companion object {
         private const val TAG = "BaseFormFragment"
