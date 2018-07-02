@@ -57,6 +57,7 @@ abstract class BaseFormFragment : DaggerFragment() {
         }
 
         elements.add(button)
+        formBuilder.refresh()
         formBuilder.addFormElements(elements)
 
     }
