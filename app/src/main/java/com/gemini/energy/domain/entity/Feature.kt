@@ -2,7 +2,7 @@ package com.gemini.energy.domain.entity
 
 import java.util.*
 
-data class PreAudit(
+data class Feature(
         val id: Int,
         val formId: String,
         val type: String,

@@ -218,6 +218,13 @@ class FormBuildHelper
     }
 
     /**
+     * Remove all the previously added form elements
+     * */
+    fun refresh() {
+        this.elements.clear()
+    }
+
+    /**
      * Gets a form element with the given [tag]
      */
     @Suppress("UNCHECKED_CAST")
