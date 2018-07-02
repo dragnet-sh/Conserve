@@ -92,8 +92,7 @@ class TypeActivity : BaseActivity(),
 
         if (app.isParent()) {
             binder.viewPager.adapter = TypePagerAdapter(
-                    supportFragmentManager, zoneModel!!, auditModel!!
-            )
+                    supportFragmentManager, zoneModel!!, auditModel!!)
         }
 
         if (app.isChild()) {

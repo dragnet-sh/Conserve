@@ -2,9 +2,11 @@ package com.gemini.energy.data.gateway
 
 import com.gemini.energy.data.gateway.mapper.SystemMapper
 import com.gemini.energy.data.repository.AuditRepository
+import com.gemini.energy.data.repository.FeatureRepository
 import com.gemini.energy.data.repository.TypeRepository
 import com.gemini.energy.data.repository.ZoneRepository
 import com.gemini.energy.domain.entity.Audit
+import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.domain.entity.Type
 import com.gemini.energy.domain.entity.Zone
 import com.gemini.energy.domain.gateway.AuditGateway
@@ -13,7 +15,8 @@ import io.reactivex.Observable
 class AuditGatewayImpl(
         private val auditRepository: AuditRepository,
         private val zoneRepository: ZoneRepository,
-        private val typeRepository: TypeRepository) : AuditGateway {
+        private val typeRepository: TypeRepository,
+        private val featureRepository: FeatureRepository) : AuditGateway {
 
     private val mapper = SystemMapper()
 
@@ -44,5 +47,7 @@ class AuditGatewayImpl(
 
 
     /*Feature Data*/
+    override fun saveFeature(feature: List<Feature>): Observable<Unit> = featureRepository.save(feature)
+
 
 }

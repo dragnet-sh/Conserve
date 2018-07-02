@@ -12,15 +12,6 @@ class PreAuditFragment : BaseFormFragment() {
         return R.raw.preaudit_sample
     }
 
-    companion object {
-
-        fun newInstance(): PreAuditFragment {
-            return PreAuditFragment()
-        }
-
-        private const val TAG = "PreAuditFragment"
-    }
-
     override fun getAuditId(): Int? {
         return auditModel?.id
     }
@@ -31,6 +22,16 @@ class PreAuditFragment : BaseFormFragment() {
 
     fun setAuditModel(auditModel: AuditModel) {
         this.auditModel = auditModel
+    }
+
+
+    companion object {
+
+        fun newInstance(): PreAuditFragment {
+            return PreAuditFragment()
+        }
+
+        private const val TAG = "PreAuditFragment"
     }
 
 }

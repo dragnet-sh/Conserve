@@ -9,6 +9,6 @@ import com.gemini.energy.data.local.model.FeatureLocalModel
 interface FeatureDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(feature: FeatureLocalModel)
+    fun insert(feature: List<FeatureLocalModel>)
 
 }

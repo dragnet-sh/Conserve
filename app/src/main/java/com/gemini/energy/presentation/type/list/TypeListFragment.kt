@@ -157,21 +157,6 @@ class TypeListFragment : DaggerFragment(),
             // 2. Side List -> Has Plugload Types
             // 3. View Pager -> Has only one Element the PlugLoad Child Elements
 
-            {
-                Log.d(TAG, "<<<<< AUDIT MODEL >>>>>")
-                Log.d(TAG, auditModel.toString())
-
-                Log.d(TAG, "<<<<< ZONE MODEL >>>>>")
-                Log.d(TAG, zoneModel.toString())
-
-                Log.d(TAG, "<<<<< ITEM MODEL >>>>>")
-                Log.d(TAG, typeModel.toString())
-
-                Log.d(TAG, "<<<<< TYPE ID >>>>>")
-                Log.d(TAG, typeId.toString())
-                Log.d(TAG, getType(typeId!!)?.value!!)
-            }
-
             val intent = Intent(activity, TypeActivity::class.java)
 
             intent.putExtra(PARCEL_AUDIT, auditModel)

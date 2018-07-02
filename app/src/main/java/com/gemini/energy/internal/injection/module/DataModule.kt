@@ -3,20 +3,21 @@ package com.gemini.energy.internal.injection.module
 import android.content.Context
 import com.gemini.energy.data.gateway.AuditGatewayImpl
 import com.gemini.energy.data.local.AuditLocalDataSource
+import com.gemini.energy.data.local.FeatureLocalDataSource
 import com.gemini.energy.data.local.TypeLocalDataSource
 import com.gemini.energy.data.local.ZoneLocalDataSource
 import com.gemini.energy.data.local.dao.AuditDao
+import com.gemini.energy.data.local.dao.FeatureDao
 import com.gemini.energy.data.local.dao.TypeDao
 import com.gemini.energy.data.local.dao.ZoneDao
 import com.gemini.energy.data.local.system.AuditDatabase
-import com.gemini.energy.data.remote.AuditRemoteDataSource
-import com.gemini.energy.data.remote.PreAuditRemoteDataSource
-import com.gemini.energy.data.remote.TypeRemoteDataSource
-import com.gemini.energy.data.remote.ZoneRemoteDataSource
+import com.gemini.energy.data.remote.*
 import com.gemini.energy.data.repository.AuditRepository
+import com.gemini.energy.data.repository.FeatureRepository
 import com.gemini.energy.data.repository.TypeRepository
 import com.gemini.energy.data.repository.ZoneRepository
 import com.gemini.energy.data.repository.mapper.AuditMapper
+import com.gemini.energy.data.repository.mapper.FeatureMapper
 import com.gemini.energy.data.repository.mapper.TypeMapper
 import com.gemini.energy.data.repository.mapper.ZoneMapper
 import com.gemini.energy.domain.gateway.AuditGateway
@@ -48,6 +49,10 @@ internal class DataModule {
     @Singleton
     internal fun provideAuditZoneTypeDao(auditDatabase: AuditDatabase): TypeDao = auditDatabase.auditScopeDao()
 
+    @Provides
+    @Singleton
+    internal fun provideFeatureDao(auditDatabase: AuditDatabase): FeatureDao = auditDatabase.featureDao()
+
     /*End of DAO*/
 
 
@@ -66,6 +71,11 @@ internal class DataModule {
     @Provides
     @Singleton
     internal fun provideAuditScopeMapper() = TypeMapper()
+
+
+    @Provides
+    @Singleton
+    internal fun provideFeatureScopeMappeR() = FeatureMapper()
 
 
     /*End of Mapper*/
@@ -89,6 +99,10 @@ internal class DataModule {
     @Singleton
     internal fun provideAuditScopeRemoteDataSource() = TypeRemoteDataSource()
 
+    @Provides
+    @Singleton
+    internal fun provideFeatureRemoteDataSource() = FeatureRemoteDataSource()
+
     /*End of Remote Data Source*/
 
 
@@ -109,6 +123,12 @@ internal class DataModule {
     @Singleton
     internal fun provideAuditScopeLocalDataSource(auditScopeDao: TypeDao) =
             TypeLocalDataSource(auditScopeDao)
+
+
+    @Provides
+    @Singleton
+    internal fun provideFeatureLocalDataSource(featureDao: FeatureDao) =
+            FeatureLocalDataSource(featureDao)
 
     /*End of Local Data Source*/
 
@@ -138,6 +158,15 @@ internal class DataModule {
                                              auditScopeRemoteDataSource: TypeRemoteDataSource,
                                              auditScopeMapper: TypeMapper) =
             TypeRepository(typeLocalDataSource, auditScopeRemoteDataSource, auditScopeMapper)
+
+
+    @Provides
+    @Singleton
+    internal fun provideFeatureRepository(featureLocalDataSource: FeatureLocalDataSource,
+                                          featureRemoteDataSource: FeatureRemoteDataSource,
+                                          featureMapper: FeatureMapper) =
+            FeatureRepository(featureLocalDataSource, featureRemoteDataSource, featureMapper)
+
     /*End of Repository*/
 
 
@@ -146,7 +175,8 @@ internal class DataModule {
     internal fun provideAuditGateway(
             auditRepository: AuditRepository,
             zoneRepository: ZoneRepository,
-            auditTypeRepository: TypeRepository): AuditGateway {
-        return AuditGatewayImpl(auditRepository, zoneRepository, auditTypeRepository)
+            auditTypeRepository: TypeRepository,
+            featureRepository: FeatureRepository): AuditGateway {
+        return AuditGatewayImpl(auditRepository, zoneRepository, auditTypeRepository, featureRepository)
     }
 }

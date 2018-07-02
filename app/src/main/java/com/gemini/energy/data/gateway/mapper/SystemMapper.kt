@@ -37,4 +37,22 @@ class SystemMapper {
             auditScopeParent.updatedAt
     )
 
+    fun toEntity(feature: FeatureLocalModel) = Feature(
+            feature.featureId,
+            feature.formId,
+            feature.belongsTo,
+            feature.dataType,
+
+            feature.auditId,
+            feature.zoneId,
+            feature.typeId,
+
+            feature.valueString,
+            feature.valueInt,
+            feature.valueDouble,
+
+            feature.createdAt,
+            feature.updatedAt
+    )
+
 }

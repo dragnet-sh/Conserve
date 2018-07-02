@@ -7,6 +7,7 @@ import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.gateway.AuditGateway
 import com.gemini.energy.domain.interactor.*
 import com.gemini.energy.internal.injection.scope.HomeScope
+import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditCreateViewModel
 import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditFragment
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneCreateViewModel
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragment
@@ -16,6 +17,7 @@ import com.gemini.energy.presentation.audit.dialog.AuditCreateViewModel
 import com.gemini.energy.presentation.audit.dialog.AuditDialogFragment
 import com.gemini.energy.presentation.audit.list.AuditListFragment
 import com.gemini.energy.presentation.audit.list.AuditListViewModel
+import com.gemini.energy.presentation.base.BaseFormFragment
 import com.gemini.energy.presentation.base.Crossfader
 import com.gemini.energy.presentation.base.GmailStyleCrossFadeSlidingPaneLayout
 import com.gemini.energy.presentation.util.Navigator
@@ -53,6 +55,9 @@ internal abstract class HomeModule {
 
     @ContributesAndroidInjector
     internal abstract fun contributeFeatureDataFragment(): FeatureDataFragment
+
+    @ContributesAndroidInjector
+    internal abstract fun contributeBaseFormFragment(): BaseFormFragment
 
     @Module
     companion object {
@@ -125,6 +130,14 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideFeatureSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                FeatureSaveUseCase {
+            return FeatureSaveUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideViewModelFactory(
 
                 context: Context,
@@ -136,8 +149,9 @@ internal abstract class HomeModule {
                 zoneSaveUseCase: ZoneSaveUseCase,
 
                 zoneTypeGetAllUseCase: ZoneTypeGetAllUseCase,
-                zoneTypeSaveUseCase: ZoneTypeSaveUseCase
+                zoneTypeSaveUseCase: ZoneTypeSaveUseCase,
 
+                featureSaveUseCase: FeatureSaveUseCase
 
         ): ViewModelProvider.Factory {
 
@@ -146,22 +160,25 @@ internal abstract class HomeModule {
                     return when {
 
                         modelClass.isAssignableFrom(AuditListViewModel::class.java) ->
-                                AuditListViewModel(context, auditGetAllUseCase) as T
+                            AuditListViewModel(context, auditGetAllUseCase) as T
 
                         modelClass.isAssignableFrom(AuditCreateViewModel::class.java) ->
-                                AuditCreateViewModel(context, auditSaveUseCase) as T
+                            AuditCreateViewModel(context, auditSaveUseCase) as T
 
                         modelClass.isAssignableFrom(ZoneListViewModel::class.java) ->
-                                ZoneListViewModel(context, zoneGetAllUseCase) as T
+                            ZoneListViewModel(context, zoneGetAllUseCase) as T
 
                         modelClass.isAssignableFrom(ZoneCreateViewModel::class.java) ->
-                                ZoneCreateViewModel(context, zoneSaveUseCase) as T
+                            ZoneCreateViewModel(context, zoneSaveUseCase) as T
 
                         modelClass.isAssignableFrom(TypeListViewModel::class.java) ->
                             TypeListViewModel(context, zoneTypeGetAllUseCase) as T
 
                         modelClass.isAssignableFrom(TypeCreateViewModel::class.java) ->
                             TypeCreateViewModel(context, zoneTypeSaveUseCase) as T
+
+                        modelClass.isAssignableFrom(PreAuditCreateViewModel::class.java) ->
+                            PreAuditCreateViewModel(context, featureSaveUseCase) as T
 
 
                         else -> throw IllegalArgumentException("Unknown ViewModel class : ${modelClass.name}")
