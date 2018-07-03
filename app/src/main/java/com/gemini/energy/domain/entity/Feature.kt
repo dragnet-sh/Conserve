@@ -13,7 +13,6 @@ data class Feature (
         val typeId: Int?,
 
         val key: String?,
-
         val valueString: String?,
         val valueInt: Int?,
         val valueDouble: Double?,

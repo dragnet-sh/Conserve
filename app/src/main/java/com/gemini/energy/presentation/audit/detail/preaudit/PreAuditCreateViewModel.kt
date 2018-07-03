@@ -10,7 +10,6 @@ import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.internal.util.SingleLiveData
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
-import java.util.*
 
 class PreAuditCreateViewModel(context: Context, private val featureCreateUseCase: FeatureSaveUseCase) :
         BaseAndroidViewModel(context.applicationContext as Application) {
@@ -22,11 +21,10 @@ class PreAuditCreateViewModel(context: Context, private val featureCreateUseCase
     val error = _error
 
     fun createFeature(feature: List<Feature>) {
-        val date = Date()
         addDisposable(save(feature))
     }
 
-    fun save(feature: List<Feature>): Disposable {
+    private fun save(feature: List<Feature>): Disposable {
         return featureCreateUseCase.execute(feature)
                 .subscribeWith(object: DisposableObserver<Unit>() {
 

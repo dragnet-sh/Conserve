@@ -23,9 +23,9 @@ class AuditGatewayImpl(
 
     /*Audit*/
     override fun getAuditList(): Observable<List<Audit>> =
-        auditRepository.getAll()
-                .doOnError { println("Audit Get Error") }
-                .map { it.map { mapper.toEntity(it) }}
+            auditRepository.getAll()
+                    .doOnError { println("Audit Get Error") }
+                    .map { it.map { mapper.toEntity(it) } }
 
     override fun saveAudit(audit: Audit): Observable<Unit> = auditRepository.save(audit)
 
@@ -40,14 +40,17 @@ class AuditGatewayImpl(
 
     /*Audit Zone Type*/
     override fun getAuditScopeList(zoneId: Int, type: String): Observable<List<Type>> =
-        typeRepository.getAllTypeByZone(zoneId, type)
-                .map { it.map { mapper.toEntity(it) } }
+            typeRepository.getAllTypeByZone(zoneId, type)
+                    .map { it.map { mapper.toEntity(it) } }
 
     override fun saveAuditScope(auditScope: Type) = typeRepository.save(auditScope)
 
 
     /*Feature Data*/
-    override fun saveFeature(feature: List<Feature>): Observable<Unit> = featureRepository.save(feature)
+    override fun getFeature(auditId: Int): Observable<List<Feature>> =
+            featureRepository.getAllByAudit(auditId)
+                    .map { it.map { mapper.toEntity(it) } }
 
+    override fun saveFeature(feature: List<Feature>): Observable<Unit> = featureRepository.save(feature)
 
 }

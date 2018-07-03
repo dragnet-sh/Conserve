@@ -13,5 +13,6 @@ interface AuditGateway {
     fun getAuditScopeList(zoneId: Int, type: String): Observable<List<Type>>
     fun saveAuditScope(auditScope: Type): Observable<Unit>
 
+    fun getFeature(auditId: Int): Observable<List<Feature>>
     fun saveFeature(feature: List<Feature>): Observable<Unit>
 }

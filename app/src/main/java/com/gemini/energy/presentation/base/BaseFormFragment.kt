@@ -124,7 +124,7 @@ abstract class BaseFormFragment : DaggerFragment() {
 
         }
 
-        featureViewModel.save(formData)
+        featureViewModel.createFeature(formData)
 
     }
 
