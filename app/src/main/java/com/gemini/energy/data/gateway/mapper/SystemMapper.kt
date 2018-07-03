@@ -47,6 +47,7 @@ class SystemMapper {
             feature.zoneId,
             feature.typeId,
 
+            feature.key,
             feature.valueString,
             feature.valueInt,
             feature.valueDouble,

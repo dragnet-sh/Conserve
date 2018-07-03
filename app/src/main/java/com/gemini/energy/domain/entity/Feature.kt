@@ -12,6 +12,8 @@ data class Feature (
         val zoneId: Int?,
         val typeId: Int?,
 
+        val key: String?,
+
         val valueString: String?,
         val valueInt: Int?,
         val valueDouble: Double?,

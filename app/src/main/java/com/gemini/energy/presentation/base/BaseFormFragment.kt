@@ -93,7 +93,7 @@ abstract class BaseFormFragment : DaggerFragment() {
             val gElement = gFormElements[it] as GElements
             val eBaseRowType = BaseRowType.get(gElement.dataType!!)
 
-            val _gFormElement = when(eBaseRowType) {
+            val _gFormElement = when (eBaseRowType) {
                 BaseRowType.TextRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
                 BaseRowType.DecimalRow -> formBuilder.getFormElement<FormNumberEditTextElement>(it)
                 BaseRowType.IntRow -> formBuilder.getFormElement<FormNumberEditTextElement>(it)
@@ -112,11 +112,16 @@ abstract class BaseFormFragment : DaggerFragment() {
 
             val date = Date()
 
-            var feature = Feature(null, gElement.id, "preaudit", gElement.dataType, getAuditId(),
-                    null, null, _gFormElement.valueAsString, null, null,
-                    date, date)
+            getAuditId()?.let {
 
-            formData.add(feature)
+                var feature = Feature(null, gElement.id, "preaudit", gElement.dataType,
+                        it, null, null, gElement.param, _gFormElement.valueAsString,
+                        null,null, date, date)
+
+                formData.add(feature)
+
+            }
+
         }
 
         featureViewModel.save(formData)

@@ -20,10 +20,12 @@ class PreAuditFragment : BaseFormFragment() {
         return null
     }
 
+    /**
+     * Audit Model gets Set Via Audit Activity
+     * */
     fun setAuditModel(auditModel: AuditModel) {
         this.auditModel = auditModel
     }
-
 
     companion object {
 

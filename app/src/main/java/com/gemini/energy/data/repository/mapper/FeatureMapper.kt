@@ -19,6 +19,7 @@ class FeatureMapper {
                     it.zoneId,
                     it.typeId,
 
+                    it.key,
                     it.valueString,
                     it.valueInt,
                     it.valueDouble,

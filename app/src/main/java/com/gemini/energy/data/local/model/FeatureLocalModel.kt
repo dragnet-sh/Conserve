@@ -31,7 +31,7 @@ data class FeatureLocalModel(
         @ColumnInfo(name = "type_id")
         var typeId: Int?,
 
-
+        var key: String?,
         @ColumnInfo(name = "value_string")
         var valueString: String?,
         @ColumnInfo(name = "value_int")
