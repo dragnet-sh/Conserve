@@ -1,5 +1,6 @@
 package com.gemini.energy.presentation.base
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -20,8 +21,9 @@ import com.gemini.energy.presentation.util.BaseRowType
 import com.thejuki.kformmaster.helper.FormBuildHelper
 import com.thejuki.kformmaster.model.*
 import dagger.android.support.DaggerFragment
+import io.reactivex.rxkotlin.toObservable
 import kotlinx.android.synthetic.main.fragment_form.*
-import java.util.*
+import java.util.Date
 import javax.inject.Inject
 
 abstract class BaseFormFragment : DaggerFragment() {
@@ -48,6 +50,10 @@ abstract class BaseFormFragment : DaggerFragment() {
         this.formBuilder.attachRecyclerView(context!!, recyclerView, autoMeasureEnabled = true)
 
         loadForm()
+
+        featureListViewModel.status.observe(this, Observer {
+            refreshFormData()
+        })
     }
 
     fun loadForm() {
@@ -77,12 +83,13 @@ abstract class BaseFormFragment : DaggerFragment() {
         formBuilder.addFormElements(elements)
 
         getAuditId()?.let {
-
-            //ToDo: Populate this data onto the respective form
-            var feature = featureListViewModel.loadFeature(it)
-
+            featureListViewModel.loadFeature(it)
         }
 
+    }
+
+    private fun refreshFormData() {
+        Log.d(TAG, "Refreshing Form Data")
     }
 
     private fun saveForm() {
@@ -125,7 +132,7 @@ abstract class BaseFormFragment : DaggerFragment() {
 
                 var feature = Feature(null, gElement.id, "preaudit", gElement.dataType,
                         it, null, null, gElement.param, _gFormElement.valueAsString,
-                        null,null, date, date)
+                        null, null, date, date)
 
                 formData.add(feature)
 

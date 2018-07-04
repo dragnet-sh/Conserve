@@ -2,7 +2,6 @@ package com.gemini.energy.presentation.audit.detail.preaudit
 
 import android.app.Application
 import android.content.Context
-import android.databinding.ObservableArrayList
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.util.Log
@@ -10,14 +9,18 @@ import com.gemini.energy.R
 import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.domain.interactor.FeatureGetAllUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel
+import com.gemini.energy.internal.util.SingleLiveData
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 
 class PreAuditGetViewModel(context: Context, private val featureGetAllUseCase: FeatureGetAllUseCase) :
         BaseAndroidViewModel(context.applicationContext as Application) {
 
+    private val _status= SingleLiveData<Boolean>()
+    val status = _status
+
     val loading = ObservableBoolean()
-    val result = ObservableArrayList<Feature>()
+    var result: List<Feature> = listOf()
     val empty = ObservableBoolean()
     val error = ObservableField<String>()
 
@@ -33,12 +36,11 @@ class PreAuditGetViewModel(context: Context, private val featureGetAllUseCase: F
 
                     override fun onNext(t: List<Feature>) {
                         loading.set(false)
-                        result.clear()
-                        result.addAll(t)
+                        result = t
                         empty.set(t.isEmpty())
+                        status.value = true
 
-                        Log.d(TAG, "Loading Feature Data !!")
-                        Log.d(TAG, t.toString())
+                        Log.d(TAG, "ON-NEXT !!! \\m/")
                     }
 
                     override fun onError(e: Throwable) {
