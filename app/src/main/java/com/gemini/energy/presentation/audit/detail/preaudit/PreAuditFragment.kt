@@ -25,6 +25,7 @@ class PreAuditFragment : BaseFormFragment() {
      * */
     fun setAuditModel(auditModel: AuditModel) {
         this.auditModel = auditModel
+        super.loadForm()
     }
 
     companion object {

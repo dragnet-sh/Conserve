@@ -75,7 +75,7 @@ internal class DataModule {
 
     @Provides
     @Singleton
-    internal fun provideFeatureScopeMappeR() = FeatureMapper()
+    internal fun provideFeatureScopeMapper() = FeatureMapper()
 
 
     /*End of Mapper*/

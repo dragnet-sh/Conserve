@@ -11,6 +11,7 @@ import com.gemini.energy.R
 import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditCreateViewModel
+import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditGetViewModel
 import com.gemini.energy.presentation.form.FormBuilder
 import com.gemini.energy.presentation.form.FormMapper
 import com.gemini.energy.presentation.form.PickerInputRow
@@ -30,8 +31,12 @@ abstract class BaseFormFragment : DaggerFragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    private val featureViewModel by lazyThreadSafetyNone {
+    private val featureSaveViewModel by lazyThreadSafetyNone {
         ViewModelProviders.of(this, viewModelFactory).get(PreAuditCreateViewModel::class.java)
+    }
+
+    private val featureListViewModel by lazyThreadSafetyNone {
+        ViewModelProviders.of(this, viewModelFactory).get(PreAuditGetViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -71,8 +76,12 @@ abstract class BaseFormFragment : DaggerFragment() {
         formBuilder.refresh()
         formBuilder.addFormElements(elements)
 
+        getAuditId()?.let {
 
-        //ToDo: Query the Database and load the form
+            //ToDo: Populate this data onto the respective form
+            var feature = featureListViewModel.loadFeature(it)
+
+        }
 
     }
 
@@ -124,7 +133,7 @@ abstract class BaseFormFragment : DaggerFragment() {
 
         }
 
-        featureViewModel.createFeature(formData)
+        featureSaveViewModel.createFeature(formData)
 
     }
 

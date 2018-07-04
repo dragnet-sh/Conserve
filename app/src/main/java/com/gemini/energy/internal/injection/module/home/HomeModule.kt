@@ -4,11 +4,13 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import com.gemini.energy.domain.Schedulers
+import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.domain.gateway.AuditGateway
 import com.gemini.energy.domain.interactor.*
 import com.gemini.energy.internal.injection.scope.HomeScope
 import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditCreateViewModel
 import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditFragment
+import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditGetViewModel
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneCreateViewModel
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneDialogFragment
 import com.gemini.energy.presentation.audit.detail.zone.list.ZoneListFragment
@@ -138,6 +140,14 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideFeatureGetAllUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                FeatureGetAllUseCase {
+            return FeatureGetAllUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideViewModelFactory(
 
                 context: Context,
@@ -151,7 +161,8 @@ internal abstract class HomeModule {
                 zoneTypeGetAllUseCase: ZoneTypeGetAllUseCase,
                 zoneTypeSaveUseCase: ZoneTypeSaveUseCase,
 
-                featureSaveUseCase: FeatureSaveUseCase
+                featureSaveUseCase: FeatureSaveUseCase,
+                featureGetAllUseCase: FeatureGetAllUseCase
 
         ): ViewModelProvider.Factory {
 
@@ -180,6 +191,8 @@ internal abstract class HomeModule {
                         modelClass.isAssignableFrom(PreAuditCreateViewModel::class.java) ->
                             PreAuditCreateViewModel(context, featureSaveUseCase) as T
 
+                        modelClass.isAssignableFrom(PreAuditGetViewModel::class.java) ->
+                                PreAuditGetViewModel(context, featureGetAllUseCase) as T
 
                         else -> throw IllegalArgumentException("Unknown ViewModel class : ${modelClass.name}")
                     }
