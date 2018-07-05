@@ -69,14 +69,7 @@ abstract class BaseFormFragment : DaggerFragment() {
             elements.addAll(gFormBuilder.build(gMapSId[sectionId]!!, gForm[sectionId]!!))
         }
 
-        val button = FormButtonElement()
-        button.value = "SAVE"
-        button.enabled = true
-        button.valueObservers.add { _, _ ->
-            saveForm()
-        }
-
-        elements.add(button)
+        elements.add(btnSave())
         formBuilder.refresh()
         formBuilder.addFormElements(elements)
 
@@ -137,6 +130,17 @@ abstract class BaseFormFragment : DaggerFragment() {
         getAuditId()?.let {
             featureSaveViewModel.createFeature(formData, it)
         }
+    }
+
+    private fun btnSave(): FormButtonElement {
+        val button = FormButtonElement()
+        button.value = "SAVE"
+        button.enabled = true
+        button.valueObservers.add { _, _ ->
+            saveForm()
+        }
+
+        return button
     }
 
     private fun getFormElement(eBaseRowType: BaseRowType, id: Int): BaseFormElement<*> =
