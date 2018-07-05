@@ -21,9 +21,8 @@ import com.gemini.energy.presentation.util.BaseRowType
 import com.thejuki.kformmaster.helper.FormBuildHelper
 import com.thejuki.kformmaster.model.*
 import dagger.android.support.DaggerFragment
-import io.reactivex.rxkotlin.toObservable
 import kotlinx.android.synthetic.main.fragment_form.*
-import java.util.Date
+import java.util.*
 import javax.inject.Inject
 
 abstract class BaseFormFragment : DaggerFragment() {
@@ -89,7 +88,34 @@ abstract class BaseFormFragment : DaggerFragment() {
     }
 
     private fun refreshFormData() {
-        Log.d(TAG, "Refreshing Form Data")
+
+        val mappedFeatureById = featureListViewModel.result.associateBy { it.formId }
+        val mapper = FormMapper(context!!, resourceId())
+        val model = mapper.decodeJSON()
+        val formIds = mapper.sortedFormElementIds(model)
+        val gFormElements = mapper.mapIdToElements(model)
+
+        Log.d(TAG, mappedFeatureById.toString())
+
+        formIds.forEach {
+            val gElement = gFormElements[it] as GElements
+            val eBaseRowType = BaseRowType.get(gElement.dataType!!)
+
+            val _gFormElement = when (eBaseRowType) {
+                BaseRowType.TextRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
+                BaseRowType.DecimalRow -> formBuilder.getFormElement<FormNumberEditTextElement>(it)
+                BaseRowType.IntRow -> formBuilder.getFormElement<FormNumberEditTextElement>(it)
+                BaseRowType.EmailRow -> formBuilder.getFormElement<FormEmailEditTextElement>(it)
+                BaseRowType.PhoneRow -> formBuilder.getFormElement<FormPhoneEditTextElement>(it)
+                BaseRowType.PickerInputRow -> formBuilder.getFormElement<FormPickerDropDownElement<PickerInputRow.ListItem>>(it)
+                BaseRowType.TextAreaRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
+                else -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
+            }
+
+            _gFormElement.setValue(mappedFeatureById.getValue(it).valueString)
+
+        }
+
     }
 
     private fun saveForm() {
