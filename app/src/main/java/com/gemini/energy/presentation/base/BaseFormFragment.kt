@@ -95,27 +95,15 @@ abstract class BaseFormFragment : DaggerFragment() {
         val formIds = mapper.sortedFormElementIds(model)
         val gFormElements = mapper.mapIdToElements(model)
 
-        Log.d(TAG, mappedFeatureById.toString())
-
-        formIds.forEach {
-            val gElement = gFormElements[it] as GElements
+        formIds.forEach { id ->
+            val gElement = gFormElements[id] as GElements
             val eBaseRowType = BaseRowType.get(gElement.dataType!!)
 
-            val _gFormElement = when (eBaseRowType) {
-                BaseRowType.TextRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
-                BaseRowType.DecimalRow -> formBuilder.getFormElement<FormNumberEditTextElement>(it)
-                BaseRowType.IntRow -> formBuilder.getFormElement<FormNumberEditTextElement>(it)
-                BaseRowType.EmailRow -> formBuilder.getFormElement<FormEmailEditTextElement>(it)
-                BaseRowType.PhoneRow -> formBuilder.getFormElement<FormPhoneEditTextElement>(it)
-                BaseRowType.PickerInputRow -> formBuilder.getFormElement<FormPickerDropDownElement<PickerInputRow.ListItem>>(it)
-                BaseRowType.TextAreaRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
-                else -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
+            eBaseRowType?.let {
+                getFormElement(it, id)
+                        .setValue(mappedFeatureById.getValue(id).valueString)
             }
-
-            _gFormElement.setValue(mappedFeatureById.getValue(it).valueString)
-
         }
-
     }
 
     private fun saveForm() {
@@ -169,6 +157,18 @@ abstract class BaseFormFragment : DaggerFragment() {
         featureSaveViewModel.createFeature(formData)
 
     }
+
+    private fun getFormElement(eBaseRowType: BaseRowType, id: Int): BaseFormElement<*> =
+            when (eBaseRowType) {
+                BaseRowType.TextRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(id)
+                BaseRowType.DecimalRow -> formBuilder.getFormElement<FormNumberEditTextElement>(id)
+                BaseRowType.IntRow -> formBuilder.getFormElement<FormNumberEditTextElement>(id)
+                BaseRowType.EmailRow -> formBuilder.getFormElement<FormEmailEditTextElement>(id)
+                BaseRowType.PhoneRow -> formBuilder.getFormElement<FormPhoneEditTextElement>(id)
+                BaseRowType.PickerInputRow -> formBuilder.getFormElement<FormPickerDropDownElement<PickerInputRow.ListItem>>(id)
+                BaseRowType.TextAreaRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(id)
+            }
+
 
     abstract fun resourceId(): Int
     abstract fun getAuditId(): Int?
