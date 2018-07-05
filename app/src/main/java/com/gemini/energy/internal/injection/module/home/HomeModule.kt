@@ -9,6 +9,7 @@ import com.gemini.energy.domain.gateway.AuditGateway
 import com.gemini.energy.domain.interactor.*
 import com.gemini.energy.internal.injection.scope.HomeScope
 import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditCreateViewModel
+import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditDeleteViewModel
 import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditFragment
 import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditGetViewModel
 import com.gemini.energy.presentation.audit.detail.zone.dialog.ZoneCreateViewModel
@@ -148,6 +149,14 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideFeatureDeleteUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                FeatureDeleteUseCase {
+            return FeatureDeleteUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideViewModelFactory(
 
                 context: Context,
@@ -162,7 +171,9 @@ internal abstract class HomeModule {
                 zoneTypeSaveUseCase: ZoneTypeSaveUseCase,
 
                 featureSaveUseCase: FeatureSaveUseCase,
-                featureGetAllUseCase: FeatureGetAllUseCase
+                featureGetAllUseCase: FeatureGetAllUseCase,
+                featureDeleteUseCase: FeatureDeleteUseCase
+
 
         ): ViewModelProvider.Factory {
 
@@ -189,10 +200,14 @@ internal abstract class HomeModule {
                             TypeCreateViewModel(context, zoneTypeSaveUseCase) as T
 
                         modelClass.isAssignableFrom(PreAuditCreateViewModel::class.java) ->
-                            PreAuditCreateViewModel(context, featureSaveUseCase) as T
+                            PreAuditCreateViewModel(context, featureSaveUseCase,
+                                    featureGetAllUseCase, featureDeleteUseCase) as T
 
                         modelClass.isAssignableFrom(PreAuditGetViewModel::class.java) ->
                                 PreAuditGetViewModel(context, featureGetAllUseCase) as T
+
+                        modelClass.isAssignableFrom(PreAuditDeleteViewModel::class.java) ->
+                                PreAuditDeleteViewModel(context, featureDeleteUseCase) as T
 
                         else -> throw IllegalArgumentException("Unknown ViewModel class : ${modelClass.name}")
                     }

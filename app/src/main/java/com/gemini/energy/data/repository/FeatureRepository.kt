@@ -19,4 +19,9 @@ class FeatureRepository(
     fun save(feature: List<Feature>): Observable<Unit> {
         return featureLocalDataSource.save(featureMapper.toLocal(feature))
     }
+
+    fun delete(feature: List<Feature>): Observable<Unit> {
+        return featureLocalDataSource.delete(featureMapper.toLocal(feature))
+    }
+
 }

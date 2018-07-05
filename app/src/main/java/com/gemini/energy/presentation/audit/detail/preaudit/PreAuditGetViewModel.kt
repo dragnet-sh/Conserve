@@ -16,11 +16,8 @@ import io.reactivex.observers.DisposableObserver
 class PreAuditGetViewModel(context: Context, private val featureGetAllUseCase: FeatureGetAllUseCase) :
         BaseAndroidViewModel(context.applicationContext as Application) {
 
-    private val _status= SingleLiveData<Boolean>()
-    val status = _status
-
     val loading = ObservableBoolean()
-    var result: List<Feature> = listOf()
+    var result = SingleLiveData<List<Feature>>()
     val empty = ObservableBoolean()
     val error = ObservableField<String>()
 
@@ -36,10 +33,11 @@ class PreAuditGetViewModel(context: Context, private val featureGetAllUseCase: F
 
                     override fun onNext(t: List<Feature>) {
                         loading.set(false)
-                        result = t
+                        result.call()
+                        result.value = t
                         empty.set(t.isEmpty())
-                        status.value = true
 
+                        Log.d(TAG, t.toString())
                         Log.d(TAG, "ON-NEXT !!! \\m/")
                     }
 

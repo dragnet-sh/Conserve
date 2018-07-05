@@ -53,4 +53,8 @@ class AuditGatewayImpl(
 
     override fun saveFeature(feature: List<Feature>): Observable<Unit> = featureRepository.save(feature)
 
+    override fun deleteFeature(feature: List<Feature>): Observable<Unit> =
+            featureRepository.delete(feature)
+
+
 }

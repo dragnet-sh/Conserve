@@ -4,7 +4,6 @@ import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,10 +48,10 @@ abstract class BaseFormFragment : DaggerFragment() {
         this.formBuilder.attachRecyclerView(context!!, recyclerView, autoMeasureEnabled = true)
 
         loadForm()
-
-        featureListViewModel.status.observe(this, Observer {
-            refreshFormData()
-        })
+        featureListViewModel.result
+                .observe(this, Observer {
+                    refreshFormData(it)
+                })
     }
 
     fun loadForm() {
@@ -87,9 +86,9 @@ abstract class BaseFormFragment : DaggerFragment() {
 
     }
 
-    private fun refreshFormData() {
+    private fun refreshFormData(feature: List<Feature>?) {
 
-        val mappedFeatureById = featureListViewModel.result.associateBy { it.formId }
+        val mappedFeatureById = feature?.associateBy { it.formId }
         val mapper = FormMapper(context!!, resourceId())
         val model = mapper.decodeJSON()
         val formIds = mapper.sortedFormElementIds(model)
@@ -99,11 +98,13 @@ abstract class BaseFormFragment : DaggerFragment() {
             val gElement = gFormElements[id] as GElements
             val eBaseRowType = BaseRowType.get(gElement.dataType!!)
 
-            eBaseRowType?.let {
-                getFormElement(it, id)
-                        .setValue(mappedFeatureById.getValue(id).valueString)
+            if (mappedFeatureById?.containsKey(id) == true) {
+                eBaseRowType?.let {getFormElement(it, id).setValue(
+                        mappedFeatureById.getValue(id).valueString
+                )}
             }
         }
+
     }
 
     private fun saveForm() {
@@ -114,48 +115,28 @@ abstract class BaseFormFragment : DaggerFragment() {
         val gFormElements = mapper.mapIdToElements(model)
         val formData: MutableList<Feature> = mutableListOf()
 
-        Log.d(TAG, "----------------------------")
-        Log.d(TAG, "Audit Id")
-        Log.d(TAG, getAuditId().toString())
-        Log.d(TAG, "----------------------------")
-
-        formIds.forEach {
-            val gElement = gFormElements[it] as GElements
+        formIds.forEach { id ->
+            val gElement = gFormElements[id] as GElements
             val eBaseRowType = BaseRowType.get(gElement.dataType!!)
 
-            val _gFormElement = when (eBaseRowType) {
-                BaseRowType.TextRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
-                BaseRowType.DecimalRow -> formBuilder.getFormElement<FormNumberEditTextElement>(it)
-                BaseRowType.IntRow -> formBuilder.getFormElement<FormNumberEditTextElement>(it)
-                BaseRowType.EmailRow -> formBuilder.getFormElement<FormEmailEditTextElement>(it)
-                BaseRowType.PhoneRow -> formBuilder.getFormElement<FormPhoneEditTextElement>(it)
-                BaseRowType.PickerInputRow -> formBuilder.getFormElement<FormPickerDropDownElement<PickerInputRow.ListItem>>(it)
-                BaseRowType.TextAreaRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
-                else -> formBuilder.getFormElement<FormSingleLineEditTextElement>(it)
-            }
+            eBaseRowType?.let { type ->
+                val gFormElement = getFormElement(type, id)
 
-            Log.d(TAG, gElement.param)
-            Log.d(TAG, _gFormElement.value.toString())
-            Log.d(TAG, gElement.dataType)
-            Log.d(TAG, gElement.id.toString())
-            Log.d(TAG, "*****")
+                val date = Date()
+                getAuditId()?.let {
+                    val feature = Feature(null, gElement.id, "preaudit", gElement.dataType,
+                            it, null, null, gElement.param, gFormElement.valueAsString,
+                            null, null, date, date)
 
-            val date = Date()
-
-            getAuditId()?.let {
-
-                var feature = Feature(null, gElement.id, "preaudit", gElement.dataType,
-                        it, null, null, gElement.param, _gFormElement.valueAsString,
-                        null, null, date, date)
-
-                formData.add(feature)
-
+                    formData.add(feature)
+                }
             }
 
         }
 
-        featureSaveViewModel.createFeature(formData)
-
+        getAuditId()?.let {
+            featureSaveViewModel.createFeature(formData, it)
+        }
     }
 
     private fun getFormElement(eBaseRowType: BaseRowType, id: Int): BaseFormElement<*> =
@@ -168,7 +149,6 @@ abstract class BaseFormFragment : DaggerFragment() {
                 BaseRowType.PickerInputRow -> formBuilder.getFormElement<FormPickerDropDownElement<PickerInputRow.ListItem>>(id)
                 BaseRowType.TextAreaRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(id)
             }
-
 
     abstract fun resourceId(): Int
     abstract fun getAuditId(): Int?

@@ -12,4 +12,8 @@ class FeatureLocalDataSource(private val featureDao: FeatureDao) {
         featureDao.insert(feature)
     }
 
+    fun delete(feature: List<FeatureLocalModel>): Observable<Unit> = Observable.fromCallable {
+        featureDao.deleteByType(feature)
+    }
+
 }
