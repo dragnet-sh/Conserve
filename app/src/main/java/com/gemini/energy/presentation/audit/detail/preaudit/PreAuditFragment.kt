@@ -32,7 +32,7 @@ class PreAuditFragment : BaseFormFragment() {
      * Utility Methods for the Base Class
      * */
     override fun resourceId(): Int? {
-        return R.raw.preaudit_sample
+        return R.raw.preaudit
     }
 
     override fun getAuditId(): Int? {
