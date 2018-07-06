@@ -7,16 +7,23 @@ import com.gemini.energy.R
 import com.gemini.energy.data.local.model.AuditLocalModel
 import com.gemini.energy.data.local.model.ZoneLocalModel
 import com.gemini.energy.domain.entity.Feature
+import com.gemini.energy.presentation.audit.AuditActivity
+import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditFragment
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseFormFragment
+import com.gemini.energy.presentation.form.model.GElements
 import com.gemini.energy.presentation.type.SharedViewModel
 import com.gemini.energy.presentation.type.list.model.TypeModel
 import com.gemini.energy.presentation.util.EApplianceType
 import com.gemini.energy.presentation.util.EZoneType
+import com.thejuki.kformmaster.model.BaseFormElement
+import java.util.*
 
 class FeatureDataFragment : BaseFormFragment() {
 
     private lateinit var sharedViewModel: SharedViewModel
     private var typeModel: TypeModel? = null
+    private var auditModel: AuditModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,6 +65,7 @@ class FeatureDataFragment : BaseFormFragment() {
         }
 
         private const val TAG = "FeatureDataFragment"
+        private const val belongsTo = "none"
     }
 
     override fun getAuditId(): Int? {
@@ -72,4 +80,15 @@ class FeatureDataFragment : BaseFormFragment() {
     override fun executeListeners() {}
     override fun createFeatureData(formData: MutableList<Feature>) {}
 
+    override fun buildFeature(gElement: GElements, gFormElement: BaseFormElement<*>): Feature? {
+        var feature: Feature? = null
+        val date = Date()
+        auditModel?.let {
+            feature = Feature(null, gElement.id, belongsTo, gElement.dataType,
+                    it.id, null, null, gElement.param, gFormElement.valueAsString,
+                    null, null, date, date)
+        }
+
+        return feature
+    }
 }

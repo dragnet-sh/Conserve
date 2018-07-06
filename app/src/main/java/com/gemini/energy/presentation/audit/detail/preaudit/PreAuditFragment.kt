@@ -8,6 +8,9 @@ import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseFormFragment
+import com.gemini.energy.presentation.form.model.GElements
+import com.thejuki.kformmaster.model.BaseFormElement
+import java.util.*
 import javax.inject.Inject
 
 class PreAuditFragment : BaseFormFragment() {
@@ -63,6 +66,21 @@ class PreAuditFragment : BaseFormFragment() {
     }
 
     /**
+     * Feature Builder - ToDo: If this gets complex create a Feature Factory Builder
+     * */
+    override fun buildFeature(gElement: GElements, gFormElement: BaseFormElement<*>): Feature? {
+        var feature: Feature? = null
+        val date = Date()
+        auditModel?.let {
+            feature = Feature(null, gElement.id, BELONGS_TO, gElement.dataType,
+                    it.id, null, null, gElement.param, gFormElement.valueAsString,
+                    null, null, date, date)
+        }
+
+        return feature
+    }
+
+    /**
      * Audit Model gets Set Via Audit Activity
      * */
     fun setAuditModel(auditModel: AuditModel) {
@@ -76,6 +94,7 @@ class PreAuditFragment : BaseFormFragment() {
         }
 
         private const val TAG = "PreAuditFragment"
+        private const val BELONGS_TO = "preaudit"
     }
 
 }
