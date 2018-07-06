@@ -6,6 +6,7 @@ import android.os.Bundle
 import com.gemini.energy.R
 import com.gemini.energy.data.local.model.AuditLocalModel
 import com.gemini.energy.data.local.model.ZoneLocalModel
+import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.presentation.base.BaseFormFragment
 import com.gemini.energy.presentation.type.SharedViewModel
 import com.gemini.energy.presentation.type.list.model.TypeModel
@@ -66,4 +67,9 @@ class FeatureDataFragment : BaseFormFragment() {
     override fun getZoneId(): Int? {
         return null
     }
+
+    override fun loadFeatureData() {}
+    override fun executeListeners() {}
+    override fun createFeatureData(formData: MutableList<Feature>) {}
+
 }

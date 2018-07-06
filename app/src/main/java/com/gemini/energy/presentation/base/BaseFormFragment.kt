@@ -1,17 +1,11 @@
 package com.gemini.energy.presentation.base
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.gemini.energy.R
 import com.gemini.energy.domain.entity.Feature
-import com.gemini.energy.internal.util.lazyThreadSafetyNone
-import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditCreateViewModel
-import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditGetViewModel
 import com.gemini.energy.presentation.form.FormBuilder
 import com.gemini.energy.presentation.form.FormMapper
 import com.gemini.energy.presentation.form.PickerInputRow
@@ -22,22 +16,10 @@ import com.thejuki.kformmaster.model.*
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_form.*
 import java.util.*
-import javax.inject.Inject
 
 abstract class BaseFormFragment : DaggerFragment() {
 
     private lateinit var formBuilder: FormBuildHelper
-
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private val featureSaveViewModel by lazyThreadSafetyNone {
-        ViewModelProviders.of(this, viewModelFactory).get(PreAuditCreateViewModel::class.java)
-    }
-
-    private val featureListViewModel by lazyThreadSafetyNone {
-        ViewModelProviders.of(this, viewModelFactory).get(PreAuditGetViewModel::class.java)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_form, container, false)
@@ -48,10 +30,8 @@ abstract class BaseFormFragment : DaggerFragment() {
         this.formBuilder.attachRecyclerView(context!!, recyclerView, autoMeasureEnabled = true)
 
         loadForm()
-        featureListViewModel.result
-                .observe(this, Observer {
-                    refreshFormData(it)
-                })
+        executeListeners()
+
     }
 
     fun loadForm() {
@@ -73,13 +53,11 @@ abstract class BaseFormFragment : DaggerFragment() {
         formBuilder.refresh()
         formBuilder.addFormElements(elements)
 
-        getAuditId()?.let {
-            featureListViewModel.loadFeature(it)
-        }
+        loadFeatureData()
 
     }
 
-    private fun refreshFormData(feature: List<Feature>?) {
+    protected fun refreshFormData(feature: List<Feature>?) {
 
         val mappedFeatureById = feature?.associateBy { it.formId }
         val mapper = FormMapper(context!!, resourceId())
@@ -115,6 +93,7 @@ abstract class BaseFormFragment : DaggerFragment() {
             eBaseRowType?.let { type ->
                 val gFormElement = getFormElement(type, id)
 
+                //ToDo: Make this better !!
                 val date = Date()
                 getAuditId()?.let {
                     val feature = Feature(null, gElement.id, "preaudit", gElement.dataType,
@@ -127,9 +106,7 @@ abstract class BaseFormFragment : DaggerFragment() {
 
         }
 
-        getAuditId()?.let {
-            featureSaveViewModel.createFeature(formData, it)
-        }
+        createFeatureData(formData)
     }
 
     private fun btnSave(): FormButtonElement {
@@ -143,6 +120,7 @@ abstract class BaseFormFragment : DaggerFragment() {
         return button
     }
 
+    //ToDo: Move this to utility *** Will be required during Energy Calculations ***
     private fun getFormElement(eBaseRowType: BaseRowType, id: Int): BaseFormElement<*> =
             when (eBaseRowType) {
                 BaseRowType.TextRow -> formBuilder.getFormElement<FormSingleLineEditTextElement>(id)
@@ -157,6 +135,10 @@ abstract class BaseFormFragment : DaggerFragment() {
     abstract fun resourceId(): Int
     abstract fun getAuditId(): Int?
     abstract fun getZoneId(): Int?
+
+    abstract fun loadFeatureData()
+    abstract fun executeListeners()
+    abstract fun createFeatureData(formData: MutableList<Feature>)
 
     companion object {
         private const val TAG = "BaseFormFragment"
