@@ -35,6 +35,9 @@ abstract class BaseFormFragment : DaggerFragment() {
     }
 
     fun loadForm() {
+
+        if (resourceId() == -1) return
+
         val elements: MutableList<BaseFormElement<*>> = mutableListOf()
         val gFormBuilder = FormBuilder()
         val gForm = getFormMapper().mapSectionIdsToElements(getModel())
@@ -98,7 +101,7 @@ abstract class BaseFormFragment : DaggerFragment() {
     private fun getFormIds() = getFormMapper().sortedFormElementIds(getModel())
     private fun getGFormElements() = getFormMapper().mapIdToElements(getModel())
 
-    abstract fun resourceId(): Int
+    abstract fun resourceId(): Int?
     abstract fun getAuditId(): Int?
     abstract fun getZoneId(): Int?
 

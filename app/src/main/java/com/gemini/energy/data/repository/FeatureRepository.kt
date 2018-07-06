@@ -16,6 +16,10 @@ class FeatureRepository(
         return featureLocalDataSource.getAllByAudit(id)
     }
 
+    fun getAllByType(id: Int): Observable<List<FeatureLocalModel>> {
+        return featureLocalDataSource.getAllByType(id)
+    }
+
     fun save(feature: List<Feature>): Observable<Unit> {
         return featureLocalDataSource.save(featureMapper.toLocal(feature))
     }

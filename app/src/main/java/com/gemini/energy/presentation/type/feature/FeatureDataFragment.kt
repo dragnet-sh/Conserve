@@ -1,15 +1,12 @@
 package com.gemini.energy.presentation.type.feature
 
 import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import com.gemini.energy.R
-import com.gemini.energy.data.local.model.AuditLocalModel
-import com.gemini.energy.data.local.model.ZoneLocalModel
 import com.gemini.energy.domain.entity.Feature
-import com.gemini.energy.presentation.audit.AuditActivity
-import com.gemini.energy.presentation.audit.detail.preaudit.PreAuditFragment
-import com.gemini.energy.presentation.audit.list.model.AuditModel
+import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.base.BaseFormFragment
 import com.gemini.energy.presentation.form.model.GElements
 import com.gemini.energy.presentation.type.SharedViewModel
@@ -18,12 +15,23 @@ import com.gemini.energy.presentation.util.EApplianceType
 import com.gemini.energy.presentation.util.EZoneType
 import com.thejuki.kformmaster.model.BaseFormElement
 import java.util.*
+import javax.inject.Inject
 
 class FeatureDataFragment : BaseFormFragment() {
 
     private lateinit var sharedViewModel: SharedViewModel
     private var typeModel: TypeModel? = null
-    private var auditModel: AuditModel? = null
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val featureSaveViewModel by lazyThreadSafetyNone {
+        ViewModelProviders.of(this, viewModelFactory).get(FeatureCreateViewModel::class.java)
+    }
+
+    private val featureListViewModel by lazyThreadSafetyNone {
+        ViewModelProviders.of(this, viewModelFactory).get(FeatureGetViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +43,9 @@ class FeatureDataFragment : BaseFormFragment() {
                 })
     }
 
-    override fun resourceId(): Int {
+    override fun resourceId(): Int? {
 
-        var rawId: Int = R.raw.preaudit_sample
+        var rawId: Int = -1
 
         typeModel?.let { model ->
             if (model.type == EZoneType.Plugload.value) {
@@ -59,13 +67,12 @@ class FeatureDataFragment : BaseFormFragment() {
     }
 
     companion object {
-
         fun newInstance(): FeatureDataFragment {
             return FeatureDataFragment()
         }
 
         private const val TAG = "FeatureDataFragment"
-        private const val belongsTo = "none"
+        private const val belongsTo = "type"
     }
 
     override fun getAuditId(): Int? {
@@ -76,16 +83,31 @@ class FeatureDataFragment : BaseFormFragment() {
         return null
     }
 
-    override fun loadFeatureData() {}
-    override fun executeListeners() {}
-    override fun createFeatureData(formData: MutableList<Feature>) {}
+    override fun executeListeners() {
+        featureListViewModel.result
+                .observe(this, Observer {
+                    super.refreshFormData(it)
+                })
+    }
+
+    override fun loadFeatureData() {
+        typeModel?.let {
+            featureListViewModel.loadFeature(it.id!!)
+        }
+    }
+
+    override fun createFeatureData(formData: MutableList<Feature>) {
+        typeModel?.let {
+            featureSaveViewModel.createFeature(formData, it.id!!)
+        }
+    }
 
     override fun buildFeature(gElement: GElements, gFormElement: BaseFormElement<*>): Feature? {
         var feature: Feature? = null
         val date = Date()
-        auditModel?.let {
+        typeModel?.let {
             feature = Feature(null, gElement.id, belongsTo, gElement.dataType,
-                    it.id, null, null, gElement.param, gFormElement.valueAsString,
+                    null, null, it.id, gElement.param, gFormElement.valueAsString,
                     null, null, date, date)
         }
 

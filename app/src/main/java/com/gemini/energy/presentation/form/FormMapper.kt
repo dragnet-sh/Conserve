@@ -7,21 +7,22 @@ import com.gemini.energy.presentation.form.model.GElements
 import com.gemini.energy.presentation.form.model.GEnergyFormModel
 import com.squareup.moshi.Moshi
 
-class FormMapper(private val context: Context, private val rawId: Int) {
+class FormMapper(private val context: Context, private val rawId: Int?) {
 
     companion object {
         private const val TAG = "FormElementMapper"
     }
 
     fun decodeJSON(): GEnergyFormModel? {
+        var formModel: GEnergyFormModel? = null
 
-        val json = context.resources.openRawResource(rawId)
+        if (rawId == -1) return null
+
+        val json = context.resources.openRawResource(rawId!!)
                 .bufferedReader().use { it.readText() }
 
         val moshi = Moshi.Builder().build()
         val jsonAdapter = moshi.adapter<GEnergyFormModel>(GEnergyFormModel::class.java)
-
-        var formModel: GEnergyFormModel? = null
 
         try {
             formModel = jsonAdapter.fromJson(json)
@@ -30,7 +31,6 @@ class FormMapper(private val context: Context, private val rawId: Int) {
         }
 
         return formModel
-
     }
 
     fun mapSectionIdsToElements(model: GEnergyFormModel?) = Mapper(model).mapSIdToGElements

@@ -51,6 +51,10 @@ class AuditGatewayImpl(
             featureRepository.getAllByAudit(auditId)
                     .map { it.map { mapper.toEntity(it) } }
 
+    override fun getFeatureByType(zoneId: Int): Observable<List<Feature>> =
+            featureRepository.getAllByType(zoneId)
+                    .map { it.map { mapper.toEntity(it) } }
+
     override fun saveFeature(feature: List<Feature>): Observable<Unit> = featureRepository.save(feature)
 
     override fun deleteFeature(feature: List<Feature>): Observable<Unit> =

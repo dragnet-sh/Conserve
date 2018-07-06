@@ -25,7 +25,9 @@ import com.gemini.energy.presentation.base.Crossfader
 import com.gemini.energy.presentation.base.GmailStyleCrossFadeSlidingPaneLayout
 import com.gemini.energy.presentation.util.Navigator
 import com.gemini.energy.presentation.type.dialog.TypeCreateViewModel
+import com.gemini.energy.presentation.type.feature.FeatureCreateViewModel
 import com.gemini.energy.presentation.type.feature.FeatureDataFragment
+import com.gemini.energy.presentation.type.feature.FeatureGetViewModel
 import com.gemini.energy.presentation.type.list.TypeListFragment
 import com.gemini.energy.presentation.type.list.TypeListViewModel
 import com.mobsandgeeks.saripaar.Validator
@@ -149,6 +151,14 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideFeatureGetAllByTypeUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                FeatureGetAllByTypeUseCase {
+            return FeatureGetAllByTypeUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideFeatureDeleteUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 FeatureDeleteUseCase {
             return FeatureDeleteUseCase(schedulers, auditGateway)
@@ -172,6 +182,7 @@ internal abstract class HomeModule {
 
                 featureSaveUseCase: FeatureSaveUseCase,
                 featureGetAllUseCase: FeatureGetAllUseCase,
+                featureGetAllByTypeUseCase: FeatureGetAllByTypeUseCase,
                 featureDeleteUseCase: FeatureDeleteUseCase
 
 
@@ -208,6 +219,13 @@ internal abstract class HomeModule {
 
                         modelClass.isAssignableFrom(PreAuditDeleteViewModel::class.java) ->
                                 PreAuditDeleteViewModel(context, featureDeleteUseCase) as T
+
+                        modelClass.isAssignableFrom(FeatureCreateViewModel::class.java) ->
+                                FeatureCreateViewModel(context, featureSaveUseCase,
+                                        featureGetAllByTypeUseCase, featureDeleteUseCase) as T
+
+                        modelClass.isAssignableFrom(FeatureGetViewModel::class.java) ->
+                                FeatureGetViewModel(context, featureGetAllByTypeUseCase) as T
 
                         else -> throw IllegalArgumentException("Unknown ViewModel class : ${modelClass.name}")
                     }

@@ -13,6 +13,9 @@ interface FeatureDao {
     @Query("SELECT * FROM feature WHERE audit_id = :id")
     fun getAllByAudit(id: Int): Maybe<List<FeatureLocalModel>>
 
+    @Query("SELECT * FROM feature WHERE type_id = :id")
+    fun getAllByType(id: Int): Maybe<List<FeatureLocalModel>>
+
     @Delete
     fun deleteByType(feature: List<FeatureLocalModel>)
 
