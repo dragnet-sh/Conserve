@@ -9,12 +9,9 @@ class EnergyService {
         return Observable.just(listOf())
     }
 
-
     // ** Computable Generator Factory gives me a list of IComputable ** //
 
     // ** Type 1 Service - Emits :: Single Row of Computed Data
     // ** Type 2 Service - Emits :: List of Computed Data
-
-
 
 }
