@@ -53,6 +53,7 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_create_audit -> consume { showCreateAudit() }
+        R.id.menu_energy_calculation -> consume {  }
         else -> super.onOptionsItemSelected(item)
     }
 

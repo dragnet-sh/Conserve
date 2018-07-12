@@ -6,4 +6,9 @@
         android:title="@string/menu_create_audit"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/menu_energy_calculation"
+        android:title="Crunch"
+        app:showAsAction="always" />
+
 </menu>
