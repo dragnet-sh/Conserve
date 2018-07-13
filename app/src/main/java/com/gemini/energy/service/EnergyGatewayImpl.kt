@@ -4,13 +4,13 @@ import com.gemini.energy.domain.entity.Audit
 import com.gemini.energy.domain.gateway.AuditGateway
 import com.gemini.energy.domain.gateway.EnergyGateway
 import io.reactivex.Observable
+import io.reactivex.disposables.Disposable
 
 class EnergyGatewayImpl(
         private val service: EnergyService,
-        private val auditGateway: AuditGateway,
         private val uploader: IUploader) : EnergyGateway {
 
-    override fun compute(audit: Audit, auditGateway: AuditGateway): Observable<List<OutgoingRows>> {
+    override fun compute(audit: Audit, auditGateway: AuditGateway): Disposable {
         return service.crunch()
     }
 

@@ -1,4 +1,4 @@
 package com.gemini.energy.service
 
-class EnergyBase {
+open class EnergyBase {
 }

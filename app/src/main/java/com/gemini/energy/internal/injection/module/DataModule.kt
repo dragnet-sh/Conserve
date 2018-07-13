@@ -2,20 +2,11 @@ package com.gemini.energy.internal.injection.module
 
 import android.content.Context
 import com.gemini.energy.data.gateway.AuditGatewayImpl
-import com.gemini.energy.data.local.AuditLocalDataSource
-import com.gemini.energy.data.local.FeatureLocalDataSource
-import com.gemini.energy.data.local.TypeLocalDataSource
-import com.gemini.energy.data.local.ZoneLocalDataSource
-import com.gemini.energy.data.local.dao.AuditDao
-import com.gemini.energy.data.local.dao.FeatureDao
-import com.gemini.energy.data.local.dao.TypeDao
-import com.gemini.energy.data.local.dao.ZoneDao
+import com.gemini.energy.data.local.*
+import com.gemini.energy.data.local.dao.*
 import com.gemini.energy.data.local.system.AuditDatabase
 import com.gemini.energy.data.remote.*
-import com.gemini.energy.data.repository.AuditRepository
-import com.gemini.energy.data.repository.FeatureRepository
-import com.gemini.energy.data.repository.TypeRepository
-import com.gemini.energy.data.repository.ZoneRepository
+import com.gemini.energy.data.repository.*
 import com.gemini.energy.data.repository.mapper.AuditMapper
 import com.gemini.energy.data.repository.mapper.FeatureMapper
 import com.gemini.energy.data.repository.mapper.TypeMapper
@@ -52,6 +43,10 @@ internal class DataModule {
     @Provides
     @Singleton
     internal fun provideFeatureDao(auditDatabase: AuditDatabase): FeatureDao = auditDatabase.featureDao()
+
+    @Provides
+    @Singleton
+    internal fun provideComputableDao(auditDatabase: AuditDatabase): ComputableDao = auditDatabase.computableDao()
 
     /*End of DAO*/
 
@@ -130,6 +125,12 @@ internal class DataModule {
     internal fun provideFeatureLocalDataSource(featureDao: FeatureDao) =
             FeatureLocalDataSource(featureDao)
 
+
+    @Provides
+    @Singleton
+    internal fun provideComputableLocalDataSource(computableDao: ComputableDao) =
+            ComputableLocalDataSource(computableDao)
+
     /*End of Local Data Source*/
 
 
@@ -167,6 +168,12 @@ internal class DataModule {
                                           featureMapper: FeatureMapper) =
             FeatureRepository(featureLocalDataSource, featureRemoteDataSource, featureMapper)
 
+
+    @Provides
+    @Singleton
+    internal fun provideComputableRepository(computableLocalDataSource: ComputableLocalDataSource) =
+            ComputableRepository(computableLocalDataSource)
+
     /*End of Repository*/
 
 
@@ -176,7 +183,13 @@ internal class DataModule {
             auditRepository: AuditRepository,
             zoneRepository: ZoneRepository,
             auditTypeRepository: TypeRepository,
-            featureRepository: FeatureRepository): AuditGateway {
-        return AuditGatewayImpl(auditRepository, zoneRepository, auditTypeRepository, featureRepository)
+            featureRepository: FeatureRepository,
+            computableRepository: ComputableRepository): AuditGateway {
+        return AuditGatewayImpl(
+                auditRepository,
+                zoneRepository,
+                auditTypeRepository,
+                featureRepository,
+                computableRepository)
     }
 }

@@ -5,10 +5,7 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
-import com.gemini.energy.data.local.dao.AuditDao
-import com.gemini.energy.data.local.dao.FeatureDao
-import com.gemini.energy.data.local.dao.TypeDao
-import com.gemini.energy.data.local.dao.ZoneDao
+import com.gemini.energy.data.local.dao.*
 import com.gemini.energy.data.local.model.AuditLocalModel
 import com.gemini.energy.data.local.model.FeatureLocalModel
 import com.gemini.energy.data.local.model.TypeLocalModel
@@ -35,6 +32,7 @@ abstract class AuditDatabase : RoomDatabase() {
     abstract fun zoneDao(): ZoneDao
     abstract fun auditScopeDao(): TypeDao
     abstract fun featureDao(): FeatureDao
+    abstract fun computableDao(): ComputableDao
 
     companion object {
         fun newInstance(context: Context): AuditDatabase {

@@ -56,4 +56,17 @@ class SystemMapper {
             feature.updatedAt
     )
 
+    fun toEntity(computable: ComputableLocalModel) = Computable(
+            computable.auditId,
+            computable.auditName,
+
+            computable.zoneId,
+            computable.zoneName,
+
+            computable.auditScopeId,
+            computable.auditScopeName,
+            computable.auditScopeType,
+            computable.auditScopeSubType
+    )
+
 }

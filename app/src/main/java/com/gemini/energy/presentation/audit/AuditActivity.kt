@@ -3,7 +3,6 @@ package com.gemini.energy.presentation.audit
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
@@ -17,6 +16,7 @@ import com.gemini.energy.presentation.audit.list.AuditListFragment
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.Navigator
+import com.gemini.energy.service.EnergyService
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -27,6 +27,9 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
 
     @Inject
     lateinit var navigator: Navigator
+
+    @Inject
+    lateinit var energyService: EnergyService
 
     private lateinit var sharedViewModel: SharedViewModel
 
@@ -53,7 +56,9 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_create_audit -> consume { showCreateAudit() }
-        R.id.menu_energy_calculation -> consume {  }
+        R.id.menu_energy_calculation -> consume {
+            disposables.add(energyService.crunch())
+        }
         else -> super.onOptionsItemSelected(item)
     }
 

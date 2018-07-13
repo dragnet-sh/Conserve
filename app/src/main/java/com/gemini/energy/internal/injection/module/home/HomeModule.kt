@@ -30,6 +30,8 @@ import com.gemini.energy.presentation.type.feature.FeatureDataFragment
 import com.gemini.energy.presentation.type.feature.FeatureGetViewModel
 import com.gemini.energy.presentation.type.list.TypeListFragment
 import com.gemini.energy.presentation.type.list.TypeListViewModel
+import com.gemini.energy.service.ComputableFactory
+import com.gemini.energy.service.EnergyService
 import com.mobsandgeeks.saripaar.Validator
 import dagger.Module
 import dagger.Provides
@@ -163,6 +165,28 @@ internal abstract class HomeModule {
                 FeatureDeleteUseCase {
             return FeatureDeleteUseCase(schedulers, auditGateway)
         }
+
+
+        //**** Computable Injection **** //
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideComputableFactory(): ComputableFactory {
+            return ComputableFactory()
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideEnergyService(schedulers: Schedulers, auditGateway: AuditGateway,
+                                          computableFactory: ComputableFactory): EnergyService {
+            return EnergyService(schedulers, auditGateway, computableFactory)
+        }
+
+        //**** End :: Computable Injection **** //
+
+
 
         @HomeScope
         @Provides
