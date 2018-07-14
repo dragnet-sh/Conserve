@@ -19,23 +19,26 @@ import com.gemini.energy.service.device.plugload.*
 // ** Type 2 Service - Emits :: List of Computable Data
 
 abstract class ComputableFactory {
-    abstract fun build(computable: Computable<*>): IComputable
+    abstract fun build(): IComputable
 
     companion object {
-        inline fun createFactory(computable: Computable<*>): ComputableFactory =
-                when (computable.auditScopeType as EZoneType) {
-                    EZoneType.Plugload              -> PlugloadFactory()
-                    EZoneType.HVAC                  -> HvacFactory()
-                    EZoneType.Lighting              -> LightingFactory()
-                    EZoneType.Motors                -> MotorFactory()
-                    EZoneType.Others                -> GeneralFactory()
-                }
+        lateinit var _computable: Computable<*>
+        inline fun createFactory(computable: Computable<*>): ComputableFactory {
+            _computable = computable
+            return when (computable.auditScopeType as EZoneType) {
+                EZoneType.Plugload -> PlugloadFactory()
+                EZoneType.HVAC -> HvacFactory()
+                EZoneType.Lighting -> LightingFactory()
+                EZoneType.Motors -> MotorFactory()
+                EZoneType.Others -> GeneralFactory()
+            }
+       }
     }
 }
 
 class PlugloadFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>): IComputable {
-        return when(computable.auditScopeSubType as EApplianceType) {
+    override fun build(): IComputable {
+        return when(_computable.auditScopeSubType as EApplianceType) {
             EApplianceType.CombinationOven          -> CombinationOven()
             EApplianceType.ConvectionOven           -> ConvectionOven()
             EApplianceType.ConveyorOven             -> ConveyorOven()
@@ -49,8 +52,8 @@ class PlugloadFactory : ComputableFactory() {
 }
 
 class LightingFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>): IComputable {
-        return when(computable.auditScopeSubType as ELightingType) {
+    override fun build(): IComputable {
+        return when(_computable.auditScopeSubType as ELightingType) {
             ELightingType.CFL                       -> Cfl()
             ELightingType.Halogen                   -> Halogen()
             ELightingType.Incandescent              -> Incandescent()
@@ -60,13 +63,13 @@ class LightingFactory : ComputableFactory() {
 }
 
 class HvacFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>) = Hvac()
+    override fun build() = Hvac()
 }
 
 class MotorFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>) = Motors()
+    override fun build() = Motors()
 }
 
 class GeneralFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>) = General()
+    override fun build() = General()
 }
