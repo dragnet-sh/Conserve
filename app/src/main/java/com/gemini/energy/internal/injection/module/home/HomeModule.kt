@@ -172,20 +172,12 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
-        internal fun provideComputableFactory(): ComputableFactory {
-            return ComputableFactory()
-        }
-
-        @HomeScope
-        @Provides
-        @JvmStatic
-        internal fun provideEnergyService(schedulers: Schedulers, auditGateway: AuditGateway,
-                                          computableFactory: ComputableFactory): EnergyService {
-            return EnergyService(schedulers, auditGateway, computableFactory)
+        internal fun provideEnergyService(schedulers: Schedulers, auditGateway: AuditGateway):
+                EnergyService {
+            return EnergyService(schedulers, auditGateway)
         }
 
         //**** End :: Computable Injection **** //
-
 
 
         @HomeScope
@@ -239,17 +231,17 @@ internal abstract class HomeModule {
                                     featureGetAllUseCase, featureDeleteUseCase) as T
 
                         modelClass.isAssignableFrom(PreAuditGetViewModel::class.java) ->
-                                PreAuditGetViewModel(context, featureGetAllUseCase) as T
+                            PreAuditGetViewModel(context, featureGetAllUseCase) as T
 
                         modelClass.isAssignableFrom(PreAuditDeleteViewModel::class.java) ->
-                                PreAuditDeleteViewModel(context, featureDeleteUseCase) as T
+                            PreAuditDeleteViewModel(context, featureDeleteUseCase) as T
 
                         modelClass.isAssignableFrom(FeatureCreateViewModel::class.java) ->
-                                FeatureCreateViewModel(context, featureSaveUseCase,
-                                        featureGetAllByTypeUseCase, featureDeleteUseCase) as T
+                            FeatureCreateViewModel(context, featureSaveUseCase,
+                                    featureGetAllByTypeUseCase, featureDeleteUseCase) as T
 
                         modelClass.isAssignableFrom(FeatureGetViewModel::class.java) ->
-                                FeatureGetViewModel(context, featureGetAllByTypeUseCase) as T
+                            FeatureGetViewModel(context, featureGetAllByTypeUseCase) as T
 
                         else -> throw IllegalArgumentException("Unknown ViewModel class : ${modelClass.name}")
                     }
