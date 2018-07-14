@@ -56,7 +56,7 @@ class AuditGatewayImpl(
 
 
     /*Computable*/
-    override fun getComputable(): Observable<List<Computable>> =
+    override fun getComputable(): Observable<List<Computable<*>>> =
         computableRepository.getAllComputable()
                 .map { it.map { mapper.toEntity(it) } }
 

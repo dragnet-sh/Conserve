@@ -18,5 +18,5 @@ interface AuditGateway {
     fun saveFeature(feature: List<Feature>): Observable<Unit>
     fun deleteFeature(feature: List<Feature>): Observable<Unit>
 
-    fun getComputable(): Observable<List<Computable>>
+    fun getComputable(): Observable<List<Computable<*>>>
 }
