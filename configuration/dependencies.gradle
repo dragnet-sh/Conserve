@@ -28,7 +28,6 @@ ext {
     saripaarVersion = '2.0.3'
     moshiVersion = '1.6.0'
     okHttp = '3.10.0'
-    parse = '1.17.3'
 
     presentationKaptDependencies = [
             "android.arch.lifecycle:compiler:$lifecycleVersion",
@@ -62,8 +61,7 @@ ext {
             "android.arch.persistence.room:runtime:$roomVersion",
             "android.arch.persistence.room:rxjava2:$roomVersion",
 
-            "com.squareup.okhttp3:okhttp:$okHttp",
-            "com.parse:parse-android:$parse"
+            "com.squareup.okhttp3:okhttp:$okHttp"
 
     ]
 
