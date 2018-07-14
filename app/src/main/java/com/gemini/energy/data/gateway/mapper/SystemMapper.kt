@@ -1,7 +1,11 @@
 package com.gemini.energy.data.gateway.mapper
 
+import android.util.Log
 import com.gemini.energy.data.local.model.*
 import com.gemini.energy.domain.entity.*
+import com.gemini.energy.presentation.util.EApplianceType
+import com.gemini.energy.presentation.util.ELightingType
+import com.gemini.energy.presentation.util.EZoneType
 
 class SystemMapper {
 
@@ -56,17 +60,24 @@ class SystemMapper {
             feature.updatedAt
     )
 
-    fun toEntity(computable: ComputableLocalModel) = Computable(
-            computable.auditId,
-            computable.auditName,
+    fun toEntity(computable: ComputableLocalModel): Computable<*> {
 
-            computable.zoneId,
-            computable.zoneName,
+        val eZoneType = EZoneType.get(computable.auditScopeType)
+        val entity = when (eZoneType) {
+            EZoneType.Plugload      -> Computable<EApplianceType>(EApplianceType.get(computable.auditScopeSubType)!!)
+            EZoneType.Lighting      -> Computable<ELightingType>(ELightingType.get(computable.auditScopeSubType)!!)
+            else                    -> Computable()
+        }
 
-            computable.auditScopeId,
-            computable.auditScopeName,
-            computable.auditScopeType,
-            computable.auditScopeSubType
-    )
+        entity.auditId = computable.auditId
+        entity.auditName = computable.auditName
+        entity.zoneId = computable.zoneId
+        entity.zoneName = computable.zoneName
+        entity.auditScopeId = computable.auditScopeId
+        entity.auditScopeName = computable.auditScopeName
+        entity.auditScopeType = eZoneType
+
+        return entity
+    }
 
 }
