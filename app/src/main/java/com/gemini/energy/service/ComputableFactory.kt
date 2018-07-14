@@ -1,8 +1,17 @@
 package com.gemini.energy.service
 
 import com.gemini.energy.domain.entity.Computable
+import com.gemini.energy.presentation.util.EApplianceType
+import com.gemini.energy.presentation.util.ELightingType
 import com.gemini.energy.presentation.util.EZoneType
-import io.reactivex.Flowable
+import com.gemini.energy.service.device.General
+import com.gemini.energy.service.device.Hvac
+import com.gemini.energy.service.device.Motors
+import com.gemini.energy.service.device.lighting.Cfl
+import com.gemini.energy.service.device.lighting.Halogen
+import com.gemini.energy.service.device.lighting.Incandescent
+import com.gemini.energy.service.device.lighting.LinearFluorescent
+import com.gemini.energy.service.device.plugload.*
 
 // ** Computable Generator Factory gives me a list of IComputable ** //
 
@@ -10,7 +19,7 @@ import io.reactivex.Flowable
 // ** Type 2 Service - Emits :: List of Computable Data
 
 abstract class ComputableFactory {
-    abstract fun build(computable: Computable<*>): Flowable<List<IComputable>>
+    abstract fun build(computable: Computable<*>): IComputable
 
     companion object {
         inline fun createFactory(computable: Computable<*>): ComputableFactory =
@@ -24,47 +33,40 @@ abstract class ComputableFactory {
     }
 }
 
-abstract class EnergyEquivalent(private val computable: Computable<*>) {
-    abstract fun isEnergyStar(): Boolean
-    abstract fun findAlternateModel(): List<IComputable>
-
-    // Step 1: Check to see the Parse Database to figure out if the Device is Star Rated Already
-    // Step 2: Query for the Alternative Energy Source - This is dependant on the Type of Device
-
-    fun setup() {
-        computable.isEnergyStar = isEnergyStar()
-        computable.energyEquivalent = findAlternateModel()
-    }
-
-}
-
-
 class PlugloadFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>): Flowable<List<IComputable>> {
-        return Flowable.just(listOf())
+    override fun build(computable: Computable<*>): IComputable {
+        return when(computable.auditScopeSubType as EApplianceType) {
+            EApplianceType.CombinationOven          -> CombinationOven()
+            EApplianceType.ConvectionOven           -> ConvectionOven()
+            EApplianceType.ConveyorOven             -> ConveyorOven()
+            EApplianceType.Fryer                    -> Fryer()
+            EApplianceType.IceMaker                 -> IceMaker()
+            EApplianceType.RackOven                 -> RackOven()
+            EApplianceType.Refrigerator             -> Refrigerator()
+            EApplianceType.SteamCooker              -> SteamCooker()
+        }
     }
 }
 
 class LightingFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>): Flowable<List<IComputable>> {
-        return Flowable.just(listOf())
+    override fun build(computable: Computable<*>): IComputable {
+        return when(computable.auditScopeSubType as ELightingType) {
+            ELightingType.CFL                       -> Cfl()
+            ELightingType.Halogen                   -> Halogen()
+            ELightingType.Incandescent              -> Incandescent()
+            ELightingType.LinearFluorescent         -> LinearFluorescent()
+        }
     }
 }
 
 class HvacFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>): Flowable<List<IComputable>> {
-        return Flowable.just(listOf())
-    }
+    override fun build(computable: Computable<*>) = Hvac()
 }
 
 class MotorFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>): Flowable<List<IComputable>> {
-        return Flowable.just(listOf())
-    }
+    override fun build(computable: Computable<*>) = Motors()
 }
 
 class GeneralFactory : ComputableFactory() {
-    override fun build(computable: Computable<*>): Flowable<List<IComputable>> {
-        return Flowable.just(listOf())
-    }
+    override fun build(computable: Computable<*>) = General()
 }
