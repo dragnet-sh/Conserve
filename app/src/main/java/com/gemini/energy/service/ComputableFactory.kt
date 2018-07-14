@@ -24,19 +24,34 @@ abstract class ComputableFactory {
     }
 }
 
+abstract class EnergyEquivalent(private val computable: Computable<*>) {
+    abstract fun isEnergyStar(): Boolean
+    abstract fun findAlternateModel(): List<IComputable>
+
+    // Step 1: Check to see the Parse Database to figure out if the Device is Star Rated Already
+    // Step 2: Query for the Alternative Energy Source - This is dependant on the Type of Device
+
+    fun setup() {
+        computable.isEnergyStar = isEnergyStar()
+        computable.energyEquivalent = findAlternateModel()
+    }
+
+}
+
+
 class PlugloadFactory : ComputableFactory() {
     override fun build(computable: Computable<*>): Flowable<List<IComputable>> {
         return Flowable.just(listOf())
     }
 }
 
-class HvacFactory : ComputableFactory() {
+class LightingFactory : ComputableFactory() {
     override fun build(computable: Computable<*>): Flowable<List<IComputable>> {
         return Flowable.just(listOf())
     }
 }
 
-class LightingFactory : ComputableFactory() {
+class HvacFactory : ComputableFactory() {
     override fun build(computable: Computable<*>): Flowable<List<IComputable>> {
         return Flowable.just(listOf())
     }
