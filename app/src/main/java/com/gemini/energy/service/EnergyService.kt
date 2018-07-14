@@ -40,7 +40,7 @@ class EnergyService(
                                                         eachComputable.featureAuditScope = featureAuditScope
                                                         Log.d(TAG, "*************************************")
                                                         Log.d(TAG, eachComputable.toString())
-                                                        ComputableFactory.createFactory(eachComputable)
+                                                        ComputableFactory.createFactory(eachComputable).build()
                                                     }
                                         }
                                     }
