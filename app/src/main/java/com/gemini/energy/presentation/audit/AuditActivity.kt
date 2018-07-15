@@ -57,7 +57,6 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_create_audit -> consume { showCreateAudit() }
         R.id.menu_energy_calculation -> consume {
-            //ToDo: Subsequent Crunch Should be stopped if one is already in progress !!
             disposables.add(energyService.crunch())
         }
         else -> super.onOptionsItemSelected(item)
@@ -129,9 +128,9 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
         }
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
         disposables.dispose()
+        super.onDestroy()
     }
 
     private fun showCreateAudit() {
