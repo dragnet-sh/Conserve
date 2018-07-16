@@ -67,7 +67,8 @@ ext {
 
     presentationTestDependencies = [
             "junit:junit:$jUnitVersion",
-            "org.mockito:mockito-core:${mockitoVersion}"
+            "org.mockito:mockito-core:${mockitoVersion}",
+            'org.json:json:20140107'
     ]
 
     presentationInstrumentationTestDependencies = [
