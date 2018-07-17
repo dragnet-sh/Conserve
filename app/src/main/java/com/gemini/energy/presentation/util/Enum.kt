@@ -99,3 +99,70 @@ enum class BaseRowType(val value: String) {
     }
 
 }
+
+
+/**
+ * Operating Hours
+ * */
+enum class EDay(val value: String) {
+
+    Mon("Monday Operating Hours"),
+    Tue("Tuesday Operating Hours"),
+    Wed("Wednesday Operating Hours"),
+    Thu("Thursday Operating Hours"),
+    Fri("Friday Operating Hours"),
+    Sat("Saturday Operating Hours"),
+    Sun("Sunday Operating Hours");
+
+    companion object {
+        private val map = EDay.values().associateBy(EDay::value)
+        fun get(day: String) = map[day]
+    }
+
+}
+
+
+/**
+ * Utility Rate | Slabs
+ * */
+enum class ERateKey(val value: String) {
+    SummerOff("summer-off-peak"),
+    SummerPart("summer-part-peak"),
+    SummerOn("summer-on-peak"),
+    WinterOff("winter-off-peak"),
+    WinterPart("winter-part-peak"),
+
+    SummerNone("summer-none"),
+    WinterNone("winter-none"),
+
+    AverageElectric("average"),
+
+    Slab1("0_5.0"),
+    Slab2("5.1_16.0"),
+    Slab3("16.1_41.0"),
+    Slab4("41.1_123.0"),
+    Slab5("123.1_n_up"),
+    SummerTransport("summer_first_4000_therms"),
+    WinterTransport("winter_first_4000_therms"),
+    Surcharge("surcharge"),
+
+    GasWinter("gas-winter"),
+    GasSummer("gas-summer"),
+
+    None("none");
+
+    companion object {
+
+        private val map = ERateKey.values().associateBy(ERateKey::value)
+        fun get(rateKey: String) = map[rateKey]
+
+        fun getAllElectric() = listOf(SummerOff, SummerPart, SummerOn, WinterOff, WinterPart, SummerNone, WinterNone)
+        fun getAllSummer() = listOf(SummerOff, SummerPart, SummerOn, SummerNone)
+        fun getAllWinter() = listOf(WinterOff, WinterPart, WinterNone)
+        fun getAllElectricRaw() = getAllElectric().map { it.value }
+
+        fun getAllGas() = listOf(Slab1, Slab2, Slab3, Slab4, Slab5)
+        fun getAllGasRaw() = getAllGas().map { it.value }
+    }
+
+}
