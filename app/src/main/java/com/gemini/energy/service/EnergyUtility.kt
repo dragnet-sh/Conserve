@@ -7,16 +7,8 @@ open class EnergyUtility(private val context: Context, private val utility: IUti
     /**
      * The Rate Structure Gets Setup from the PreAudit
      * */
-    var rate: String = "A-1"
     lateinit var content: String
     lateinit var structure: HashMap<String, List<String>>
-
-
-    fun initRate(rate: String): EnergyUtility {
-        this.rate = rate
-        return this
-    }
-
 
     /**
      * To be set by the Child Class later on
@@ -90,7 +82,7 @@ interface IUtility {
 //    override fun getValue(columns: List<String>): List<String> { return listOf() }
 //}
 
-class Electricity : IUtility {
+class Electricity(private val rateStructure: String) : IUtility {
 
     enum class EKey(val index: Int) { Season(1), Peak(4) }
     enum class EValue(val index: Int) { EnergyCharge(5), Average(6) }
@@ -99,7 +91,7 @@ class Electricity : IUtility {
     override fun getValue(columns: List<String>) = listOf(columns[EValue.EnergyCharge.index], columns[EValue.Average.index])
     override fun getResourcePath() = "utility/pge_electric.csv"
     override fun getSeparator(): Char = ','
-    override fun getRate() = "A-1 TOU"
+    override fun getRate() = rateStructure
     override fun getRowIdentifier() = "^${getRate()}${getSeparator()}.*".toRegex()
 
 }
