@@ -2,6 +2,7 @@ package com.gemini.energy
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
+import com.gemini.energy.service.Electricity
 import com.gemini.energy.service.EnergyUtility
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -13,7 +14,7 @@ class EnergyUtilityTest {
     @Test
     fun readUtilityData() {
         val context = InstrumentationRegistry.getTargetContext()
-        val utility = EnergyUtility(context)
+        val utility = EnergyUtility(context, Electricity())
                 .initRate("A-1 TOU")
                 .build()
 

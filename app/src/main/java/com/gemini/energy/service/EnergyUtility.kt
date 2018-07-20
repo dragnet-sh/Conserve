@@ -2,7 +2,7 @@ package com.gemini.energy.service
 
 import android.content.Context
 
-class EnergyUtility(private val context: Context) {
+open class EnergyUtility(private val context: Context, private val utility: IUtility) {
 
     /**
      * The Rate Structure Gets Setup from the PreAudit
@@ -21,9 +21,9 @@ class EnergyUtility(private val context: Context) {
     /**
      * To be set by the Child Class later on
      * */
-    private fun getResourcePath() = "utility/pge_electric.csv"
-    private fun getSeparator() = ','
-    private fun getRowIdentifierRegEx() = "^$rate${getSeparator()}.*".toRegex()
+    private fun getResourcePath() = utility.getResourcePath()
+    private fun getSeparator() = utility.getSeparator()
+    private fun getRowIdentifier() = utility.getRowIdentifier()
 
     fun build(): EnergyUtility {
         val inputStream= context.resources.assets.open(getResourcePath())
@@ -33,11 +33,11 @@ class EnergyUtility(private val context: Context) {
 
         if (collection.count() > 0) {
             collection.forEach {
-                if (it.matches(getRowIdentifierRegEx())) {
-                    val result = parseLine(it, getSeparator())
 
-                    val key = result[EKey.Season.index] + "-" + result[EKey.Peak.index]
-                    outgoing[key] = listOf(result[EValue.EnergyCharge.index], result[EValue.Average.index])
+                if (it.matches(getRowIdentifier())) {
+                    val result = parseLine(it, getSeparator())
+                    val key = utility.getKey(result)
+                    outgoing[key] = utility.getValue(result)
                 }
             }
         }
@@ -48,11 +48,6 @@ class EnergyUtility(private val context: Context) {
 
 
     companion object {
-        private const val TAG = "EnergyUtility"
-
-        enum class EKey(val index: Int) { Season(1), Peak(4) }
-        enum class EValue(val index: Int) { EnergyCharge(5), Average(6) }
-
         private fun parseLine(line: String, separator: Char) : List<String> {
             val result = mutableListOf<String>()
             val builder = StringBuilder()
@@ -77,5 +72,34 @@ class EnergyUtility(private val context: Context) {
             return result
         }
     }
+
+}
+
+
+interface IUtility {
+    fun getKey(columns: List<String>): String
+    fun getValue(columns: List<String>): List<String>
+    fun getResourcePath(): String
+    fun getSeparator(): Char
+    fun getRowIdentifier(): Regex
+    fun getRate(): String
+}
+
+//class Gas : IUtility {
+//    override fun getKey(columns: List<String>): String { return "" }
+//    override fun getValue(columns: List<String>): List<String> { return listOf() }
+//}
+
+class Electricity : IUtility {
+
+    enum class EKey(val index: Int) { Season(1), Peak(4) }
+    enum class EValue(val index: Int) { EnergyCharge(5), Average(6) }
+
+    override fun getKey(columns: List<String>) = columns[EKey.Season.index] + "-" + columns[EKey.Peak.index]
+    override fun getValue(columns: List<String>) = listOf(columns[EValue.EnergyCharge.index], columns[EValue.Average.index])
+    override fun getResourcePath() = "utility/pge_electric.csv"
+    override fun getSeparator(): Char = ','
+    override fun getRate() = "A-1 TOU"
+    override fun getRowIdentifier() = "^${getRate()}${getSeparator()}.*".toRegex()
 
 }
