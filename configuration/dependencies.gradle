@@ -10,7 +10,7 @@ ext {
     ]
 
     daggerVersion = '2.14.+'
-    supportLibraryVersion = '27.0.+'
+    supportLibraryVersion = '27.1.1'
     rxKotlinVersion = '2.2.+'
     rxAndroidVersion = '2.0.+'
     constraintLayoutVersion = '1.0.+'
@@ -27,7 +27,8 @@ ext {
     jacocoVersion = '0.7.9'
     saripaarVersion = '2.0.3'
     moshiVersion = '1.6.0'
-    okHttp = '3.10.0'
+    okHttpVersion = '3.10.0'
+    retrofitVersion = '2.4.0'
 
     presentationKaptDependencies = [
             "android.arch.lifecycle:compiler:$lifecycleVersion",
@@ -61,7 +62,11 @@ ext {
             "android.arch.persistence.room:runtime:$roomVersion",
             "android.arch.persistence.room:rxjava2:$roomVersion",
 
-            "com.squareup.okhttp3:okhttp:$okHttp"
+            "com.squareup.okhttp3:okhttp:$okHttpVersion",
+
+            "com.squareup.retrofit2:retrofit:$retrofitVersion",
+            "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion",
+            "com.squareup.retrofit2:converter-gson:$retrofitVersion"
 
     ]
 
