@@ -2,8 +2,10 @@ package com.gemini.energy
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
+import com.gemini.energy.presentation.util.ERateKey
 import com.gemini.energy.service.Electricity
 import com.gemini.energy.service.EnergyUtility
+import com.gemini.energy.service.Gas
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -12,7 +14,7 @@ import org.junit.runner.RunWith
 class EnergyUtilityTest {
 
     @Test
-    fun readUtilityData() {
+    fun readUtilityDataElectric() {
         val context = InstrumentationRegistry.getTargetContext()
         val utility = EnergyUtility(context, Electricity("A-1 TOU"))
                 .build()
@@ -27,8 +29,24 @@ class EnergyUtilityTest {
         assertEquals(listOf("0.26298", "0.23020"), structure["summer-on-peak"])
     }
 
-    companion object {
-        private const val TAG = "EnergyUtilityTest"
+    @Test
+    fun readUtilityDataGas() {
+        val context = InstrumentationRegistry.getTargetContext()
+        val utility = EnergyUtility(context, Gas())
+                .build()
+
+        val structure = utility.structure
+
+        assertEquals(8, structure.count())
+        assertEquals(listOf("0.27048"), structure[ERateKey.Slab1.value])
+        assertEquals(listOf("0.52106"), structure[ERateKey.Slab2.value])
+        assertEquals(listOf("0.95482"), structure[ERateKey.Slab3.value])
+        assertEquals(listOf("1.66489"), structure[ERateKey.Slab4.value])
+        assertEquals(listOf("2.14936"), structure[ERateKey.Slab5.value])
+        assertEquals(listOf("0.91132"), structure[ERateKey.SummerTransport.value])
+        assertEquals(listOf("1.0215"), structure[ERateKey.WinterTransport.value])
+        assertEquals(listOf("0.04672"), structure[ERateKey.Surcharge.value])
+
     }
 
 }
