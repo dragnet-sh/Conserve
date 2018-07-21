@@ -44,6 +44,9 @@ data class Computable<SubType>(
     constructor(auditScopeSubType: SubType) : this(NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
             auditScopeSubType, null, null, false, null)
 
+    fun mappedFeatureAuditScope() = featureAuditScope?.associateBy { it.key }
+    fun mappedFeaturePreAudit() = featurePreAudit?.associateBy { it.key }
+
     companion object {
         private const val EMPTY = ""
         private const val NONE = -1
