@@ -4,6 +4,6 @@ import io.reactivex.Observable
 
 interface IUploader {
 
-    fun upload(outgoingRows: List<OutgoingRow>): Observable<Unit>
+    fun upload(outgoingRows: List<OutgoingRows>): Observable<Unit>
 
 }

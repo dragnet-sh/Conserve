@@ -2,18 +2,22 @@ package com.gemini.energy.service.device.plugload
 
 import android.util.Log
 import com.gemini.energy.domain.entity.Computable
-import com.gemini.energy.service.*
+import com.gemini.energy.service.EnergyUsage
+import com.gemini.energy.service.EnergyUtility
+import com.gemini.energy.service.IComputable
+import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
 import io.reactivex.Flowable
 import org.json.JSONObject
+import java.util.*
 
 class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
-                   energyUsage: EnergyUsage) : EBase(computable, energyUtility, energyUsage), IComputable {
+                   energyUsage: EnergyUsage, private val outgoingRows: OutgoingRows) : EBase(computable, energyUtility, energyUsage), IComputable {
 
     /**
      * IMP !! This is the Main Compute Method
      * */
-    override fun compute(): Flowable<List<OutgoingRow>> {
+    override fun compute(): Flowable<List<OutgoingRows>> {
         super.initialize()
         super.compute(extra = {
             Log.d(TAG, it)
@@ -39,8 +43,22 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
                     Log.d(TAG, "Total Cost - $cost")
 
 
-                    // *** Pass these on to Drop Box *** //
+                    outgoingRows.header = mutableListOf("power", "yearly_usage_hrs", "energy_consumed", "cost")
+                    outgoingRows.rows = mutableListOf(mapOf("power" to power.toString(),
+                            "yearly_usage_hrs" to usage.yearly().toString(),
+                            "energy_consumed" to energyConsumed.toString(),
+                            "cost" to cost.toString()))
 
+                    val path = StringBuilder()
+                    path.append("${it.auditName.replace(" ", "_")}/")
+                    path.append("${it.zoneName.replace(" ", "_")}/")
+
+                    val filename = "${Date().toInstant().epochSecond}"
+
+                    outgoingRows.setFilePath(path.toString(), filename)
+                    outgoingRows.saveFile()
+
+                    Log.d(TAG, "File Path: ${outgoingRows.filePath}")
                 }
 
         return Flowable.just(listOf())

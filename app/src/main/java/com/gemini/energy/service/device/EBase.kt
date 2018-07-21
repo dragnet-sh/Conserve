@@ -24,10 +24,10 @@ abstract class EBase(private val computable: Computable<*>,
                      val energyUsage: EnergyUsage) {
 
     lateinit var schedulers: Schedulers
-    lateinit var gasUtility: EnergyUtility
+    private lateinit var gasUtility: EnergyUtility
     lateinit var electricityUtility: EnergyUtility
 
-    var preAudit: Map<String?, Feature>? = mapOf()
+    private var preAudit: Map<String?, Feature>? = mapOf()
     var featureData: Map<String?, Feature>? = mapOf()
     var electricRateStructure: String = RATE
 

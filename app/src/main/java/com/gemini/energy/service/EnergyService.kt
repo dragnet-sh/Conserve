@@ -14,7 +14,8 @@ class EnergyService(
         private val schedulers: Schedulers,
         private val auditGateway: AuditGateway,
         private val energyUtility: EnergyUtility,
-        private val energyUsage: EnergyUsage) {
+        private val energyUsage: EnergyUsage,
+        private val outgoingRows: OutgoingRows) {
 
     /**
      * Flowable Data Stream of Computable
@@ -49,7 +50,7 @@ class EnergyService(
                                                         collector.add(
                                                                 ComputableFactory
                                                                         .createFactory(eachComputable,
-                                                                                energyUtility, energyUsage)
+                                                                                energyUtility, energyUsage, outgoingRows)
                                                                         .build()
                                                         )
                                                     }

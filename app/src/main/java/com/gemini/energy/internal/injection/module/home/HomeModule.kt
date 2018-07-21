@@ -30,10 +30,7 @@ import com.gemini.energy.presentation.type.feature.FeatureDataFragment
 import com.gemini.energy.presentation.type.feature.FeatureGetViewModel
 import com.gemini.energy.presentation.type.list.TypeListFragment
 import com.gemini.energy.presentation.type.list.TypeListViewModel
-import com.gemini.energy.service.ComputableFactory
-import com.gemini.energy.service.EnergyService
-import com.gemini.energy.service.EnergyUsage
-import com.gemini.energy.service.EnergyUtility
+import com.gemini.energy.service.*
 import com.mobsandgeeks.saripaar.Validator
 import dagger.Module
 import dagger.Provides
@@ -188,10 +185,17 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideOutgoingRows(context: Context): OutgoingRows {
+            return OutgoingRows(context)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideEnergyService(schedulers: Schedulers, auditGateway: AuditGateway,
-                                          energyUtility: EnergyUtility, energyUsage: EnergyUsage):
+                                          energyUtility: EnergyUtility, energyUsage: EnergyUsage, outgoingRows: OutgoingRows):
                 EnergyService {
-            return EnergyService(schedulers, auditGateway, energyUtility, energyUsage)
+            return EnergyService(schedulers, auditGateway, energyUtility, energyUsage, outgoingRows)
         }
 
         //**** End :: Energy Services **** //

@@ -20,10 +20,10 @@ abstract class ComputableFactory {
     companion object {
         lateinit var computable: Computable<*>
         inline fun createFactory(computable: Computable<*>, energyUtility: EnergyUtility,
-                                 energyUsage: EnergyUsage): ComputableFactory {
+                                 energyUsage: EnergyUsage, outgoingRows: OutgoingRows): ComputableFactory {
             this.computable = computable
             return when (computable.auditScopeType as EZoneType) {
-                EZoneType.Plugload                  -> PlugloadFactory(energyUtility, energyUsage)
+                EZoneType.Plugload                  -> PlugloadFactory(energyUtility, energyUsage, outgoingRows)
                 EZoneType.HVAC                      -> HvacFactory()
                 EZoneType.Lighting                  -> LightingFactory()
                 EZoneType.Motors                    -> MotorFactory()
@@ -34,7 +34,8 @@ abstract class ComputableFactory {
 }
 
 class PlugloadFactory(private val energyUtility: EnergyUtility,
-                      private val energyUsage: EnergyUsage) : ComputableFactory() {
+                      private val energyUsage: EnergyUsage,
+                      private val outgoingRows: OutgoingRows) : ComputableFactory() {
 
     override fun build(): IComputable {
         return when(computable.auditScopeSubType as EApplianceType) {
@@ -44,7 +45,7 @@ class PlugloadFactory(private val energyUtility: EnergyUtility,
             EApplianceType.Fryer                    -> Fryer()
             EApplianceType.IceMaker                 -> IceMaker()
             EApplianceType.RackOven                 -> RackOven()
-            EApplianceType.Refrigerator             -> Refrigerator(computable, energyUtility, energyUsage)
+            EApplianceType.Refrigerator             -> Refrigerator(computable, energyUtility, energyUsage, outgoingRows)
             EApplianceType.SteamCooker              -> SteamCooker()
         }
     }

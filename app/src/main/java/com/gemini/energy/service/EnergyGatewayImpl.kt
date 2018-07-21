@@ -14,7 +14,7 @@ class EnergyGatewayImpl(
         return service.run()
     }
 
-    override fun upload(outgoingRows: List<OutgoingRow>): Observable<Unit> {
+    override fun upload(outgoingRows: List<OutgoingRows>): Observable<Unit> {
         return uploader.upload(outgoingRows)
     }
 }
