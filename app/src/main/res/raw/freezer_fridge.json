@@ -43,6 +43,22 @@
           "validation": "",
           "defaultValues": "",
           "id": "105"
+        },
+        {
+          "index": 6,
+          "param": "Age",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": "106"
+        },
+        {
+          "index": 7,
+          "param": "Control",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:Yes,02:No",
+          "id": "107"
         }
       ],
       "id": "10"
