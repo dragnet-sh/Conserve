@@ -1,5 +1,7 @@
 package com.gemini.energy.service
 
+import io.reactivex.Flowable
+
 interface IComputable {
-    fun compute(): List<List<OutgoingRows>>
+    fun compute(): Flowable<List<OutgoingRow>>
 }
