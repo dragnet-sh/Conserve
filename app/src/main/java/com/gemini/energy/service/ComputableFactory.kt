@@ -13,10 +13,6 @@ import com.gemini.energy.service.device.lighting.Incandescent
 import com.gemini.energy.service.device.lighting.LinearFluorescent
 import com.gemini.energy.service.device.plugload.*
 
-// ** Computable Generator Factory gives me a list of IComputable ** //
-
-// ** Type 1 Service - Emits :: Single Row of Computable Data
-// ** Type 2 Service - Emits :: List of Computable Data
 
 abstract class ComputableFactory {
     abstract fun build(): IComputable
@@ -26,11 +22,11 @@ abstract class ComputableFactory {
         inline fun createFactory(computable: Computable<*>): ComputableFactory {
             _computable = computable
             return when (computable.auditScopeType as EZoneType) {
-                EZoneType.Plugload -> PlugloadFactory()
-                EZoneType.HVAC -> HvacFactory()
-                EZoneType.Lighting -> LightingFactory()
-                EZoneType.Motors -> MotorFactory()
-                EZoneType.Others -> GeneralFactory()
+                EZoneType.Plugload                  -> PlugloadFactory()
+                EZoneType.HVAC                      -> HvacFactory()
+                EZoneType.Lighting                  -> LightingFactory()
+                EZoneType.Motors                    -> MotorFactory()
+                EZoneType.Others                    -> GeneralFactory()
             }
        }
     }
@@ -45,7 +41,7 @@ class PlugloadFactory : ComputableFactory() {
             EApplianceType.Fryer                    -> Fryer()
             EApplianceType.IceMaker                 -> IceMaker()
             EApplianceType.RackOven                 -> RackOven()
-            EApplianceType.Refrigerator             -> Refrigerator()
+            EApplianceType.Refrigerator             -> Refrigerator(_computable)
             EApplianceType.SteamCooker              -> SteamCooker()
         }
     }
