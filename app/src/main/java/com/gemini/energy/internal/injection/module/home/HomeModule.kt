@@ -32,6 +32,8 @@ import com.gemini.energy.presentation.type.list.TypeListFragment
 import com.gemini.energy.presentation.type.list.TypeListViewModel
 import com.gemini.energy.service.ComputableFactory
 import com.gemini.energy.service.EnergyService
+import com.gemini.energy.service.EnergyUsage
+import com.gemini.energy.service.EnergyUtility
 import com.mobsandgeeks.saripaar.Validator
 import dagger.Module
 import dagger.Provides
@@ -167,17 +169,32 @@ internal abstract class HomeModule {
         }
 
 
-        //**** Computable Injection **** //
+        //**** Energy Services **** //
 
         @HomeScope
         @Provides
         @JvmStatic
-        internal fun provideEnergyService(schedulers: Schedulers, auditGateway: AuditGateway):
-                EnergyService {
-            return EnergyService(schedulers, auditGateway)
+        internal fun provideEnergyUtility(context: Context): EnergyUtility {
+            return EnergyUtility(context)
         }
 
-        //**** End :: Computable Injection **** //
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideEnergyUsage(): EnergyUsage {
+            return EnergyUsage()
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideEnergyService(schedulers: Schedulers, auditGateway: AuditGateway,
+                                          energyUtility: EnergyUtility, energyUsage: EnergyUsage):
+                EnergyService {
+            return EnergyService(schedulers, auditGateway, energyUtility, energyUsage)
+        }
+
+        //**** End :: Energy Services **** //
 
 
         @HomeScope

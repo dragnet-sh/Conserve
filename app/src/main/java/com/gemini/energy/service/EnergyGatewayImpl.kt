@@ -11,10 +11,10 @@ class EnergyGatewayImpl(
         private val uploader: IUploader) : EnergyGateway {
 
     override fun compute(audit: Audit, auditGateway: AuditGateway): Disposable {
-        return service.crunch()
+        return service.run()
     }
 
-    override fun upload(outgoingRows: List<OutgoingRows>): Observable<Unit> {
+    override fun upload(outgoingRows: List<OutgoingRow>): Observable<Unit> {
         return uploader.upload(outgoingRows)
     }
 }

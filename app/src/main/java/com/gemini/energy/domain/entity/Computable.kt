@@ -1,7 +1,7 @@
 package com.gemini.energy.domain.entity
 
 import com.gemini.energy.presentation.util.EZoneType
-import com.gemini.energy.service.IComputable
+import com.google.gson.JsonElement
 
 data class Computable<SubType>(
 
@@ -35,7 +35,7 @@ data class Computable<SubType>(
          * The following parameters are used for Energy Efficient Equivalent
          * */
         var isEnergyStar: Boolean,
-        var energyEquivalent: List<IComputable>?) {
+        var efficientAlternative: List<JsonElement>?) {
 
     constructor(): this(
             NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,

@@ -156,7 +156,8 @@ enum class ERateKey(val value: String) {
         private val map = ERateKey.values().associateBy(ERateKey::value)
         fun get(rateKey: String) = map[rateKey]
 
-        fun getAllElectric() = listOf(SummerOff, SummerPart, SummerOn, WinterOff, WinterPart, SummerNone, WinterNone)
+        fun getAllElectric() = listOf(SummerOff, SummerPart, SummerOn, WinterOff,
+                WinterPart, SummerNone, WinterNone)
         fun getAllSummer() = listOf(SummerOff, SummerPart, SummerOn, SummerNone)
         fun getAllWinter() = listOf(WinterOff, WinterPart, WinterNone)
         fun getAllElectricRaw() = getAllElectric().map { it.value }

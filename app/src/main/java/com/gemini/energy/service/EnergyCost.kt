@@ -4,12 +4,12 @@ interface ICost {
     fun cost(energyUsed: Double): Double
 }
 
-open class EnergyCost(energyUsage: EnergyUsage, utilityCharge: EnergyUtilityCharge) {
+open class EnergyCost(energyUsage: EnergyUsage, utilityCharge: EnergyUtility) {
 
 }
 
 
-class CostGas(energyUsage: EnergyUsage, utilityCharge: EnergyUtilityCharge) :
+class CostGas(energyUsage: EnergyUsage, utilityCharge: EnergyUtility) :
         EnergyCost(energyUsage, utilityCharge), ICost {
 
     override fun cost(energyUsed: Double): Double {
@@ -19,7 +19,7 @@ class CostGas(energyUsage: EnergyUsage, utilityCharge: EnergyUtilityCharge) :
 }
 
 
-class CostElectric(energyUsage: EnergyUsage, utilityCharge: EnergyUtilityCharge) :
+class CostElectric(energyUsage: EnergyUsage, utilityCharge: EnergyUtility) :
         EnergyCost(energyUsage, utilityCharge), ICost {
 
     override fun cost(energyUsed: Double): Double {

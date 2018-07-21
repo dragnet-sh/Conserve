@@ -5,6 +5,9 @@ import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.internal.AppSchedulers
+import com.gemini.energy.presentation.util.EDay
+import com.gemini.energy.presentation.util.ERateKey
+import com.gemini.energy.service.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import io.reactivex.Observable
@@ -16,17 +19,29 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-abstract class EBase(private val computable: Computable<*>) {
+abstract class EBase(private val computable: Computable<*>,
+                     private val energyUtility: EnergyUtility,
+                     val energyUsage: EnergyUsage) {
 
     lateinit var schedulers: Schedulers
+    lateinit var gasUtility: EnergyUtility
+    lateinit var electricityUtility: EnergyUtility
 
     var preAudit: Map<String?, Feature>? = mapOf()
     var featureData: Map<String?, Feature>? = mapOf()
+    var electricRateStructure: String = RATE
 
     fun initialize() {
         schedulers = AppSchedulers()
         featureData = computable.mappedFeatureAuditScope()
         preAudit = computable.mappedFeaturePreAudit()
+
+        gasUtility = energyUtility.initUtility(Gas()).build()
+
+        electricRateStructure = preAudit?.get("Electric Rate Structure")?.valueString ?: RATE
+        electricityUtility = energyUtility.initUtility(
+                Electricity(electricRateStructure))
+                .build()
     }
 
 
@@ -38,9 +53,9 @@ abstract class EBase(private val computable: Computable<*>) {
                 starValidator(queryEnergyStar())
                         .observeOn(schedulers.observeOn)
                         .subscribeOn(schedulers.subscribeOn)
-                        .subscribe { starValidation ->
+                        .subscribe { starValidationFail ->
 
-                            if (starValidation) {
+                            if (starValidationFail) {
 
                                 // 1. Fetch Efficient Devices
                                 // 2. Start Doing your Calculations -- Where ??
@@ -49,23 +64,24 @@ abstract class EBase(private val computable: Computable<*>) {
                                         .observeOn(schedulers.observeOn)
                                         .subscribeOn(schedulers.subscribeOn)
                                         .subscribe { response ->
-                                            Log.d(TAG, response.count().toString())
+
+                                            Log.d(TAG, "Efficient Alternate Count - ${response.count()}")
                                             Log.d(TAG, response.toString())
-
-                                            // computable.energyEquivalent = ????
-
-                                            extra("Hola!! from Efficient Alternative !!")
+                                            computable.efficientAlternative = response.map { it.asJsonObject.get("data") }
 
                                             it.onNext(computable)
                                             it.onComplete()
+
                                         }
 
-
-                            } else { extra("Already Efficient !!") }
+                            } else {
+                                computable.isEnergyStar = true
+                                it.onNext(computable)
+                                it.onComplete()
+                            }
 
                         }
             } else {
-                extra("Hola!! from Negative Efficiency Lookup !!")
                 it.onNext(computable)
                 it.onComplete()
             }
@@ -74,15 +90,15 @@ abstract class EBase(private val computable: Computable<*>) {
 
     }
 
-
     companion object {
         private const val TAG = "EBase"
+        private const val RATE = "A-1 TOU"
     }
 
     abstract fun queryFilter(): String
     abstract fun efficientLookup(): Boolean
 
-    fun queryEnergyStar(): String {
+    private fun queryEnergyStar(): String {
         val json = JSONObject()
         json.put("data.company_name", featureData?.get("company")?.valueString ?: "")
         json.put("data.model_number", featureData?.get("model_number")?.valueString ?: "")
@@ -104,7 +120,7 @@ abstract class EBase(private val computable: Computable<*>) {
         }
     }
 
-    fun efficientAlternative(query: String): Observable<JsonArray> {
+    private fun efficientAlternative(query: String): Observable<JsonArray> {
         return Observable.create<JsonArray> {
             parseAPIService.fetchPlugload(query)
                     .subscribeOn(schedulers.subscribeOn)
@@ -114,6 +130,39 @@ abstract class EBase(private val computable: Computable<*>) {
                         it.onNext(rows)
                         it.onComplete()
                     }
+        }
+    }
+
+    fun mappedUsageHours(): Map<EDay, String?> {
+        val usage = EDay.values().map { preAudit?.get(it.value)?.valueString }
+        return EDay.values().associateBy({ it }, {
+            usage[EDay.values().indexOf(it)]
+        })
+    }
+
+    fun costElectricity(energyUsed: Double, usage: EnergyUsage, utility: EnergyUtility): Double {
+        val regex = "^.*TOU$".toRegex()
+        val usageByPeak = usage.mappedPeakHourYearly()
+        val usageByYear = usage.yearly()
+
+        if (electricRateStructure.matches(regex)) {
+
+            var summer = usageByPeak[ERateKey.SummerOn]!! * energyUsed * utility.structure[ERateKey.SummerOn.value]!![0].toDouble()
+            summer += usageByPeak[ERateKey.SummerPart]!! * energyUsed * utility.structure[ERateKey.SummerPart.value]!![0].toDouble()
+            summer += usageByPeak[ERateKey.SummerOff]!! * energyUsed * utility.structure[ERateKey.SummerOff.value]!![0].toDouble()
+
+            var winter = usageByPeak[ERateKey.WinterPart]!! * energyUsed * utility.structure[ERateKey.WinterPart.value]!![0].toDouble()
+            winter += usageByPeak[ERateKey.WinterOff]!! * energyUsed * utility.structure[ERateKey.WinterOff.value]!![0].toDouble()
+
+            return (summer + winter)
+
+        } else {
+
+            val summer = usageByYear * energyUsed * utility.structure[ERateKey.SummerNone.value]!![0].toDouble()
+            val winter = usageByYear * energyUsed * utility.structure[ERateKey.WinterNone.value]!![0].toDouble()
+
+            return (summer + winter)
+
         }
     }
 

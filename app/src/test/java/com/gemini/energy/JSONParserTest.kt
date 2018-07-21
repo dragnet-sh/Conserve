@@ -3,16 +3,6 @@ package com.gemini.energy
 import com.squareup.moshi.Moshi
 import org.junit.Test
 
-class Product {
-    val section: String? = null
-    val elements: List<Elements>? = null
-}
-
-class Elements {
-    val productname: String? = null
-    val price: String? = null
-}
-
 class JSONParserTest {
 
     @Test
@@ -41,7 +31,18 @@ class JSONParserTest {
                 }
             }
         }
-   }
+    }
+
+
+    class Product {
+        val section: String? = null
+        val elements: List<Elements>? = null
+    }
+
+    class Elements {
+        val productname: String? = null
+        val price: String? = null
+    }
 }
 
 

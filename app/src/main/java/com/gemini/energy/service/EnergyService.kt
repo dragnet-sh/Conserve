@@ -12,7 +12,9 @@ import io.reactivex.observers.DisposableObserver
 
 class EnergyService(
         private val schedulers: Schedulers,
-        private val auditGateway: AuditGateway) {
+        private val auditGateway: AuditGateway,
+        private val energyUtility: EnergyUtility,
+        private val energyUsage: EnergyUsage) {
 
     /**
      * Flowable Data Stream of Computable
@@ -46,7 +48,8 @@ class EnergyService(
 
                                                         collector.add(
                                                                 ComputableFactory
-                                                                        .createFactory(eachComputable)
+                                                                        .createFactory(eachComputable,
+                                                                                energyUtility, energyUsage)
                                                                         .build()
                                                         )
                                                     }

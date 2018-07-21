@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.gemini.energy"
-        minSdkVersion 15
+        minSdkVersion 26
         targetSdkVersion 27
         versionCode 1
         versionName "1.0"
@@ -33,10 +33,11 @@ androidExtensions {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     kapt presentationKaptDependencies
     implementation presentationDependencies
     implementation project(":form")
+    implementation project(":sync")
     testImplementation presentationTestDependencies
     androidTestImplementation presentationInstrumentationTestDependencies
 }

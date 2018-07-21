@@ -1,12 +1,13 @@
 package com.gemini.energy.service.device.lighting
 
 import com.gemini.energy.service.IComputable
-import com.gemini.energy.service.OutgoingRows
+import com.gemini.energy.service.OutgoingRow
+import io.reactivex.Flowable
 
 class Incandescent : IComputable {
 
-    override fun compute(): List<List<OutgoingRows>> {
-        return listOf()
+    override fun compute(): Flowable<List<OutgoingRow>> {
+        return Flowable.just(listOf())
     }
 
 }

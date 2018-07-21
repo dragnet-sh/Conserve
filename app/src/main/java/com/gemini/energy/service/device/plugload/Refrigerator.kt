@@ -2,13 +2,13 @@ package com.gemini.energy.service.device.plugload
 
 import android.util.Log
 import com.gemini.energy.domain.entity.Computable
-import com.gemini.energy.service.IComputable
-import com.gemini.energy.service.OutgoingRow
+import com.gemini.energy.service.*
 import com.gemini.energy.service.device.EBase
 import io.reactivex.Flowable
 import org.json.JSONObject
 
-class Refrigerator(computable: Computable<*>) : EBase(computable), IComputable {
+class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
+                   energyUsage: EnergyUsage) : EBase(computable, energyUtility, energyUsage), IComputable {
 
     /**
      * IMP !! This is the Main Compute Method
@@ -22,9 +22,24 @@ class Refrigerator(computable: Computable<*>) : EBase(computable), IComputable {
                 .observeOn(schedulers.observeOn)
                 .subscribe {
 
-                    Log.d(TAG, it.auditName)
-                    Log.d(TAG, it.auditScopeName)
-                    Log.d(TAG, it.zoneName)
+                    // 1. Original Computable - Done
+                    // 2. Efficient Alternative JSON Data - Done
+                    // 3. Utility Rate - In Progress
+                    // 4. Usage Hours - Done
+
+                    val power = featureData?.get("Power Consumed")?.valueString?.toDouble()
+                    val usage = energyUsage.initUsage(mappedUsageHours()).build()
+                    val energyConsumed = (power ?: 0.0) * usage.yearly()
+                    val cost = costElectricity(energyConsumed, usage, electricityUtility)
+
+                    Log.d(TAG, "Power - $power")
+                    Log.d(TAG, "Usage Mapped by Peak (Yearly)- ${usage.mappedPeakHourYearly()}")
+                    Log.d(TAG, "Usage (Yearly)- ${usage.yearly()}")
+                    Log.d(TAG, "Energy Consumed - $energyConsumed")
+                    Log.d(TAG, "Total Cost - $cost")
+
+
+                    // *** Pass these on to Drop Box *** //
 
                 }
 

@@ -18,11 +18,12 @@ abstract class ComputableFactory {
     abstract fun build(): IComputable
 
     companion object {
-        lateinit var _computable: Computable<*>
-        inline fun createFactory(computable: Computable<*>): ComputableFactory {
-            _computable = computable
+        lateinit var computable: Computable<*>
+        inline fun createFactory(computable: Computable<*>, energyUtility: EnergyUtility,
+                                 energyUsage: EnergyUsage): ComputableFactory {
+            this.computable = computable
             return when (computable.auditScopeType as EZoneType) {
-                EZoneType.Plugload                  -> PlugloadFactory()
+                EZoneType.Plugload                  -> PlugloadFactory(energyUtility, energyUsage)
                 EZoneType.HVAC                      -> HvacFactory()
                 EZoneType.Lighting                  -> LightingFactory()
                 EZoneType.Motors                    -> MotorFactory()
@@ -32,24 +33,27 @@ abstract class ComputableFactory {
     }
 }
 
-class PlugloadFactory : ComputableFactory() {
+class PlugloadFactory(private val energyUtility: EnergyUtility,
+                      private val energyUsage: EnergyUsage) : ComputableFactory() {
+
     override fun build(): IComputable {
-        return when(_computable.auditScopeSubType as EApplianceType) {
+        return when(computable.auditScopeSubType as EApplianceType) {
             EApplianceType.CombinationOven          -> CombinationOven()
             EApplianceType.ConvectionOven           -> ConvectionOven()
             EApplianceType.ConveyorOven             -> ConveyorOven()
             EApplianceType.Fryer                    -> Fryer()
             EApplianceType.IceMaker                 -> IceMaker()
             EApplianceType.RackOven                 -> RackOven()
-            EApplianceType.Refrigerator             -> Refrigerator(_computable)
+            EApplianceType.Refrigerator             -> Refrigerator(computable, energyUtility, energyUsage)
             EApplianceType.SteamCooker              -> SteamCooker()
         }
     }
+
 }
 
 class LightingFactory : ComputableFactory() {
     override fun build(): IComputable {
-        return when(_computable.auditScopeSubType as ELightingType) {
+        return when(computable.auditScopeSubType as ELightingType) {
             ELightingType.CFL                       -> Cfl()
             ELightingType.Halogen                   -> Halogen()
             ELightingType.Incandescent              -> Incandescent()

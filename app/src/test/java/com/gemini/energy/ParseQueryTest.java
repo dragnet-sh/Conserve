@@ -22,7 +22,6 @@ public class ParseQueryTest {
     private void queryPlugload() {
 
         String plugloadGetUrl = parseApiRoot + classPath + "PlugLoad?where=";
-
         try {
 
             JSONObject json = new JSONObject();

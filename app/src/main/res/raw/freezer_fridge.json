@@ -59,6 +59,14 @@
           "validation": "",
           "defaultValues": "01:Yes,02:No",
           "id": "107"
+        },
+        {
+          "index": 7,
+          "param": "Power Consumed",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "108"
         }
       ],
       "id": "10"

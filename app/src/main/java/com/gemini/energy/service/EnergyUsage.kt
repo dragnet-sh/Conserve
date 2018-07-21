@@ -13,7 +13,7 @@ class EnergyUsage {
      * Usage Hours - Could either be from the PreAudit i.e. PRE
      * or could be Device Specific i.e. POST
      * */
-    private lateinit var usage: HashMap<EDay, String>
+    private lateinit var usage: Map<EDay, String?>
     private lateinit var mapper: PeakHourMapper
 
     /**
@@ -30,7 +30,7 @@ class EnergyUsage {
     fun mappedPeakHourWeekly() = mapper.mappedHoursWeekly()
     fun mappedPeakHourYearly() = mapper.mappedHoursYearly()
 
-    fun initUsage(usage: HashMap<EDay, String>): EnergyUsage {
+    fun initUsage(usage: Map<EDay, String?>): EnergyUsage {
         this.usage = usage
         return this
     }
@@ -53,10 +53,10 @@ class EnergyUsage {
             ERateKey.getAllElectric().forEach { outgoing[it] = 0.0 }
         }
 
-        fun run(usage: HashMap<EDay, String>): PeakHourMapper {
+        fun run(usage: Map<EDay, String?>): PeakHourMapper {
 
             usage.forEach { _, hourRange ->
-                hourRange.split(",").forEach { time ->
+                hourRange?.split(",")?.forEach { time ->
 
                     val component = time.split("\\s+".toRegex())
                     if (component.count() == 2) {
