@@ -16,7 +16,8 @@ class EnergyUtilityTest {
     @Test
     fun readUtilityDataElectric() {
         val context = InstrumentationRegistry.getTargetContext()
-        val utility = EnergyUtility(context, Electricity("A-1 TOU"))
+        val utility = EnergyUtility(context)
+                .initUtility(Electricity("A-1 TOU"))
                 .build()
 
         val structure = utility.structure
@@ -32,7 +33,8 @@ class EnergyUtilityTest {
     @Test
     fun readUtilityDataGas() {
         val context = InstrumentationRegistry.getTargetContext()
-        val utility = EnergyUtility(context, Gas())
+        val utility = EnergyUtility(context)
+                .initUtility(Gas())
                 .build()
 
         val structure = utility.structure

@@ -3,13 +3,14 @@ package com.gemini.energy.service
 import android.content.Context
 import com.gemini.energy.presentation.util.ERateKey
 
-open class EnergyUtility(private val context: Context, private val utility: IUtility) {
+open class EnergyUtility(private val context: Context) {
 
     /**
      * The Rate Structure Gets Setup from the PreAudit
      * */
     lateinit var content: String
     lateinit var structure: HashMap<String, List<String>>
+    lateinit var utility: IUtility
 
     /**
      * To be set by the Child Class later on
@@ -17,6 +18,11 @@ open class EnergyUtility(private val context: Context, private val utility: IUti
     private fun getResourcePath() = utility.getResourcePath()
     private fun getSeparator() = utility.getSeparator()
     private fun getRowIdentifier() = utility.getRowIdentifier()
+
+    fun initUtility(utility: IUtility): EnergyUtility {
+        this.utility = utility
+        return this
+    }
 
     fun build(): EnergyUtility {
         val inputStream= context.resources.assets.open(getResourcePath())
