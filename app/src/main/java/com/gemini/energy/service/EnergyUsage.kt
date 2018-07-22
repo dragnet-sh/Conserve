@@ -156,11 +156,13 @@ class EnergyUsage {
             private fun getTime(time: String) = dateFormatter.parse(time)
 
             private fun inBetween(now: Date, start: Date, end: Date): Boolean {
-                val a = now.toInstant().epochSecond
-                val b = start.toInstant().epochSecond
-                val c = end.toInstant().epochSecond
+
+                val a = now.time
+                val b = start.time
+                val c = end.time
 
                 return (a >= b) && (a < c)
+
             }
 
             private fun isSummerPeak(now: Date) = inBetween(now, getTime("12:00"), getTime("18:00"))
