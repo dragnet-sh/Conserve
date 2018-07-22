@@ -1,5 +1,7 @@
 package com.gemini.energy
 
+import android.content.Context
+import android.support.multidex.MultiDex
 import com.gemini.energy.internal.injection.DaggerApplication
 import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.type.list.model.TypeModel
@@ -21,10 +23,14 @@ class App : DaggerApplication() {
         RxJavaPlugins.setErrorHandler({Timber.e(it)})
     }
 
+    override fun attachBaseContext(base: Context?) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
+    }
 
     /*
-    * Type Counter for Parent - Child
-    * */
+        * Type Counter for Parent - Child
+        * */
     private var counter: ArrayList<TypeModel> = arrayListOf<TypeModel>()
 
     fun getCount() = counter.size
