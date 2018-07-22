@@ -7,6 +7,7 @@ import com.gemini.energy.service.EnergyUtility
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
+import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import org.json.JSONObject
 import java.util.*
@@ -17,51 +18,58 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
     /**
      * IMP !! This is the Main Compute Method
      * */
-    override fun compute(): Flowable<List<OutgoingRows>> {
-        super.initialize()
-        super.compute(extra = {
-            Log.d(TAG, it)
-        })
-                .subscribeOn(schedulers.subscribeOn)
-                .observeOn(schedulers.observeOn)
-                .subscribe {
+    override fun compute(): Flowable<Boolean> {
 
-                    // 1. Original Computable - Done
-                    // 2. Efficient Alternative JSON Data - Done
-                    // 3. Utility Rate - In Progress
-                    // 4. Usage Hours - Done
+        return Flowable.create<Boolean>({ emitter ->
 
-                    val power = featureData?.get("Power Consumed")?.valueString?.toDouble()
-                    val usage = energyUsage.initUsage(mappedUsageHours()).build()
-                    val energyConsumed = (power ?: 0.0) * usage.yearly()
-                    val cost = costElectricity(energyConsumed, usage, electricityUtility)
+            super.initialize()
+            super.compute(extra = {
+                Log.d(TAG, it)
+            })
+                    .subscribeOn(schedulers.subscribeOn)
+                    .observeOn(schedulers.observeOn)
+                    .subscribe {
 
-                    Log.d(TAG, "Power - $power")
-                    Log.d(TAG, "Usage Mapped by Peak (Yearly)- ${usage.mappedPeakHourYearly()}")
-                    Log.d(TAG, "Usage (Yearly)- ${usage.yearly()}")
-                    Log.d(TAG, "Energy Consumed - $energyConsumed")
-                    Log.d(TAG, "Total Cost - $cost")
+                        // 1. Original Computable - Done
+                        // 2. Efficient Alternative JSON Data - Done
+                        // 3. Utility Rate - In Progress
+                        // 4. Usage Hours - Done
 
-                    outgoingRows.header = mutableListOf("power", "yearly_usage_hrs", "energy_consumed", "cost")
-                    outgoingRows.rows = mutableListOf(mapOf("power" to power.toString(),
-                            "yearly_usage_hrs" to usage.yearly().toString(),
-                            "energy_consumed" to energyConsumed.toString(),
-                            "cost" to cost.toString()))
+                        val power = featureData?.get("Power Consumed")?.valueString?.toDouble()
+                        val usage = energyUsage.initUsage(mappedUsageHours()).build()
+                        val energyConsumed = (power ?: 0.0) * usage.yearly()
+                        val cost = costElectricity(energyConsumed, usage, electricityUtility)
 
-                    val path = StringBuilder()
-                    path.append("${it.auditName.toLowerCase().replace(" ", "_")}/")
-                    path.append("${it.zoneName.toLowerCase().replace(" ", "_")}/")
-                    path.append("${it.auditScopeType?.value?.toLowerCase()}_")
-                    path.append("${it.auditScopeSubType?.toString()?.toLowerCase()}_")
-                    path.append("${it.auditScopeName.toLowerCase().replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
+                        Log.d(TAG, "Power - $power")
+                        Log.d(TAG, "Usage Mapped by Peak (Yearly)- ${usage.mappedPeakHourYearly()}")
+                        Log.d(TAG, "Usage (Yearly)- ${usage.yearly()}")
+                        Log.d(TAG, "Energy Consumed - $energyConsumed")
+                        Log.d(TAG, "Total Cost - $cost")
 
-                    outgoingRows.setFilePath(path.toString(), "${Date().time}.csv")
-                    outgoingRows.saveFile()
+                        outgoingRows.header = mutableListOf("power", "yearly_usage_hrs", "energy_consumed", "cost")
+                        outgoingRows.rows = mutableListOf(mapOf("power" to power.toString(),
+                                "yearly_usage_hrs" to usage.yearly().toString(),
+                                "energy_consumed" to energyConsumed.toString(),
+                                "cost" to cost.toString()))
 
-                    Log.d(TAG, "File Path: ${outgoingRows.filePath}")
-                }
+                        val path = StringBuilder()
+                        path.append("${it.auditName.toLowerCase().replace(" ", "_")}/")
+                        path.append("${it.zoneName.toLowerCase().replace(" ", "_")}/")
+                        path.append("${it.auditScopeType?.value?.toLowerCase()}_")
+                        path.append("${it.auditScopeSubType?.toString()?.toLowerCase()}_")
+                        path.append("${it.auditScopeName.toLowerCase().replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
 
-        return Flowable.just(listOf())
+                        outgoingRows.setFilePath(path.toString(), "${Date().time}.csv")
+                        outgoingRows.saveFile()
+
+                        Log.d(TAG, "File Path: ${outgoingRows.filePath}")
+
+                        emitter.onNext(true)
+                        emitter.onComplete()
+                    }
+
+        }, BackpressureStrategy.BUFFER)
+
     }
 
     override fun efficientLookup() = true

@@ -2,13 +2,12 @@ package com.gemini.energy.service.device.lighting
 
 import android.util.Log
 import com.gemini.energy.service.IComputable
-import com.gemini.energy.service.OutgoingRows
 import io.reactivex.Flowable
 
 class Halogen : IComputable {
 
-    override fun compute(): Flowable<List<OutgoingRows>> {
+    override fun compute(): Flowable<Boolean> {
         Log.d(this.javaClass.simpleName, "COMPUTE")
-        return Flowable.just(listOf())
+        return Flowable.just(true)
     }
 }

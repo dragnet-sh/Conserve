@@ -24,7 +24,9 @@ class EnergyService(
         val observer = object: DisposableObserver<List<Computable<*>>>() {
             override fun onNext(computables: List<Computable<*>>) {
                 buildComputables(computables).subscribe {
-                    it.compute()
+                    it.compute().subscribe {
+                        Log.d(TAG, "Flowable Returned !!")
+                    }
                 }
             }
             override fun onError(e: Throwable) {}
