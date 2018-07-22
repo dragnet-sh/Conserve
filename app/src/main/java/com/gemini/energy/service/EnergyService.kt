@@ -56,10 +56,9 @@ class EnergyService(
                                                     energyUtility, energyUsage, outgoingRows).build())
                                 }
                     }
-                    emitter.onComplete()
                 }
             }
-
+            emitter.onComplete()
         }
     }
 
