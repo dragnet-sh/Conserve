@@ -50,8 +50,11 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
                             "cost" to cost.toString()))
 
                     val path = StringBuilder()
-                    path.append("${it.auditName.replace(" ", "_")}/")
-                    path.append("${it.zoneName.replace(" ", "_")}/")
+                    path.append("${it.auditName.toLowerCase().replace(" ", "_")}/")
+                    path.append("${it.zoneName.toLowerCase().replace(" ", "_")}/")
+                    path.append("${it.auditScopeType?.value?.toLowerCase()}/")
+                    path.append("${it.auditScopeSubType?.toString()?.toLowerCase()}/")
+                    path.append("${it.auditScopeName.toLowerCase().replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
 
                     val filename = "${Date().toInstant().epochSecond}"
 
