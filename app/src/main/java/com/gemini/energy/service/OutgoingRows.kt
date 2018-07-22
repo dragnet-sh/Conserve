@@ -1,6 +1,7 @@
 package com.gemini.energy.service
 
 import android.content.Context
+import android.os.Environment
 import android.util.Log
 import java.io.BufferedOutputStream
 import java.io.ByteArrayInputStream
@@ -37,19 +38,66 @@ class OutgoingRows(private val context: Context) {
         }
     }
 
+
+    /**
+     * Utility Methods
+     * */
+    fun isExternalStorageWritable(): Boolean {
+        val state = Environment.getExternalStorageState()
+        return Environment.MEDIA_MOUNTED == state
+    }
+
+    fun isExternalStorageReadable(): Boolean {
+        val state = Environment.getExternalStorageState()
+        return Environment.MEDIA_MOUNTED == state || Environment.MEDIA_MOUNTED_READ_ONLY == state
+    }
+
     fun parseFilenameFromPath(filePath: String): String {
         val index = filePath.lastIndexOf('/') + 1
         return filePath.substring(index)
     }
 
-    fun setFilePath(path: String, filename: String) {
-        Log.d(TAG, context.filesDir.path)
-        Log.d(TAG, path)
 
-        val dir = File(context.filesDir.path + "/gemini/$path")
-        dir.mkdirs()
+    private fun getDocumentFolderPath(subFolderPath: String? = null): File? {
 
-        filePath = File(dir, filename)
+        val folderDir: File?
+
+        if (isExternalStorageWritable()) {
+            Log.d(TAG, "External - Storage :: Writable")
+            if (subFolderPath == null) {
+                folderDir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).path)
+            } else {
+                folderDir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).path + "/$subFolderPath")
+            }
+        } else {
+            Log.d(TAG, "External - Storage :: Not Writable")
+            if (subFolderPath == null) {
+                folderDir = File(context.filesDir.path + "/Documents")
+            } else {
+                folderDir = File(context.filesDir.path + "/Documents/$subFolderPath")
+            }
+        }
+
+        if (!folderDir.isDirectory) {
+            Log.d(TAG, "****** Creating Directory *******")
+            Log.d(TAG, folderDir.toString())
+
+            folderDir.mkdirs()
+        }
+
+        return folderDir
+    }
+
+
+    fun setFilePath(path: String, fileName: String) {
+        val directory = getDocumentFolderPath("gemini/$path")!!
+        this.filePath = File(directory.toString(), fileName)
+
+        if (this.filePath.exists()) {
+            Log.d(TAG, "File Exists")
+        } else {
+            Log.d(TAG, "File Does Not Exists")
+        }
     }
 
     fun data(): String {

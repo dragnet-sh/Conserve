@@ -1,5 +1,6 @@
 package com.gemini.energy.data.gateway.mapper
 
+import android.util.Log
 import com.gemini.energy.data.local.model.*
 import com.gemini.energy.domain.entity.*
 import com.gemini.energy.presentation.util.EApplianceType
@@ -60,6 +61,12 @@ class SystemMapper {
     )
 
     fun toEntity(computable: ComputableLocalModel): Computable<*> {
+
+        val TAG = this.javaClass.simpleName
+
+        Log.d(TAG, "###### Debugging Computable #######")
+        Log.d(TAG, computable.toString())
+
 
         val eZoneType = EZoneType.get(computable.auditScopeType)
         val entity = when (eZoneType) {

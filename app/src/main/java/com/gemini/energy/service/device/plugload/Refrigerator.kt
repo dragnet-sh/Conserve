@@ -42,7 +42,6 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
                     Log.d(TAG, "Energy Consumed - $energyConsumed")
                     Log.d(TAG, "Total Cost - $cost")
 
-
                     outgoingRows.header = mutableListOf("power", "yearly_usage_hrs", "energy_consumed", "cost")
                     outgoingRows.rows = mutableListOf(mapOf("power" to power.toString(),
                             "yearly_usage_hrs" to usage.yearly().toString(),
@@ -52,13 +51,11 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
                     val path = StringBuilder()
                     path.append("${it.auditName.toLowerCase().replace(" ", "_")}/")
                     path.append("${it.zoneName.toLowerCase().replace(" ", "_")}/")
-                    path.append("${it.auditScopeType?.value?.toLowerCase()}/")
-                    path.append("${it.auditScopeSubType?.toString()?.toLowerCase()}/")
+                    path.append("${it.auditScopeType?.value?.toLowerCase()}_")
+                    path.append("${it.auditScopeSubType?.toString()?.toLowerCase()}_")
                     path.append("${it.auditScopeName.toLowerCase().replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
 
-                    val filename = "${Date().toInstant().epochSecond}"
-
-                    outgoingRows.setFilePath(path.toString(), filename)
+                    outgoingRows.setFilePath(path.toString(), "${Date().time}.csv")
                     outgoingRows.saveFile()
 
                     Log.d(TAG, "File Path: ${outgoingRows.filePath}")

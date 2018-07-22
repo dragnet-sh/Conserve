@@ -55,7 +55,8 @@ class EnergyUsage {
 
         fun run(usage: Map<EDay, String?>): PeakHourMapper {
 
-            usage.forEach { _, hourRange ->
+            for ((_, hourRange) in usage) {
+
                 hourRange?.split(",")?.forEach { time ->
 
                     val component = time.split("\\s+".toRegex())
@@ -72,7 +73,7 @@ class EnergyUsage {
                             val calendar = Calendar.getInstance()
                             var current = start
 
-                            while(current < end) {
+                            while (current < end) {
 
                                 if (isSummerOffPeak(current)) {
                                     val tmp = outgoing[ERateKey.SummerOff]
@@ -81,7 +82,7 @@ class EnergyUsage {
 
                                 if (isSummerPartialPeak(current)) {
                                     val tmp = outgoing[ERateKey.SummerPart]
-                                    outgoing[ERateKey.SummerPart] = tmp !! + delta
+                                    outgoing[ERateKey.SummerPart] = tmp!! + delta
                                 }
 
                                 if (isSummerPeak(current)) {
@@ -110,6 +111,7 @@ class EnergyUsage {
                     }
                 }
             }
+
 
             return this
         }
