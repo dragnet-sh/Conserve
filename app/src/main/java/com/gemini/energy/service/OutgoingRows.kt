@@ -46,7 +46,7 @@ class OutgoingRows(private val context: Context) {
         Log.d(TAG, context.filesDir.path)
         Log.d(TAG, path)
 
-        val dir = File(context.filesDir.path + "/Gemini/Energy/$path")
+        val dir = File(context.filesDir.path + "/gemini/$path")
         dir.mkdirs()
 
         filePath = File(dir, filename)
