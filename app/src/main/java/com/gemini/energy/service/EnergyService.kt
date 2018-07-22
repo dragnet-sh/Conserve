@@ -17,7 +17,7 @@ class EnergyService(
         private val outgoingRows: OutgoingRows) {
 
     // *** This returns a Unit Flag - to signal the processing is Done or Error Out  as Applicable *** //
-    fun run(): Disposable {
+    fun run(callback: (status: Boolean) -> Unit): Disposable {
 
         Log.d(TAG, "Energy - Service :: Crunch Inc.")
 
@@ -25,7 +25,7 @@ class EnergyService(
             override fun onNext(computables: List<Computable<*>>) {
                 buildComputables(computables).subscribe {
                     it.compute().subscribe {
-                        Log.d(TAG, "Flowable Returned !!")
+                        callback(it)
                     }
                 }
             }

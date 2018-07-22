@@ -11,7 +11,9 @@ class EnergyGatewayImpl(
         private val uploader: IUploader) : EnergyGateway {
 
     override fun compute(audit: Audit, auditGateway: AuditGateway): Disposable {
-        return service.run()
+        return service.run(callback = {
+            // *** Do Nothing *** //
+        })
     }
 
     override fun upload(outgoingRows: List<OutgoingRows>): Observable<Unit> {

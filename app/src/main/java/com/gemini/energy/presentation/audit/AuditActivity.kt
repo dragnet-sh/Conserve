@@ -3,8 +3,10 @@ package com.gemini.energy.presentation.audit
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import com.gemini.energy.R
 import com.gemini.energy.databinding.ActivityHomeDetailBinding
@@ -57,7 +59,11 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_create_audit -> consume { showCreateAudit() }
         R.id.menu_energy_calculation -> consume {
-            disposables.add(energyService.run())
+            linlaHeaderProgress.visibility = View.VISIBLE
+            disposables.add(energyService.run(callback = {
+                Log.d(TAG, "\\m/ End of Computation \\m/")
+                linlaHeaderProgress.visibility = View.GONE
+            }))
         }
         else -> super.onOptionsItemSelected(item)
     }
