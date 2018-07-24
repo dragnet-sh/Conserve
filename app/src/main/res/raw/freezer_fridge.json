@@ -7,9 +7,9 @@
         {
           "index": 1,
           "param": "Product Type",
-          "dataType": "textrow",
+          "dataType": "pickerinputrow",
           "validation": "",
-          "defaultValues": "",
+          "defaultValues": "01:Undercounter,02:Reach-in,03:Work-Top Table,04:Milk or Beverage Cabinet,05:Roll-In,06:Other",
           "id": "101"
         },
         {
@@ -61,8 +61,8 @@
           "id": "107"
         },
         {
-          "index": 7,
-          "param": "Power Consumed",
+          "index": 8,
+          "param": "Energy Used",
           "dataType": "decimalrow",
           "validation": "",
           "defaultValues": "",
