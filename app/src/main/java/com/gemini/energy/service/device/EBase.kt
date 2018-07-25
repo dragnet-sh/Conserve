@@ -3,11 +3,13 @@ package com.gemini.energy.service.device
 import android.util.Log
 import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
-import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.presentation.util.EDay
 import com.gemini.energy.presentation.util.ERateKey
-import com.gemini.energy.service.*
+import com.gemini.energy.service.Electricity
+import com.gemini.energy.service.EnergyUsage
+import com.gemini.energy.service.EnergyUtility
+import com.gemini.energy.service.Gas
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import io.reactivex.Observable
@@ -24,30 +26,42 @@ abstract class EBase(private val computable: Computable<*>,
                      val energyUsage: EnergyUsage) {
 
     lateinit var schedulers: Schedulers
-    private lateinit var gasUtility: EnergyUtility
+    lateinit var gasUtility: EnergyUtility
     lateinit var electricityUtility: EnergyUtility
 
-    private var preAudit: Map<String?, Feature>? = mapOf()
-    var featureData: Map<String?, Feature>? = mapOf()
+    var preAudit: Map<String, Any> = mapOf()
+    var featureData: Map<String, Any> = mapOf()
     var electricRateStructure: String = RATE
 
     fun initialize() {
-        schedulers = AppSchedulers()
-        featureData = computable.mappedFeatureAuditScope()
-        preAudit = computable.mappedFeaturePreAudit()
+        val base = this
 
-        gasUtility = energyUtility.initUtility(Gas()).build()
+        base.schedulers = AppSchedulers()
+        base.featureData = computable.mappedFeatureAuditScope()
+        base.preAudit = computable.mappedFeaturePreAudit()
 
-        electricRateStructure = preAudit?.get("Electric Rate Structure")?.valueString ?: RATE
-        electricityUtility = energyUtility.initUtility(
-                Electricity(electricRateStructure))
-                .build()
+        base.gasUtility = energyUtility.initUtility(Gas()).build()
+        base.electricRateStructure = preAudit["Electric Rate Structure"] as String
+        base.electricityUtility = energyUtility.initUtility(
+                Electricity(electricRateStructure)).build()
+
+        base.energyUsage.initUsage(mappedUsageHours()).build()
     }
 
 
     fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
 
         return Observable.create<Computable<*>> {
+
+            // #### Step 1: Pre-State Energy Calculation ####
+
+            /**
+             * Cost Function to be Called !!
+             * */
+            val cost = cost()
+            Log.d(TAG, "***** ENERGY COST :: $cost *****")
+
+            // #### Step 2: Post-State Energy Calculation ####
 
             if (efficientLookup()) {
                 starValidator(queryEnergyStar())
@@ -60,6 +74,9 @@ abstract class EBase(private val computable: Computable<*>,
                                 // 1. Fetch Efficient Devices
                                 // 2. Start Doing your Calculations -- Where ??
 
+                                Log.d(TAG, "Debug - Query Filter")
+                                Log.d(TAG, queryFilter())
+
                                 efficientAlternative(queryFilter())
                                         .observeOn(schedulers.observeOn)
                                         .subscribeOn(schedulers.subscribeOn)
@@ -68,6 +85,10 @@ abstract class EBase(private val computable: Computable<*>,
                                             Log.d(TAG, "Efficient Alternate Count - ${response.count()}")
                                             Log.d(TAG, response.toString())
                                             computable.efficientAlternative = response.map { it.asJsonObject.get("data") }
+
+                                            /**
+                                             * Cost Function to be Called - for each of the Data Row!!
+                                             * */
 
                                             it.onNext(computable)
                                             it.onComplete()
@@ -98,11 +119,18 @@ abstract class EBase(private val computable: Computable<*>,
     abstract fun queryFilter(): String
     abstract fun efficientLookup(): Boolean
 
+    abstract fun preAuditFields(): MutableList<String>
+    abstract fun featureDataFields(): MutableList<String>
+    abstract fun preStateFields(): MutableList<String>
+    abstract fun postStateFields(): MutableList<String>
+    abstract fun computedFields(): MutableList<String>
+
+    abstract fun cost(): Double
+
     private fun queryEnergyStar(): String {
         val json = JSONObject()
-        json.put("data.company_name", featureData?.get("company")?.valueString ?: "")
-        json.put("data.model_number", featureData?.get("model_number")?.valueString ?: "")
-
+        json.put("data.company_name", featureData["Company"])
+        json.put("data.model_number", featureData["Model Number"])
         return json.toString()
     }
 
@@ -133,8 +161,17 @@ abstract class EBase(private val computable: Computable<*>,
         }
     }
 
-    fun mappedUsageHours(): Map<EDay, String?> {
-        val usage = EDay.values().map { preAudit?.get(it.value)?.valueString }
+    private fun mappedUsageHours(): Map<EDay, String?> {
+        val usage = mutableListOf<String>()
+
+        for (eDay in EDay.values()) {
+            if (preAudit.containsKey(eDay.value)) {
+                usage.add(preAudit[eDay.value] as String)
+            } else {usage.add("")}
+        }
+
+        Log.d(TAG, usage.toString())
+
         return EDay.values().associateBy({ it }, {
             usage[EDay.values().indexOf(it)]
         })
@@ -164,8 +201,12 @@ abstract class EBase(private val computable: Computable<*>,
             return (summer + winter)
 
         }
+
     }
 
+    /**
+     * Parse API Service ToDo: Move this to the Network Layer !!
+     * */
     private val parseAPIService by lazy { ParseAPI.create() }
 
     class ParseAPI {

@@ -10,13 +10,12 @@ import com.gemini.energy.service.device.EBase
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import org.json.JSONObject
-import java.util.*
 
 class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
                    energyUsage: EnergyUsage, private val outgoingRows: OutgoingRows) : EBase(computable, energyUtility, energyUsage), IComputable {
 
     /**
-     * IMP !! This is the Main Compute Method
+     * Entry Point
      * */
     override fun compute(): Flowable<Boolean> {
 
@@ -30,39 +29,7 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
                     .observeOn(schedulers.observeOn)
                     .subscribe {
 
-                        // 1. Original Computable - Done
-                        // 2. Efficient Alternative JSON Data - Done
-                        // 3. Utility Rate - In Progress
-                        // 4. Usage Hours - Done
-
-                        val power = featureData?.get("Power Consumed")?.valueString?.toDouble()
-                        val usage = energyUsage.initUsage(mappedUsageHours()).build()
-                        val energyConsumed = (power ?: 0.0) * usage.yearly()
-                        val cost = costElectricity(energyConsumed, usage, electricityUtility)
-
-                        Log.d(TAG, "Power - $power")
-                        Log.d(TAG, "Usage Mapped by Peak (Yearly)- ${usage.mappedPeakHourYearly()}")
-                        Log.d(TAG, "Usage (Yearly)- ${usage.yearly()}")
-                        Log.d(TAG, "Energy Consumed - $energyConsumed")
-                        Log.d(TAG, "Total Cost - $cost")
-
-                        outgoingRows.header = mutableListOf("power", "yearly_usage_hrs", "energy_consumed", "cost")
-                        outgoingRows.rows = mutableListOf(mapOf("power" to power.toString(),
-                                "yearly_usage_hrs" to usage.yearly().toString(),
-                                "energy_consumed" to energyConsumed.toString(),
-                                "cost" to cost.toString()))
-
-                        val path = StringBuilder()
-                        path.append("${it.auditName.toLowerCase().replace(" ", "_")}/")
-                        path.append("${it.zoneName.toLowerCase().replace(" ", "_")}/")
-                        path.append("${it.auditScopeType?.value?.toLowerCase()}_")
-                        path.append("${it.auditScopeSubType?.toString()?.toLowerCase()}_")
-                        path.append("${it.auditScopeName.toLowerCase().replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
-
-                        outgoingRows.setFilePath(path.toString(), "${Date().time}.csv")
-                        outgoingRows.saveFile()
-
-                        Log.d(TAG, "File Path: ${outgoingRows.filePath}")
+                        // #### Nothing to do at the Moment #### //
 
                         emitter.onNext(true)
                         emitter.onComplete()
@@ -72,20 +39,40 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
 
     }
 
+    /**
+     * Energy Cost Calculation Formula
+     * */
+    override fun cost(): Double {
+        val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"] as Double
+        val vacationDays = preAudit["Number of Vacation days"] as Int
+        val yearlyEnergyUsed = dailyEnergyUsed * (energyUsage.yearly() - vacationDays * 24.00)
+
+        return costElectricity(yearlyEnergyUsed, energyUsage, electricityUtility)
+    }
+
+    /**
+     * Energy Efficiency Lookup Query Definition
+     * */
     override fun efficientLookup() = true
     override fun queryFilter() = JSONObject()
-            .put("data.style_type", "Reach-in")
-            .put("data.total_volume", 17.89)
+            .put("data.style_type", featureData["Product Type"] as String)
+            .put("data.total_volume", featureData["Total Volume"] as Double)
             .toString()
+
+    /**
+     * Define all the fields here - These would be used to Generate the Outgoing Rows.
+     * */
+    override fun preAuditFields() = mutableListOf("Number of Vacation days")
+    override fun featureDataFields() = mutableListOf("Company", "Model Number", "Fridge Capacity", "Age", "Control",
+            "Daily Energy Used (kWh)", "Product Type", "Total Volume")
+
+    override fun preStateFields() = mutableListOf<String>()
+    override fun postStateFields() = mutableListOf("company", "model_number", "style_type",
+            "total_volume", "daily_energy_use", "rebate", "pgne_measure_code", "purchase_price_per_unit", "vendor")
+
+    override fun computedFields() = mutableListOf("__daily_operating_hours", "__electric_energy", "__electric_cost")
 
     companion object {
         private const val TAG = "Refrigerator"
-
-        fun fields() = listOf(
-                "company", "model_number", "style_type", "total_volume","daily_energy_use", "rebate",
-                "pgne_measure_code", "purchase_price_per_unit", "vendor",
-
-                "__daily_operating_hours", "__electric_energy", "__electric_cost"
-        )
     }
 }
