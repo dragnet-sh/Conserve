@@ -56,8 +56,11 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
     override fun efficientLookup() = true
     override fun queryFilter() = JSONObject()
             .put("data.style_type", featureData["Product Type"] as String)
-            .put("data.total_volume", featureData["Total Volume"] as Double)
+            .put("data.total_volume", JSONObject()
+                    .put("\$gte", 50) // ** Greater than 50
+                    .put("\$lte", 70)) // ** Less than 70
             .toString()
+
 
     /**
      * Define all the fields here - These would be used to Generate the Outgoing Rows.
