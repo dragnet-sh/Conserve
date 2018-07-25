@@ -12,7 +12,8 @@ import io.reactivex.Flowable
 import org.json.JSONObject
 
 class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
-                   energyUsage: EnergyUsage, private val outgoingRows: OutgoingRows) : EBase(computable, energyUtility, energyUsage), IComputable {
+                   energyUsage: EnergyUsage, outgoingRows: OutgoingRows) :
+        EBase(computable, energyUtility, energyUsage, outgoingRows), IComputable {
 
     /**
      * Entry Point
@@ -29,7 +30,7 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
                     .observeOn(schedulers.observeOn)
                     .subscribe {
 
-                        // #### Nothing to do at the Moment #### //
+                        outgoingRows.saveFile()
 
                         emitter.onNext(true)
                         emitter.onComplete()
@@ -42,12 +43,11 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
     /**
      * Energy Cost Calculation Formula
      * */
-    override fun cost(): Double {
-        val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"] as Double
-        val vacationDays = preAudit["Number of Vacation days"] as Int
-        val yearlyEnergyUsed = dailyEnergyUsed * (energyUsage.yearly() - vacationDays * 24.00)
+    override fun cost(vararg params: Any): Double {
+        val dailyEnergyUsed = params[0] as Double
+        val yearlyEnergyUsed = dailyEnergyUsed * (operatingHours.yearly())
 
-        return costElectricity(yearlyEnergyUsed, energyUsage, electricityUtility)
+        return costElectricity(yearlyEnergyUsed, operatingHours, electricityUtility)
     }
 
     /**
@@ -56,9 +56,7 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
     override fun efficientLookup() = true
     override fun queryFilter() = JSONObject()
             .put("data.style_type", featureData["Product Type"] as String)
-            .put("data.total_volume", JSONObject()
-                    .put("\$gte", 50) // ** Greater than 50
-                    .put("\$lte", 70)) // ** Less than 70
+            .put("data.total_volume", featureData["Total Volume"] as Double)
             .toString()
 
 
@@ -73,7 +71,8 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
     override fun postStateFields() = mutableListOf("company", "model_number", "style_type",
             "total_volume", "daily_energy_use", "rebate", "pgne_measure_code", "purchase_price_per_unit", "vendor")
 
-    override fun computedFields() = mutableListOf("__daily_operating_hours", "__electric_energy", "__electric_cost")
+    override fun computedFields() = mutableListOf("__daily_operating_hours", "__weekly_operating_hours",
+            "__yearly_operating_hours", "__electric_cost")
 
     companion object {
         private const val TAG = "Refrigerator"

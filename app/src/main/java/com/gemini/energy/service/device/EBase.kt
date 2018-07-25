@@ -6,10 +6,7 @@ import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.presentation.util.EDay
 import com.gemini.energy.presentation.util.ERateKey
-import com.gemini.energy.service.Electricity
-import com.gemini.energy.service.EnergyUsage
-import com.gemini.energy.service.EnergyUtility
-import com.gemini.energy.service.Gas
+import com.gemini.energy.service.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import io.reactivex.Observable
@@ -23,7 +20,8 @@ import retrofit2.http.Query
 
 abstract class EBase(private val computable: Computable<*>,
                      private val energyUtility: EnergyUtility,
-                     val energyUsage: EnergyUsage) {
+                     val operatingHours: EnergyUsage,
+                     val outgoingRows: OutgoingRows) {
 
     lateinit var schedulers: Schedulers
     lateinit var gasUtility: EnergyUtility
@@ -32,6 +30,8 @@ abstract class EBase(private val computable: Computable<*>,
     var preAudit: Map<String, Any> = mapOf()
     var featureData: Map<String, Any> = mapOf()
     var electricRateStructure: String = RATE
+
+    var entry: HashMap<String, String> = hashMapOf()
 
     fun initialize() {
         val base = this
@@ -45,9 +45,11 @@ abstract class EBase(private val computable: Computable<*>,
         base.electricityUtility = energyUtility.initUtility(
                 Electricity(electricRateStructure)).build()
 
-        base.energyUsage.initUsage(mappedUsageHours()).build()
-    }
+        base.operatingHours.initUsage(mappedUsageHours()).build()
+        base.outgoingRows.computable = computable
+        base.outgoingRows.dataHolder = mutableListOf()
 
+    }
 
     fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
 
@@ -55,11 +57,34 @@ abstract class EBase(private val computable: Computable<*>,
 
             // #### Step 1: Pre-State Energy Calculation ####
 
-            /**
-             * Cost Function to be Called !!
-             * */
-            val cost = cost()
-            Log.d(TAG, "***** ENERGY COST :: $cost *****")
+            val dataHolderPreState = DataHolder()
+            dataHolderPreState.header?.addAll(featureDataFields())
+            dataHolderPreState.computable = computable
+
+            val preRow = mutableMapOf<String, String>()
+            featureDataFields().forEach { field ->
+                val value = featureData[field]
+                preRow[field] = when (value) {
+                    is String       -> value
+                    is Int          -> value.toString()
+                    is Double       -> value.toString()
+                    else            -> ""
+                }
+            }
+
+            val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"]
+            dailyEnergyUsed?.let {
+                val cost = cost(dailyEnergyUsed)
+                dataHolderPreState.header?.add("__electric_cost")
+                preRow["__electric_cost"] = cost.toString()
+            }
+
+            dataHolderPreState.rows?.add(preRow)
+            outgoingRows.dataHolder.add(dataHolderPreState)
+
+            Log.d(TAG, "### PRE STATE ###" )
+            Log.d(TAG, dataHolderPreState.header.toString())
+            Log.d(TAG, dataHolderPreState.rows.toString())
 
             // #### Step 2: Post-State Energy Calculation ####
 
@@ -71,10 +96,7 @@ abstract class EBase(private val computable: Computable<*>,
 
                             if (starValidationFail) {
 
-                                // 1. Fetch Efficient Devices
-                                // 2. Start Doing your Calculations -- Where ??
-
-                                Log.d(TAG, "Debug - Query Filter")
+                                Log.d(TAG, "### Debug - Query Filter ###")
                                 Log.d(TAG, queryFilter())
 
                                 efficientAlternative(queryFilter())
@@ -84,11 +106,36 @@ abstract class EBase(private val computable: Computable<*>,
 
                                             Log.d(TAG, "Efficient Alternate Count - ${response.count()}")
                                             Log.d(TAG, response.toString())
-                                            computable.efficientAlternative = response.map { it.asJsonObject.get("data") }
+                                            val jsonElements = response.map { it.asJsonObject.get("data") }
+                                            computable.efficientAlternative = jsonElements
 
                                             /**
                                              * Cost Function to be Called - for each of the Data Row!!
                                              * */
+                                            val dataHolderPostState = DataHolder()
+                                            dataHolderPostState.header = postStateFields()
+                                            dataHolderPostState.header?.add("__electric_cost")
+                                            dataHolderPostState.computable = computable
+
+                                            jsonElements.forEach { element ->
+                                                val postRow = mutableMapOf<String, String>()
+                                                postStateFields().forEach { key ->
+                                                    val value = element.asJsonObject.get(key)
+                                                    postRow[key] = value.asString
+                                                }
+
+                                                val postDailyEnergyUsed = element.asJsonObject.get("daily_energy_use").asDouble
+                                                val cost = cost(postDailyEnergyUsed)
+                                                postRow["__electric_cost"] = cost.toString()
+
+                                                dataHolderPostState.rows?.add(postRow)
+                                            }
+
+                                            outgoingRows.dataHolder.add(dataHolderPostState)
+
+                                            Log.d(TAG, "### POST STATE ###")
+                                            Log.d(TAG, dataHolderPostState.header.toString())
+                                            Log.d(TAG, dataHolderPostState.rows.toString())
 
                                             it.onNext(computable)
                                             it.onComplete()
@@ -125,7 +172,7 @@ abstract class EBase(private val computable: Computable<*>,
     abstract fun postStateFields(): MutableList<String>
     abstract fun computedFields(): MutableList<String>
 
-    abstract fun cost(): Double
+    abstract fun cost(vararg params: Any): Double
 
     private fun queryEnergyStar(): String {
         val json = JSONObject()

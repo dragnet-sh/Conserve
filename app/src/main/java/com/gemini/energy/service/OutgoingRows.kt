@@ -3,38 +3,78 @@ package com.gemini.energy.service
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import com.gemini.energy.domain.entity.Computable
 import java.io.BufferedOutputStream
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.util.*
+
+class DataHolder {
+    var header: MutableList<String>? = mutableListOf()
+    var rows: MutableList<Map<String, String>>? = mutableListOf()
+    lateinit var computable: Computable<*>
+
+    fun path() = StringBuilder()
+            .append("${computable.auditName.toLowerCase().replace("\\s+".toRegex(), "_")}/")
+            .append("${computable.zoneName.toLowerCase().replace("\\s+".toRegex(), "_")}/")
+            .append("${computable.auditScopeType?.value?.toLowerCase()}_")
+            .append("${computable.auditScopeSubType?.toString()?.toLowerCase()}_")
+            .append("${computable.auditScopeName.toLowerCase().replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
+            .toString()
+}
 
 class OutgoingRows(private val context: Context) {
 
-    var header: MutableList<String>? = mutableListOf()
-    var rows: MutableList<Map<String, String>>? = mutableListOf()
-    lateinit var filePath: File
+    private lateinit var filePath: File
+    lateinit var computable: Computable<*>
 
-    fun saveFile(data:String = data()): Boolean {
+    lateinit var dataHolder: MutableList<DataHolder>
 
-        try {
-            val inputStream = ByteArrayInputStream(data.toByteArray())
-            val outputStream = BufferedOutputStream(FileOutputStream(filePath!!))
+    /**
+     * Saves the Data to the Internal File System
+     * */
+    fun saveFile() {
 
-            var buffer = ByteArray(1024)
-            var bytesRead = inputStream.read(buffer, 0, buffer.size)
+        // Step 1: Loop over through the Data Holder
+        // Step 2: Extract out the individual components
+        // Step 3: Feed those components to the data method
+        // Step 4: Collect those data string in a list
+        // Step 5: Concatenate the list and write that to the file
 
-            while (bytesRead > 0) {
-                outputStream.write(buffer, 0, bytesRead)
-                bytesRead = inputStream.read(buffer, 0, buffer.size)
+        Log.d(TAG, dataHolder.count().toString())
+        dataHolder.forEach { eachData ->
+
+            val outgoing = StringBuilder()
+            val header = eachData.header
+            val rows = eachData.rows
+
+            Log.d(TAG, header.toString())
+            Log.d(TAG, rows.toString())
+            outgoing.append(data(header, rows))
+
+            setFilePath(eachData.path(), "${Date().time}.csv")
+
+            val data = outgoing.toString()
+
+            try {
+                val inputStream = ByteArrayInputStream(data.toByteArray())
+                val outputStream = BufferedOutputStream(FileOutputStream(filePath))
+
+                val buffer = ByteArray(1024)
+                var bytesRead = inputStream.read(buffer, 0, buffer.size)
+
+                while (bytesRead > 0) {
+                    outputStream.write(buffer, 0, bytesRead)
+                    bytesRead = inputStream.read(buffer, 0, buffer.size)
+                }
+
+                inputStream.close()
+                outputStream.close()
+
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-
-            inputStream.close()
-            outputStream.close()
-
-            return true
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
         }
     }
 
@@ -42,20 +82,21 @@ class OutgoingRows(private val context: Context) {
     /**
      * Utility Methods
      * */
-    fun isExternalStorageWritable(): Boolean {
+    private fun isExternalStorageWritable(): Boolean {
         val state = Environment.getExternalStorageState()
         return Environment.MEDIA_MOUNTED == state
     }
 
-    fun isExternalStorageReadable(): Boolean {
+    private fun isExternalStorageReadable(): Boolean {
         val state = Environment.getExternalStorageState()
         return Environment.MEDIA_MOUNTED == state || Environment.MEDIA_MOUNTED_READ_ONLY == state
     }
 
-    fun parseFilenameFromPath(filePath: String): String {
+    private fun parseFilenameFromPath(filePath: String): String {
         val index = filePath.lastIndexOf('/') + 1
         return filePath.substring(index)
     }
+
 
 
     private fun getDocumentFolderPath(subFolderPath: String? = null): File? {
@@ -85,11 +126,13 @@ class OutgoingRows(private val context: Context) {
             folderDir.mkdirs()
         }
 
+        Log.d(TAG, folderDir.toString())
+
         return folderDir
     }
 
 
-    fun setFilePath(path: String, fileName: String) {
+    private fun setFilePath(path: String, fileName: String) {
         val directory = getDocumentFolderPath("gemini/$path")!!
         this.filePath = File(directory.toString(), fileName)
 
@@ -100,7 +143,7 @@ class OutgoingRows(private val context: Context) {
         }
     }
 
-    fun data(): String {
+    private fun data(header: List<String>?, rows: MutableList<Map<String, String>>?): String {
         val buffer = StringBuilder()
         buffer.append(header?.joinToString())
         buffer.append("\r\n")
@@ -114,7 +157,6 @@ class OutgoingRows(private val context: Context) {
             buffer.append("\r\n")
         }
 
-        Log.d(TAG, buffer.toString())
         return buffer.toString()
     }
 

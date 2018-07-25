@@ -8,6 +8,6 @@ class CombinationOven : IComputable {
 
     override fun compute(): Flowable<Boolean> {
         Log.d(this.javaClass.simpleName, "COMPUTE")
-        return Flowable.just(true)
+        return Flowable.just(false)
     }
 }
