@@ -41,32 +41,34 @@ class SystemMapper {
             auditScopeParent.updatedAt
     )
 
-    fun toEntity(feature: FeatureLocalModel) = Feature(
-            feature.featureId,
-            feature.formId,
-            feature.belongsTo,
-            feature.dataType,
+    fun toEntity(feature: FeatureLocalModel): Feature {
 
-            feature.auditId,
-            feature.zoneId,
-            feature.typeId,
+//        Log.d("$TAG.Thread", "Feature Entity Mapper (${Thread.currentThread().name})")
 
-            feature.key,
-            feature.valueString,
-            feature.valueInt,
-            feature.valueDouble,
+        return Feature(
+                feature.featureId,
+                feature.formId,
+                feature.belongsTo,
+                feature.dataType,
 
-            feature.createdAt,
-            feature.updatedAt
-    )
+                feature.auditId,
+                feature.zoneId,
+                feature.typeId,
+
+                feature.key,
+                feature.valueString,
+                feature.valueInt,
+                feature.valueDouble,
+
+                feature.createdAt,
+                feature.updatedAt
+        )
+    }
 
     fun toEntity(computable: ComputableLocalModel): Computable<*> {
 
-        val TAG = this.javaClass.simpleName
-
-        Log.d(TAG, "###### Debugging Computable #######")
-        Log.d(TAG, computable.toString())
-
+//        Log.d(TAG, computable.toString())
+//        Log.d("$TAG.Thread", "Computable Entity Mapper (${Thread.currentThread().name})")
 
         val eZoneType = EZoneType.get(computable.auditScopeType)
         val entity = when (eZoneType) {
@@ -84,6 +86,10 @@ class SystemMapper {
         entity.auditScopeType = eZoneType
 
         return entity
+    }
+
+    companion object {
+        private const val TAG = "SystemMapper"
     }
 
 }

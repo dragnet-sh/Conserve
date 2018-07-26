@@ -182,7 +182,6 @@ internal abstract class HomeModule {
             return EnergyUsage()
         }
 
-        @HomeScope
         @Provides
         @JvmStatic
         internal fun provideOutgoingRows(context: Context): OutgoingRows {

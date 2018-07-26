@@ -77,4 +77,11 @@ data class Computable<SubType>(
         private fun discard(boolean: Boolean) = !boolean
     }
 
+    override fun toString(): String {
+        return  "Audit [$auditId - $auditName] | Zone [$zoneId - $zoneName]\n" +
+                "Scope [$auditScopeId - $auditScopeName] | Type [${auditScopeType?.value} - ${auditScopeSubType?.toString()}]\n" +
+                "Feature Pre-Audit Count [${featurePreAudit?.count()}]\n" +
+                "Feature Audit Scope Count [${featureAuditScope?.count()}]"
+    }
+
 }

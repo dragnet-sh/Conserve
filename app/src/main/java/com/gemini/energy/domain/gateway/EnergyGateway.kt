@@ -6,6 +6,6 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 
 interface EnergyGateway {
-    fun compute(audit: Audit, auditGateway: AuditGateway): Disposable
+    fun compute(audit: Audit, auditGateway: AuditGateway)
     fun upload(outgoingRows: List<OutgoingRows>): Observable<Unit>
 }

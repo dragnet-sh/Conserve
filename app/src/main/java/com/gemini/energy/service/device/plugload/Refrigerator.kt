@@ -11,7 +11,7 @@ import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import org.json.JSONObject
 
-class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
+class Refrigerator(private val computable: Computable<*>, energyUtility: EnergyUtility,
                    energyUsage: EnergyUsage, outgoingRows: OutgoingRows) :
         EBase(computable, energyUtility, energyUsage, outgoingRows), IComputable {
 
@@ -19,6 +19,9 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
      * Entry Point
      * */
     override fun compute(): Flowable<Boolean> {
+
+        Log.d(TAG, "Refrigerator : Compute : Start")
+        Log.d(TAG, computable.toString())
 
         return Flowable.create<Boolean>({ emitter ->
 
@@ -30,7 +33,8 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
                     .observeOn(schedulers.observeOn)
                     .subscribe {
 
-                        outgoingRows.saveFile()
+                        Log.d(TAG, "Refrigerator : Compute : Saving Data")
+//                        outgoingRows.saveFile()
 
                         emitter.onNext(true)
                         emitter.onComplete()

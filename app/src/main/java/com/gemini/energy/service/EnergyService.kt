@@ -1,12 +1,15 @@
+
 package com.gemini.energy.service
 
 import android.util.Log
 import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
+import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.domain.gateway.AuditGateway
+import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
-import io.reactivex.observers.DisposableObserver
+import io.reactivex.functions.BiFunction
 
 
 class EnergyService(
@@ -16,54 +19,86 @@ class EnergyService(
         private val energyUsage: EnergyUsage,
         private val outgoingRows: OutgoingRows) {
 
-    // *** This returns a Unit Flag - to signal the processing is Done or Error Out  as Applicable *** //
-    fun run(callback: (status: Boolean) -> Unit): Disposable {
+    private var primary: MutableList<Observable<IComputable>> = mutableListOf()
+    private var secondary: MutableList<Flowable<Boolean>> = mutableListOf()
+    private var disposableStream: MutableList<Disposable> = mutableListOf()
 
-        Log.d(TAG, "Energy - Service :: Crunch Inc.")
+    fun run(callback: (status: Boolean) -> Unit) {
 
-        val observer = object: DisposableObserver<List<Computable<*>>>() {
-            override fun onNext(computables: List<Computable<*>>) {
-                buildComputables(computables).subscribe {
-                    it.compute().subscribe {
-                        callback(it)
-                    }
-                }
+        if (disposableStream.count() > 0) {
+            disposableStream.forEach {
+                it.dispose()
             }
-            override fun onError(e: Throwable) {}
-            override fun onComplete() {}
         }
 
-        return auditGateway.getComputable()
-                .observeOn(schedulers.observeOn)
+        Log.d(TAG, ":: Crunch Inc ::")
+        disposableStream.add(auditGateway.getComputable()
                 .subscribeOn(schedulers.subscribeOn)
-                .subscribeWith(observer)
+                .observeOn(schedulers.observeOn)
+                .subscribe {
+                    Observable.fromIterable(it)
+                            .subscribe({
+                                primary.add(getComputable(it))
+                                Log.d(TAG, it.toString())
+                            }, {}, { doWorkPrimary(callback) })
+                })
+
     }
 
-    private fun buildComputables(models: List<Computable<*>>): Observable<IComputable> {
-        return Observable.create<IComputable> { emitter ->
-            val groupedComputables = models.groupBy { it.auditId }
-            for ((auditId, computables) in groupedComputables) {
-                auditGateway.getFeature(auditId).subscribe { featurePreAudit ->
-                    computables.forEach { eachComputable ->
-                        auditGateway.getFeatureByType(eachComputable.auditScopeId)
-                                .subscribe { featureAuditScope ->
+    private fun doWorkPrimary(callback: (status: Boolean) -> Unit) {
+        Log.d(TAG, "####### DO WORK PRIMARY #######")
+        Log.d(TAG, primary.toString())
+        Log.d(TAG, primary.count().toString())
 
-                                    eachComputable.featurePreAudit = featurePreAudit
-                                    eachComputable.featureAuditScope = featureAuditScope
+        disposableStream.addAll(primary.map {
+            it.subscribe({
+                secondary.add(it.compute())
+            }, {}, {
+                Log.d(TAG, "##### PRIMARY WORK - DONE #####")
+                doWorkSecondary(callback)
+            })
+        })
 
-                                    emitter.onNext(
-                                            ComputableFactory.createFactory(eachComputable,
-                                                    energyUtility, energyUsage, outgoingRows).build())
-                                }
-                    }
-                }
-            }
-            emitter.onComplete()
-        }
+    }
+
+    private fun doWorkSecondary(callback: (status: Boolean) -> Unit) {
+        Log.d(TAG, "####### DO WORK SECONDARY #######")
+        Log.d(TAG, secondary.toString())
+        Log.d(TAG, secondary.count().toString())
+
+        Flowable.merge(secondary)
+                .subscribeOn(schedulers.subscribeOn)
+                .observeOn(schedulers.observeOn)
+                .subscribe ({
+                    // ** Do Nothing ** //
+                }, {}, {
+                    Log.d(TAG, "##### SECONDARY WORK - DONE #####")
+                    callback(true)
+                })
+
+    }
+
+    private fun getComputable(computable: Computable<*>): Observable<IComputable> {
+        return Observable.zip(
+                auditGateway.getFeature(computable.auditId),
+                auditGateway.getFeatureByType(computable.zoneId),
+                BiFunction<List<Feature>, List<Feature>, IComputable> { featurePreAudit, featureAuditScope ->
+                    buildComputable(computable, featureAuditScope, featurePreAudit) })
+    }
+
+
+    private fun buildComputable(computable: Computable<*>, featureAuditScope: List<Feature>,
+                                featurePreAudit: List<Feature>): IComputable {
+
+        computable.featureAuditScope = featureAuditScope
+        computable.featurePreAudit = featurePreAudit
+
+        return ComputableFactory.createFactory(computable, energyUtility, energyUsage,
+                outgoingRows).build()
     }
 
     companion object {
-        private val TAG = "EnergyService"
+        private const val TAG = "Gemini.EnergyService"
     }
 
 }

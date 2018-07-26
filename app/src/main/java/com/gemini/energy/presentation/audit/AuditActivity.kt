@@ -60,12 +60,12 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
         R.id.menu_create_audit -> consume { showCreateAudit() }
         R.id.menu_energy_calculation -> consume {
             linlaHeaderProgress.visibility = View.VISIBLE
-            disposables.add(energyService.run(callback = {
-                Log.d(TAG, "\\m/ End of Computation \\m/")
+            energyService.run(callback = {
+                Log.d(TAG, "\\m/ End of Computation \\m/ - (${Thread.currentThread().name})")
                 if (it) {
                     linlaHeaderProgress.visibility = View.GONE
                 }
-            }))
+            })
         }
         else -> super.onOptionsItemSelected(item)
     }

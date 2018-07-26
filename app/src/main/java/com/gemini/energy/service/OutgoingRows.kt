@@ -8,27 +8,41 @@ import java.io.BufferedOutputStream
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.FileOutputStream
-import java.util.*
 
 class DataHolder {
+
+    /**
+     * Set from EBase
+     * */
+    var computable: Computable<*>? = null
+    set(value) {
+        this.path = StringBuilder()
+
+                .append("${computable?.auditName?.toLowerCase()?.replace("\\s+".toRegex(), "_")}/")
+                .append("${computable?.zoneName?.toLowerCase()?.replace("\\s+".toRegex(), "_")}/")
+                .append("${computable?.auditScopeType?.value?.toLowerCase()}_")
+                .append("${computable?.auditScopeSubType?.toString()?.toLowerCase()}_")
+                .append("${computable?.auditScopeName?.toLowerCase()?.replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
+
+                .toString()
+    }
+
+    /**
+     * These variables are exposed and are supposed to be set by Each Computables - @EBase
+     * */
     var header: MutableList<String>? = mutableListOf()
     var rows: MutableList<Map<String, String>>? = mutableListOf()
-    lateinit var computable: Computable<*>
+    var fileName: String = ""
 
-    fun path() = StringBuilder()
-            .append("${computable.auditName.toLowerCase().replace("\\s+".toRegex(), "_")}/")
-            .append("${computable.zoneName.toLowerCase().replace("\\s+".toRegex(), "_")}/")
-            .append("${computable.auditScopeType?.value?.toLowerCase()}_")
-            .append("${computable.auditScopeSubType?.toString()?.toLowerCase()}_")
-            .append("${computable.auditScopeName.toLowerCase().replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
-            .toString()
+    /**
+     * Set's during runtime via the computable set method
+     * */
+    var path: String = ""
+
 }
 
 class OutgoingRows(private val context: Context) {
-
-    private lateinit var filePath: File
     lateinit var computable: Computable<*>
-
     lateinit var dataHolder: MutableList<DataHolder>
 
     /**
@@ -42,24 +56,27 @@ class OutgoingRows(private val context: Context) {
         // Step 4: Collect those data string in a list
         // Step 5: Concatenate the list and write that to the file
 
-        Log.d(TAG, dataHolder.count().toString())
+        Log.d(TAG, "Data Holder Count - ${dataHolder.count()}")
         dataHolder.forEach { eachData ->
 
             val outgoing = StringBuilder()
             val header = eachData.header
             val rows = eachData.rows
 
+            Log.d(TAG, "## Debug :: Data Holder ##")
             Log.d(TAG, header.toString())
             Log.d(TAG, rows.toString())
+
+            Log.d(TAG, eachData.path)
+            Log.d(TAG, eachData.fileName)
+
             outgoing.append(data(header, rows))
-
-            setFilePath(eachData.path(), "${Date().time}.csv")
-
+            val file = getFile(eachData.path, eachData.fileName)
             val data = outgoing.toString()
 
             try {
                 val inputStream = ByteArrayInputStream(data.toByteArray())
-                val outputStream = BufferedOutputStream(FileOutputStream(filePath))
+                val outputStream = BufferedOutputStream(FileOutputStream(file))
 
                 val buffer = ByteArray(1024)
                 var bytesRead = inputStream.read(buffer, 0, buffer.size)
@@ -98,7 +115,9 @@ class OutgoingRows(private val context: Context) {
     }
 
 
-
+    /**
+     * Makes sure the Directory is created and all the folder structures are in place
+     * */
     private fun getDocumentFolderPath(subFolderPath: String? = null): File? {
 
         val folderDir: File?
@@ -121,47 +140,47 @@ class OutgoingRows(private val context: Context) {
 
         if (!folderDir.isDirectory) {
             Log.d(TAG, "****** Creating Directory *******")
-            Log.d(TAG, folderDir.toString())
-
             folderDir.mkdirs()
         }
 
         Log.d(TAG, folderDir.toString())
-
         return folderDir
     }
 
 
-    private fun setFilePath(path: String, fileName: String) {
-        val directory = getDocumentFolderPath("gemini/$path")!!
-        this.filePath = File(directory.toString(), fileName)
-
-        if (this.filePath.exists()) {
-            Log.d(TAG, "File Exists")
-        } else {
-            Log.d(TAG, "File Does Not Exists")
-        }
+    /**
+     * File Object where the Data gets written to
+     * */
+    private fun getFile(path: String, fileName: String): File {
+        val directory = getDocumentFolderPath("$GEMINI$path")!!
+        return File(directory.toString(), fileName)
     }
 
-    private fun data(header: List<String>?, rows: MutableList<Map<String, String>>?): String {
-        val buffer = StringBuilder()
-        buffer.append(header?.joinToString())
-        buffer.append("\r\n")
-
-        for (row in rows!!) {
-            val tmp: MutableList<String> = mutableListOf()
-            header?.forEach { item ->
-                tmp.add(row[item] ?: "")
-            }
-            buffer.append(tmp.joinToString())
-            buffer.append("\r\n")
-        }
-
-        return buffer.toString()
-    }
 
     companion object {
+
         private const val TAG = "OutgoingRows"
+        private const val GEMINI = "gemini/"
+
+        /**
+         * Creating a Comma Separated CSV Data String
+         * */
+        private fun data(header: List<String>?, rows: MutableList<Map<String, String>>?): String {
+            val buffer = StringBuilder()
+            buffer.append(header?.joinToString())
+            buffer.append("\r\n")
+
+            for (row in rows!!) {
+                val tmp: MutableList<String> = mutableListOf()
+                header?.forEach { item ->
+                    tmp.add(row[item] ?: "")
+                }
+                buffer.append(tmp.joinToString())
+                buffer.append("\r\n")
+            }
+
+            return buffer.toString()
+        }
     }
 
 }
