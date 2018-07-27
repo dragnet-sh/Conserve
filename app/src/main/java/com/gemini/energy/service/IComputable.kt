@@ -1,7 +1,8 @@
 package com.gemini.energy.service
 
-import io.reactivex.Flowable
+import com.gemini.energy.domain.entity.Computable
+import io.reactivex.Observable
 
 interface IComputable {
-    fun compute(): Flowable<Boolean>
+    fun compute(): Observable<Computable<*>>
 }

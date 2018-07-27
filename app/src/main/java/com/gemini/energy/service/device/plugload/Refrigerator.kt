@@ -7,8 +7,7 @@ import com.gemini.energy.service.EnergyUtility
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
+import io.reactivex.Observable
 import org.json.JSONObject
 
 class Refrigerator(private val computable: Computable<*>, energyUtility: EnergyUtility,
@@ -18,32 +17,8 @@ class Refrigerator(private val computable: Computable<*>, energyUtility: EnergyU
     /**
      * Entry Point
      * */
-    override fun compute(): Flowable<Boolean> {
-
-        Log.d(TAG, "<< Refrigerator :: COMPUTE >> [Start] - (${Thread.currentThread().name})")
-        Log.d(TAG, computable.toString())
-
-        return Flowable.just(true)
-
-//        return Flowable.create<Boolean>({ emitter ->
-//
-//            super.initialize()
-//            super.compute(extra = {
-//                Log.d(TAG, it)
-//            })
-//                    .subscribeOn(schedulers.subscribeOn)
-//                    .observeOn(schedulers.observeOn)
-//                    .subscribe {
-//
-//                        Log.d(TAG, "Refrigerator : Compute : Saving Data")
-////                        outgoingRows.saveFile()
-//
-//                        emitter.onNext(true)
-//                        emitter.onComplete()
-//                    }
-//
-//        }, BackpressureStrategy.BUFFER)
-
+    override fun compute(): Observable<Computable<*>> {
+        return super.compute(extra = ({ Log.d(TAG, it) }))
     }
 
     /**
@@ -79,6 +54,8 @@ class Refrigerator(private val computable: Computable<*>, energyUtility: EnergyU
 
     override fun computedFields() = mutableListOf("__daily_operating_hours", "__weekly_operating_hours",
             "__yearly_operating_hours", "__electric_cost")
+
+
 
     companion object {
         private const val TAG = "Refrigerator"

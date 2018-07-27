@@ -18,11 +18,11 @@ class DataHolder {
     set(value) {
         this.path = StringBuilder()
 
-                .append("${computable?.auditName?.toLowerCase()?.replace("\\s+".toRegex(), "_")}/")
-                .append("${computable?.zoneName?.toLowerCase()?.replace("\\s+".toRegex(), "_")}/")
-                .append("${computable?.auditScopeType?.value?.toLowerCase()}_")
-                .append("${computable?.auditScopeSubType?.toString()?.toLowerCase()}_")
-                .append("${computable?.auditScopeName?.toLowerCase()?.replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
+                .append("${value?.auditName?.toLowerCase()?.replace("\\s+".toRegex(), "_")}/")
+                .append("${value?.zoneName?.toLowerCase()?.replace("\\s+".toRegex(), "_")}/")
+                .append("${value?.auditScopeType?.value?.toLowerCase()}_")
+                .append("${value?.auditScopeSubType?.toString()?.toLowerCase()}_")
+                .append("${value?.auditScopeName?.toLowerCase()?.replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
 
                 .toString()
     }

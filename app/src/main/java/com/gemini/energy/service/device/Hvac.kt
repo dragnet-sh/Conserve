@@ -1,15 +1,15 @@
 package com.gemini.energy.service.device
 
 import android.util.Log
+import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.service.IComputable
-import com.gemini.energy.service.device.plugload.Refrigerator
-import io.reactivex.Flowable
+import io.reactivex.Observable
 
 class Hvac : IComputable {
 
-    override fun compute(): Flowable<Boolean> {
+    override fun compute(): Observable<Computable<*>> {
         Log.d(TAG, "<< HVAC :: COMPUTE >> [Start] - (${Thread.currentThread().name})")
-        return Flowable.just(false)
+        return Observable.just(Computable(null))
     }
 
     companion object {
