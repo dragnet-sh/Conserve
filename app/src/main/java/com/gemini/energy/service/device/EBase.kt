@@ -32,8 +32,11 @@ abstract class EBase(private val computable: Computable<*>,
     var featureData: Map<String, Any> = mapOf()
     var electricRateStructure: String = RATE
 
-    fun initialize() {
+    private fun initialize() {
         val base = this
+
+        Log.d(TAG, "<< COMPUTE :: ${identifier()} >> [Start] - (${thread()})")
+        Log.d(TAG, computable.toString())
 
         base.schedulers = AppSchedulers()
         base.featureData = computable.mappedFeatureAuditScope()
@@ -50,13 +53,18 @@ abstract class EBase(private val computable: Computable<*>,
 
     }
 
+    private fun thread() = Thread.currentThread().name
+    private fun identifier() = "${computable.auditScopeType} - ${computable.auditScopeSubType}"
+
     fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
 
         return Observable.create<Computable<*>> {
 
+            initialize()
+
             // #### Step 1: Pre-State Energy Calculation ####
 
-            Log.d(TAG, ":: Pre-State Energy Calculation ::")
+            Log.d(TAG, ":::::::: Pre-State Energy Calculation - (${thread()}) ::::::::")
             val dataHolderPreState = DataHolder()
             dataHolderPreState.header?.addAll(featureDataFields())
             dataHolderPreState.computable = computable
@@ -83,31 +91,28 @@ abstract class EBase(private val computable: Computable<*>,
             dataHolderPreState.rows?.add(preRow)
             outgoingRows.dataHolder.add(dataHolderPreState)
 
-            Log.d(TAG, "### Data Holder - PRE STATE ###" )
+            Log.d(TAG, "## Data Holder - PRE STATE - (${thread()}) ##" )
             Log.d(TAG, dataHolderPreState.header.toString())
             Log.d(TAG, dataHolderPreState.rows.toString())
 
             // #### Step 2: Post-State Energy Calculation ####
 
-            Log.d(TAG, ":: Post-State Energy Calculation ::")
+            Log.d(TAG, ":::::::: Post-State Energy Calculation - (${thread()}) ::::::::")
             if (efficientLookup()) {
                 starValidator(queryEnergyStar())
-                        .observeOn(schedulers.observeOn)
-                        .subscribeOn(schedulers.subscribeOn)
+                        .observeOn(schedulers.subscribeOn)
                         .subscribe { starValidationFail ->
 
                             if (starValidationFail) {
 
-                                Log.d(TAG, "### Debug - Query Filter ###")
+                                Log.d(TAG, "### Debug - Query Filter - (${thread()})###")
                                 Log.d(TAG, queryFilter())
 
                                 efficientAlternative(queryFilter())
-                                        .observeOn(schedulers.observeOn)
-                                        .subscribeOn(schedulers.subscribeOn)
+                                        .observeOn(schedulers.subscribeOn)
                                         .subscribe { response ->
 
-                                            Log.d(TAG, "### Efficient Alternate Count - ${response.count()} ###")
-                                            Log.d(TAG, response.toString())
+                                            Log.d(TAG, "### Efficient Alternate Count - [${response.count()}] - ###")
                                             val jsonElements = response.map { it.asJsonObject.get("data") }
                                             computable.efficientAlternative = jsonElements
 
@@ -136,7 +141,7 @@ abstract class EBase(private val computable: Computable<*>,
 
                                             outgoingRows.dataHolder.add(dataHolderPostState)
 
-                                            Log.d(TAG, "### Data Holder - POST STATE ###")
+                                            Log.d(TAG, "## Data Holder - POST STATE  - (${thread()}) ##")
                                             Log.d(TAG, dataHolderPostState.header.toString())
                                             Log.d(TAG, dataHolderPostState.rows.toString())
 

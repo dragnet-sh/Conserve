@@ -6,7 +6,6 @@ import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.domain.gateway.AuditGateway
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
@@ -23,7 +22,7 @@ class EnergyService(
     /**
      * Holds the Unit of Work i.e the IComputables
      * */
-    private var taskHolder: MutableList<Observable<Flowable<Boolean>>> = mutableListOf()
+    private var taskHolder: MutableList<Observable<Computable<*>>> = mutableListOf()
 
 
     /**
@@ -45,9 +44,12 @@ class EnergyService(
                 .subscribe { computables ->
                     Observable.fromIterable(computables)
                             .subscribe({ eachComputable ->
-                                Log.d(TAG, "Computables Iterable - (${thread()})")
-                                taskHolder.add(getComputable(eachComputable))
+                                Log.d(TAG, "**** Computables Iterable - (${thread()}) ****")
                                 Log.d(TAG, eachComputable.toString())
+                                getComputable(eachComputable)
+                                        .subscribe {
+                                            taskHolder.add(it)
+                                        }
                             }, {}, {
                                 Log.d(TAG, "**** Computables Iterable - [ON COMPLETE] ****")
                                 doWork(callback) // << ** Executed Only One Time ** >> //
@@ -80,11 +82,8 @@ class EnergyService(
         Log.d(TAG, "####### DO WORK - COUNT [${taskHolder.count()}] - (${thread()}) #######")
         taskHolder.merge()
                 .observeOn(schedulers.observeOn)
-                .subscribe({
-                    it.subscribe({}, {}, {
-                                Log.d(TAG, "**** Each IComputable - [ON COMPLETE] ****")})
-                }, {}, {
-                    Log.d(TAG, "**** Primary Merge - [ON COMPLETE] ****")
+                .subscribe({}, {}, {
+                    Log.d(TAG, "**** Merge - [ON COMPLETE] ****")
                     callback(true) // << ** The final Exit Point ** >> //
                 })
     }
@@ -96,22 +95,23 @@ class EnergyService(
      *
      * The build() method returns the fully packaged IComputable as a Flowable - Wrapped by an Observable
      * */
-    private fun getComputable(computable: Computable<*>): Observable<Flowable<Boolean>> {
+    private fun getComputable(computable: Computable<*>): Observable<Observable<Computable<*>>> {
+
+        fun build(computable: Computable<*>, featureAuditScope: List<Feature>,
+                          featurePreAudit: List<Feature>): Observable<Computable<*>>{
+
+            computable.featureAuditScope = featureAuditScope
+            computable.featurePreAudit = featurePreAudit
+
+            return ComputableFactory.createFactory(computable, energyUtility, energyUsage,
+                    outgoingRows).build().compute()
+        }
+
         return Observable.zip(
                 auditGateway.getFeature(computable.auditId),
                 auditGateway.getFeatureByType(computable.zoneId),
-                BiFunction<List<Feature>, List<Feature>, Flowable<Boolean>> { featurePreAudit, featureAuditScope ->
+                BiFunction<List<Feature>, List<Feature>, Observable<Computable<*>>> { featurePreAudit, featureAuditScope ->
                     build(computable, featureAuditScope, featurePreAudit) })
-    }
-
-    private fun build(computable: Computable<*>, featureAuditScope: List<Feature>,
-                      featurePreAudit: List<Feature>): Flowable<Boolean>{
-
-        computable.featureAuditScope = featureAuditScope
-        computable.featurePreAudit = featurePreAudit
-
-        return ComputableFactory.createFactory(computable, energyUtility, energyUsage,
-                outgoingRows).build().compute()
     }
 
     private fun thread() = Thread.currentThread().name
