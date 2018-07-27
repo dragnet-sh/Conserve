@@ -68,7 +68,7 @@ abstract class EBase(private val computable: Computable<*>,
             val dataHolderPreState = DataHolder()
             dataHolderPreState.header?.addAll(featureDataFields())
             dataHolderPreState.computable = computable
-            dataHolderPreState.fileName = "${Date()}_pre_state.csv"
+            dataHolderPreState.fileName = "${Date().time}_pre_state.csv"
 
             val preRow = mutableMapOf<String, String>()
             featureDataFields().forEach { field ->
@@ -122,7 +122,7 @@ abstract class EBase(private val computable: Computable<*>,
                                             val dataHolderPostState = DataHolder()
                                             dataHolderPostState.header = postStateFields()
                                             dataHolderPostState.computable = computable
-                                            dataHolderPostState.fileName = "${Date()}_post_state.csv"
+                                            dataHolderPostState.fileName = "${Date().time}_post_state.csv"
 
                                             jsonElements.forEach { element ->
                                                 val postRow = mutableMapOf<String, String>()
@@ -147,6 +147,7 @@ abstract class EBase(private val computable: Computable<*>,
 
                                             it.onNext(computable)
                                             extra("OnComplete :: Efficient Data Row Processing - Done")
+                                            outgoingRows.saveFile()
                                             it.onComplete()
 
                                         }
@@ -155,6 +156,7 @@ abstract class EBase(private val computable: Computable<*>,
                                 computable.isEnergyStar = true
                                 it.onNext(computable)
                                 extra("OnComplete :: Energy Star - true")
+                                outgoingRows.saveFile()
                                 it.onComplete()
                             }
 
@@ -162,6 +164,7 @@ abstract class EBase(private val computable: Computable<*>,
             } else {
                 it.onNext(computable)
                 extra("OnComplete :: Energy Efficiency Lookup - false")
+                outgoingRows.saveFile()
                 it.onComplete()
             }
 
