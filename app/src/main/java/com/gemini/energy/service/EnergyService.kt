@@ -38,7 +38,7 @@ class EnergyService(
 
         cleanup()
 
-        Log.d(TAG, ":: Gemini Energy - Crunch Inc ::")
+        Log.d(TAG, ":::: Gemini Energy - Crunch Inc ::::")
         disposables.add(auditGateway.getComputable()
                 .subscribeOn(schedulers.subscribeOn)
                 .subscribe { computables ->

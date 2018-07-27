@@ -64,11 +64,11 @@ class OutgoingRows(private val context: Context) {
             val rows = eachData.rows
 
             Log.d(TAG, "## Debug :: Data Holder ##")
-            Log.d(TAG, header.toString())
-            Log.d(TAG, rows.toString())
-
             Log.d(TAG, eachData.path)
             Log.d(TAG, eachData.fileName)
+
+            Log.d(TAG, header.toString())
+            Log.d(TAG, rows.toString())
 
             outgoing.append(data(header, rows))
             val file = getFile(eachData.path, eachData.fileName)
@@ -152,6 +152,7 @@ class OutgoingRows(private val context: Context) {
      * File Object where the Data gets written to
      * */
     private fun getFile(path: String, fileName: String): File {
+        Log.d(TAG, "GET FILE -- $GEMINI$path")
         val directory = getDocumentFolderPath("$GEMINI$path")!!
         return File(directory.toString(), fileName)
     }
