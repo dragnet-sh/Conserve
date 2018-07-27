@@ -7,7 +7,11 @@ import io.reactivex.Flowable
 class CombinationOven : IComputable {
 
     override fun compute(): Flowable<Boolean> {
-        Log.d(this.javaClass.simpleName, "COMPUTE")
+        Log.d(TAG, "<< CombinationOven :: COMPUTE >> [Start] - (${Thread.currentThread().name})")
         return Flowable.just(false)
+    }
+
+    companion object {
+        private const val TAG = "CombinationOven"
     }
 }

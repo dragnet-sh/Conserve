@@ -10,6 +10,7 @@ import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
+import io.reactivex.rxkotlin.merge
 
 
 class EnergyService(
@@ -19,83 +20,101 @@ class EnergyService(
         private val energyUsage: EnergyUsage,
         private val outgoingRows: OutgoingRows) {
 
-    private var primary: MutableList<Observable<IComputable>> = mutableListOf()
-    private var secondary: MutableList<Flowable<Boolean>> = mutableListOf()
-    private var disposableStream: MutableList<Disposable> = mutableListOf()
+    /**
+     * Holds the Unit of Work i.e the IComputables
+     * */
+    private var taskHolder: MutableList<Observable<Flowable<Boolean>>> = mutableListOf()
 
+
+    /**
+     * Holds the reference to the Observed Stream
+     * */
+    private var disposables: MutableList<Disposable> = mutableListOf()
+
+
+    /**
+     * Energy Calculation - Main Entry Point
+     * */
     fun run(callback: (status: Boolean) -> Unit) {
 
-        if (disposableStream.count() > 0) {
-            disposableStream.forEach {
+        cleanup()
+
+        Log.d(TAG, ":: Gemini Energy - Crunch Inc ::")
+        disposables.add(auditGateway.getComputable()
+                .subscribeOn(schedulers.subscribeOn)
+                .subscribe { computables ->
+                    Observable.fromIterable(computables)
+                            .subscribe({ eachComputable ->
+                                Log.d(TAG, "Computables Iterable - (${thread()})")
+                                taskHolder.add(getComputable(eachComputable))
+                                Log.d(TAG, eachComputable.toString())
+                            }, {}, {
+                                Log.d(TAG, "**** Computables Iterable - [ON COMPLETE] ****")
+                                doWork(callback) // << ** Executed Only One Time ** >> //
+                            })
+                })
+
+    }
+
+    /**
+     * Required to Clean Up Existing Disposables before a new CRUNCH begins
+     * */
+    private fun cleanup() {
+        Log.d(TAG, "Cleanup - (${thread()})")
+        if (disposables.count() > 0) {
+            Log.d(TAG, "DISPOSABLE COUNT - [${disposables.count()}] - (${thread()})")
+            disposables.forEach {
                 it.dispose()
+                Log.d(TAG, "POST DISPOSABLE - Status - [${it.isDisposed}]")
             }
         }
 
-        Log.d(TAG, ":: Crunch Inc ::")
-        disposableStream.add(auditGateway.getComputable()
-                .subscribeOn(schedulers.subscribeOn)
-                .observeOn(schedulers.observeOn)
-                .subscribe {
-                    Observable.fromIterable(it)
-                            .subscribe({
-                                primary.add(getComputable(it))
-                                Log.d(TAG, it.toString())
-                            }, {}, { doWorkPrimary(callback) })
-                })
-
+        disposables.clear()
+        taskHolder.clear()
     }
 
-    private fun doWorkPrimary(callback: (status: Boolean) -> Unit) {
-        Log.d(TAG, "####### DO WORK PRIMARY #######")
-        Log.d(TAG, primary.toString())
-        Log.d(TAG, primary.count().toString())
-
-        disposableStream.addAll(primary.map {
-            it.subscribe({
-                secondary.add(it.compute())
-            }, {}, {
-                Log.d(TAG, "##### PRIMARY WORK - DONE #####")
-                doWorkSecondary(callback)
-            })
-        })
-
-    }
-
-    private fun doWorkSecondary(callback: (status: Boolean) -> Unit) {
-        Log.d(TAG, "####### DO WORK SECONDARY #######")
-        Log.d(TAG, secondary.toString())
-        Log.d(TAG, secondary.count().toString())
-
-        Flowable.merge(secondary)
-                .subscribeOn(schedulers.subscribeOn)
+    /**
+     * Holds the Main Work - i.e Running each Energy Calculations for each of the IComputables
+     * */
+    private fun doWork(callback: (status: Boolean) -> Unit) {
+        Log.d(TAG, "####### DO WORK - COUNT [${taskHolder.count()}] - (${thread()}) #######")
+        taskHolder.merge()
                 .observeOn(schedulers.observeOn)
-                .subscribe ({
-                    // ** Do Nothing ** //
+                .subscribe({
+                    it.subscribe({}, {}, {
+                                Log.d(TAG, "**** Each IComputable - [ON COMPLETE] ****")})
                 }, {}, {
-                    Log.d(TAG, "##### SECONDARY WORK - DONE #####")
-                    callback(true)
+                    Log.d(TAG, "**** Primary Merge - [ON COMPLETE] ****")
+                    callback(true) // << ** The final Exit Point ** >> //
                 })
-
     }
 
-    private fun getComputable(computable: Computable<*>): Observable<IComputable> {
+    /**
+     * Takes in two Observables
+     * 1. To get the Feature Pre Audit (pre-audit)
+     * 2. To get the Feature Audit Scope (feature data)
+     *
+     * The build() method returns the fully packaged IComputable as a Flowable - Wrapped by an Observable
+     * */
+    private fun getComputable(computable: Computable<*>): Observable<Flowable<Boolean>> {
         return Observable.zip(
                 auditGateway.getFeature(computable.auditId),
                 auditGateway.getFeatureByType(computable.zoneId),
-                BiFunction<List<Feature>, List<Feature>, IComputable> { featurePreAudit, featureAuditScope ->
-                    buildComputable(computable, featureAuditScope, featurePreAudit) })
+                BiFunction<List<Feature>, List<Feature>, Flowable<Boolean>> { featurePreAudit, featureAuditScope ->
+                    build(computable, featureAuditScope, featurePreAudit) })
     }
 
-
-    private fun buildComputable(computable: Computable<*>, featureAuditScope: List<Feature>,
-                                featurePreAudit: List<Feature>): IComputable {
+    private fun build(computable: Computable<*>, featureAuditScope: List<Feature>,
+                      featurePreAudit: List<Feature>): Flowable<Boolean>{
 
         computable.featureAuditScope = featureAuditScope
         computable.featurePreAudit = featurePreAudit
 
         return ComputableFactory.createFactory(computable, energyUtility, energyUsage,
-                outgoingRows).build()
+                outgoingRows).build().compute()
     }
+
+    private fun thread() = Thread.currentThread().name
 
     companion object {
         private const val TAG = "Gemini.EnergyService"

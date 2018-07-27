@@ -20,27 +20,29 @@ class Refrigerator(private val computable: Computable<*>, energyUtility: EnergyU
      * */
     override fun compute(): Flowable<Boolean> {
 
-        Log.d(TAG, "Refrigerator : Compute : Start")
+        Log.d(TAG, "<< Refrigerator :: COMPUTE >> [Start] - (${Thread.currentThread().name})")
         Log.d(TAG, computable.toString())
 
-        return Flowable.create<Boolean>({ emitter ->
+        return Flowable.just(true)
 
-            super.initialize()
-            super.compute(extra = {
-                Log.d(TAG, it)
-            })
-                    .subscribeOn(schedulers.subscribeOn)
-                    .observeOn(schedulers.observeOn)
-                    .subscribe {
-
-                        Log.d(TAG, "Refrigerator : Compute : Saving Data")
-//                        outgoingRows.saveFile()
-
-                        emitter.onNext(true)
-                        emitter.onComplete()
-                    }
-
-        }, BackpressureStrategy.BUFFER)
+//        return Flowable.create<Boolean>({ emitter ->
+//
+//            super.initialize()
+//            super.compute(extra = {
+//                Log.d(TAG, it)
+//            })
+//                    .subscribeOn(schedulers.subscribeOn)
+//                    .observeOn(schedulers.observeOn)
+//                    .subscribe {
+//
+//                        Log.d(TAG, "Refrigerator : Compute : Saving Data")
+////                        outgoingRows.saveFile()
+//
+//                        emitter.onNext(true)
+//                        emitter.onComplete()
+//                    }
+//
+//        }, BackpressureStrategy.BUFFER)
 
     }
 
