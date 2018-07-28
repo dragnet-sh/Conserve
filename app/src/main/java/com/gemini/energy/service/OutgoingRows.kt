@@ -55,7 +55,7 @@ class OutgoingRows(private val context: Context) {
     /**
      * Saves the Data to the Internal File System
      * */
-    fun saveFile() {
+    fun save() {
 
         // Step 1: Loop over through the Data Holder
         // Step 2: Extract out the individual components

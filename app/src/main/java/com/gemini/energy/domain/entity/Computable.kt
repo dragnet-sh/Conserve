@@ -78,8 +78,8 @@ data class Computable<SubType>(
     }
 
     override fun toString(): String {
-        return  "Audit [$auditId - $auditName] | Zone [$zoneId - $zoneName]\n" +
-                "Scope [$auditScopeId - $auditScopeName] | Type [${auditScopeType?.value} - ${auditScopeSubType?.toString()}]\n" +
+        return  "audit: [$auditId - $auditName] | zone: [$zoneId - $zoneName]\n" +
+                "scope: [$auditScopeId - $auditScopeName] | type: [${auditScopeType?.value} - ${auditScopeSubType?.toString()}]\n" +
                 "Feature Pre-Audit - COUNT [${featurePreAudit?.count()}]\n" +
                 "Feature Audit Scope - COUNT [${featureAuditScope?.count()}]"
     }

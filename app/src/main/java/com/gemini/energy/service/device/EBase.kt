@@ -58,6 +58,25 @@ abstract class EBase(private val computable: Computable<*>,
 
 
     /**
+     * Collect the Various Energy Calculation - Concat them
+     * Write the result to the CSV - Emit back Computable
+     * */
+    fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
+        initialize()
+        return Observable.create<Computable<*>> { emitter ->
+            Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra))
+                    .subscribe({ outgoingRows.dataHolder.add(it) }, {}, {
+                        Log.d(TAG, "Concat Operation - PRE | POST - [ON COMPLETE] - Save Data - (${thread()})")
+                        outgoingRows.save()
+                        emitter.onNext(computable)
+                        emitter.onComplete()
+                    })
+        }
+
+    }
+
+
+    /**
      * Pre State - Energy Calculation
      * Gives an Observable with the Data Holder
      * */
@@ -172,25 +191,6 @@ abstract class EBase(private val computable: Computable<*>,
                         }
             }
 
-        }
-
-    }
-
-
-    /**
-     * Collect the Various Energy Calculation - Concat them
-     * Write the result to the CSV - Emit back Computable
-     * */
-    fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
-        initialize()
-        return Observable.create<Computable<*>> { emitter ->
-            Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra))
-                    .subscribe({ outgoingRows.dataHolder.add(it) }, {}, {
-                        Log.d(TAG, "Concat Operation - PRE | POST - [ON COMPLETE] - Save Data - (${thread()})")
-                        outgoingRows.saveFile()
-                        emitter.onNext(computable)
-                        emitter.onComplete()
-                    })
         }
 
     }
