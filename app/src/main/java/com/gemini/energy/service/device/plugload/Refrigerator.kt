@@ -25,10 +25,8 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
      * Energy Cost Calculation Formula
      * */
     override fun cost(vararg params: Any): Double {
-        val dailyEnergyUsed = params[0] as Double
-        val yearlyEnergyUsed = dailyEnergyUsed * (operatingHours.yearly())
-
-        return costElectricity(yearlyEnergyUsed, operatingHours, electricityUtility)
+        val energyUsed = (params[0] as Double) / 24
+        return costElectricity(energyUsed, operatingHours, electricityUtility)
     }
 
     /**
@@ -36,8 +34,8 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
      * */
     override fun efficientLookup() = true
     override fun queryFilter() = JSONObject()
-            .put("data.style_type", featureData["Product Type"] as String)
-            .put("data.total_volume", featureData["Total Volume"] as Double)
+            .put("data.style_type", featureData["Product Type"])
+            .put("data.total_volume", featureData["Total Volume"] ?: 0.0)
             .toString()
 
 

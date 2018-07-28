@@ -65,44 +65,46 @@ class OutgoingRows(private val context: Context) {
 
         Log.d(TAG, "Data Holder Count - [${dataHolder.count()}] - (${thread()})")
 
-        val iterator = dataHolder.iterator()
-        while (iterator.hasNext()) {
-            val eachData = iterator.next()
-            val outgoing = StringBuilder()
-            val header = eachData.header
-            val rows = eachData.rows
+        synchronized(dataHolder) {
+            val iterator = dataHolder.iterator()
+            while (iterator.hasNext()) {
+                val eachData = iterator.next()
+                val outgoing = StringBuilder()
+                val header = eachData.header
+                val rows = eachData.rows
 
-            Log.d(TAG, "## Debug :: Data Holder - (${thread()}) ##")
-            Log.d(TAG, eachData.path)
-            Log.d(TAG, eachData.fileName)
+                Log.d(TAG, "## Debug :: Data Holder - (${thread()}) ##")
+                Log.d(TAG, eachData.path)
+                Log.d(TAG, eachData.fileName)
 
-            Log.d(TAG, header.toString())
-            Log.d(TAG, rows.toString())
+                Log.d(TAG, header.toString())
+                Log.d(TAG, rows.toString())
 
-            outgoing.append(data(header, rows))
-            val file = getFile(eachData.path, eachData.fileName)
-            val data = outgoing.toString()
+                outgoing.append(data(header, rows))
+                val file = getFile(eachData.path, eachData.fileName)
+                val data = outgoing.toString()
 
-            try {
-                val inputStream = ByteArrayInputStream(data.toByteArray())
-                val outputStream = BufferedOutputStream(FileOutputStream(file))
+                try {
+                    val inputStream = ByteArrayInputStream(data.toByteArray())
+                    val outputStream = BufferedOutputStream(FileOutputStream(file))
 
-                val buffer = ByteArray(1024)
-                var bytesRead = inputStream.read(buffer, 0, buffer.size)
+                    val buffer = ByteArray(1024)
+                    var bytesRead = inputStream.read(buffer, 0, buffer.size)
 
-                while (bytesRead > 0) {
-                    outputStream.write(buffer, 0, bytesRead)
-                    bytesRead = inputStream.read(buffer, 0, buffer.size)
+                    while (bytesRead > 0) {
+                        outputStream.write(buffer, 0, bytesRead)
+                        bytesRead = inputStream.read(buffer, 0, buffer.size)
+                    }
+
+                    inputStream.close()
+                    outputStream.close()
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-
-                inputStream.close()
-                outputStream.close()
-
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
-        }
 
+        }
     }
 
 

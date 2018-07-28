@@ -27,6 +27,7 @@ abstract class EBase(private val computable: Computable<*>,
     lateinit var schedulers: Schedulers
     lateinit var gasUtility: EnergyUtility
     lateinit var electricityUtility: EnergyUtility
+    lateinit var preconditions: Preconditions
 
     private var preAudit: Map<String, Any> = mapOf()
     var featureData: Map<String, Any> = mapOf()
@@ -50,6 +51,7 @@ abstract class EBase(private val computable: Computable<*>,
         base.operatingHours.initUsage(mappedUsageHours()).build()
         base.outgoingRows.computable = computable
         base.outgoingRows.dataHolder = mutableListOf()
+        base.preconditions = Preconditions()
 
     }
 
@@ -63,9 +65,16 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
         initialize()
+        validatePreConditions()
         return Observable.create<Computable<*>> { emitter ->
             Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra))
-                    .subscribe({ outgoingRows.dataHolder.add(it) }, {}, {
+                    .subscribe({
+
+                        synchronized(outgoingRows.dataHolder) {
+                            outgoingRows.dataHolder.add(it)
+                        }
+
+                    }, {}, {
                         Log.d(TAG, "Concat Operation - PRE | POST - [ON COMPLETE] - Save Data - (${thread()})")
                         outgoingRows.save()
                         emitter.onNext(computable)
@@ -75,6 +84,7 @@ abstract class EBase(private val computable: Computable<*>,
 
     }
 
+    private fun validatePreConditions() = preconditions.validate()
 
     /**
      * Pre State - Energy Calculation
@@ -105,14 +115,14 @@ abstract class EBase(private val computable: Computable<*>,
 
             val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"]
             dailyEnergyUsed?.let {
-                val cost = cost(dailyEnergyUsed)
+                val cost = cost(it)
                 dataHolderPreState.header?.add("__electric_cost")
                 preRow["__electric_cost"] = cost.toString()
             }
 
             dataHolderPreState.rows?.add(preRow)
 
-            Log.d(TAG, "## Data Holder - PRE STATE - (${thread()}) ##" )
+            Log.d(TAG, "## Data Holder - PRE STATE - (${thread()}) ##")
             Log.d(TAG, dataHolderPreState.toString())
 
             emitter.onNext(dataHolderPreState)
@@ -148,6 +158,7 @@ abstract class EBase(private val computable: Computable<*>,
                                         .subscribe { response ->
 
                                             Log.d(TAG, "### Efficient Alternate Count - [${response.count()}] - ###")
+
                                             val jsonElements = response.map { it.asJsonObject.get("data") }
                                             computable.efficientAlternative = jsonElements
 
