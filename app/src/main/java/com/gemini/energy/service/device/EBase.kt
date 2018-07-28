@@ -167,6 +167,8 @@ abstract class EBase(private val computable: Computable<*>,
                                              * */
                                             val dataHolderPostState = DataHolder()
                                             dataHolderPostState.header = postStateFields()
+                                            dataHolderPostState.header?.add("__electric_cost")
+
                                             dataHolderPostState.computable = computable
                                             dataHolderPostState.fileName = "${Date().time}_post_state.csv"
 
@@ -179,9 +181,7 @@ abstract class EBase(private val computable: Computable<*>,
 
                                                 val postDailyEnergyUsed = element.asJsonObject.get("daily_energy_use").asDouble
                                                 val cost = cost(postDailyEnergyUsed)
-                                                dataHolderPostState.header?.add("__electric_cost")
                                                 postRow["__electric_cost"] = cost.toString()
-
                                                 dataHolderPostState.rows?.add(postRow)
                                             }
 

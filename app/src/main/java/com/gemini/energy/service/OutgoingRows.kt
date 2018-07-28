@@ -70,6 +70,7 @@ class OutgoingRows(private val context: Context) {
             while (iterator.hasNext()) {
                 val eachData = iterator.next()
                 val outgoing = StringBuilder()
+
                 val header = eachData.header
                 val rows = eachData.rows
 
@@ -84,26 +85,31 @@ class OutgoingRows(private val context: Context) {
                 val file = getFile(eachData.path, eachData.fileName)
                 val data = outgoing.toString()
 
-                try {
-                    val inputStream = ByteArrayInputStream(data.toByteArray())
-                    val outputStream = BufferedOutputStream(FileOutputStream(file))
-
-                    val buffer = ByteArray(1024)
-                    var bytesRead = inputStream.read(buffer, 0, buffer.size)
-
-                    while (bytesRead > 0) {
-                        outputStream.write(buffer, 0, bytesRead)
-                        bytesRead = inputStream.read(buffer, 0, buffer.size)
-                    }
-
-                    inputStream.close()
-                    outputStream.close()
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+                write(data, file)
             }
 
+        }
+    }
+
+    @Synchronized
+    private fun write(data: String, file: File) {
+        try {
+            val inputStream = ByteArrayInputStream(data.toByteArray())
+            val outputStream = BufferedOutputStream(FileOutputStream(file))
+
+            val buffer = ByteArray(1024)
+            var bytesRead = inputStream.read(buffer, 0, buffer.size)
+
+            while (bytesRead > 0) {
+                outputStream.write(buffer, 0, bytesRead)
+                bytesRead = inputStream.read(buffer, 0, buffer.size)
+            }
+
+            inputStream.close()
+            outputStream.close()
+
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -178,6 +184,7 @@ class OutgoingRows(private val context: Context) {
         /**
          * Creating a Comma Separated CSV Data String
          * */
+        @Synchronized
         private fun data(header: List<String>?, rows: MutableList<Map<String, String>>?): String {
             val buffer = StringBuilder()
             buffer.append(header?.joinToString())
