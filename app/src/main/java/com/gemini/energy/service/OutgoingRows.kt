@@ -35,9 +35,16 @@ class DataHolder {
     var fileName: String = ""
 
     /**
-     * Set's during runtime via the computable set method
+     * Set during runtime via the computable set method
      * */
     var path: String = ""
+
+    override fun toString(): String {
+        return "fileName: [$fileName]\n" +
+                "path: [$path]\n" +
+                "header: $header\n" +
+                "rows: $rows"
+    }
 
 }
 
@@ -56,14 +63,16 @@ class OutgoingRows(private val context: Context) {
         // Step 4: Collect those data string in a list
         // Step 5: Concatenate the list and write that to the file
 
-        Log.d(TAG, "Data Holder Count - ${dataHolder.count()}")
-        dataHolder.forEach { eachData ->
+        Log.d(TAG, "Data Holder Count - [${dataHolder.count()}] - (${thread()})")
 
+        val iterator = dataHolder.iterator()
+        while (iterator.hasNext()) {
+            val eachData = iterator.next()
             val outgoing = StringBuilder()
             val header = eachData.header
             val rows = eachData.rows
 
-            Log.d(TAG, "## Debug :: Data Holder ##")
+            Log.d(TAG, "## Debug :: Data Holder - (${thread()}) ##")
             Log.d(TAG, eachData.path)
             Log.d(TAG, eachData.fileName)
 
@@ -93,6 +102,7 @@ class OutgoingRows(private val context: Context) {
                 e.printStackTrace()
             }
         }
+
     }
 
 
@@ -123,7 +133,7 @@ class OutgoingRows(private val context: Context) {
         val folderDir: File?
 
         if (isExternalStorageWritable()) {
-            Log.d(TAG, "External - Storage :: Writable")
+            Log.d(TAG, "External - Storage :: Writable - (${thread()})")
             if (subFolderPath == null) {
                 folderDir = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).path)
             } else {
@@ -173,8 +183,10 @@ class OutgoingRows(private val context: Context) {
 
             for (row in rows!!) {
                 val tmp: MutableList<String> = mutableListOf()
-                header?.forEach { item ->
-                    tmp.add(row[item] ?: "")
+                header?.let { hdr ->
+                    for (item in hdr) {
+                        tmp.add(row[item] ?: "")
+                    }
                 }
                 buffer.append(tmp.joinToString())
                 buffer.append("\r\n")
@@ -183,5 +195,7 @@ class OutgoingRows(private val context: Context) {
             return buffer.toString()
         }
     }
+
+    private fun thread() = Thread.currentThread().name
 
 }

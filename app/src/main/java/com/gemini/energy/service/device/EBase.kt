@@ -28,9 +28,9 @@ abstract class EBase(private val computable: Computable<*>,
     lateinit var gasUtility: EnergyUtility
     lateinit var electricityUtility: EnergyUtility
 
-    var preAudit: Map<String, Any> = mapOf()
+    private var preAudit: Map<String, Any> = mapOf()
     var featureData: Map<String, Any> = mapOf()
-    var electricRateStructure: String = RATE
+    private var electricRateStructure: String = RATE
 
     private fun initialize() {
         val base = this
@@ -56,21 +56,24 @@ abstract class EBase(private val computable: Computable<*>,
     private fun thread() = Thread.currentThread().name
     private fun identifier() = "${computable.auditScopeType} - ${computable.auditScopeSubType}"
 
-    fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
 
-        return Observable.create<Computable<*>> {
+    /**
+     * Pre State - Energy Calculation
+     * Gives an Observable with the Data Holder
+     * */
+    private fun calculateEnergyPreState(extra: (param: String) -> Unit): Observable<DataHolder> {
 
-            initialize()
+        return Observable.create<DataHolder> { emitter ->
 
-            // #### Step 1: Pre-State Energy Calculation ####
-
-            Log.d(TAG, ":::::::: Pre-State Energy Calculation - (${thread()}) ::::::::")
+            Log.d(TAG, "%^%^% Pre-State Energy Calculation - (${thread()}) %^%^%")
             val dataHolderPreState = DataHolder()
             dataHolderPreState.header?.addAll(featureDataFields())
             dataHolderPreState.computable = computable
             dataHolderPreState.fileName = "${Date().time}_pre_state.csv"
 
             val preRow = mutableMapOf<String, String>()
+
+            //ToDo: Is this really necessary ??
             featureDataFields().forEach { field ->
                 val value = featureData[field]
                 preRow[field] = when (value) {
@@ -89,15 +92,28 @@ abstract class EBase(private val computable: Computable<*>,
             }
 
             dataHolderPreState.rows?.add(preRow)
-            outgoingRows.dataHolder.add(dataHolderPreState)
 
             Log.d(TAG, "## Data Holder - PRE STATE - (${thread()}) ##" )
-            Log.d(TAG, dataHolderPreState.header.toString())
-            Log.d(TAG, dataHolderPreState.rows.toString())
+            Log.d(TAG, dataHolderPreState.toString())
 
-            // #### Step 2: Post-State Energy Calculation ####
+            emitter.onNext(dataHolderPreState)
+            emitter.onComplete()
 
-            Log.d(TAG, ":::::::: Post-State Energy Calculation - (${thread()}) ::::::::")
+            extra("Post [On Complete] - Run Away Thread.")
+        }
+
+    }
+
+
+    /**
+     * Post State - Energy Calculation
+     * Gives an Observable with the Data Holder
+     * */
+    private fun calculateEnergyPostState(extra: (param: String) -> Unit): Observable<DataHolder> {
+
+        return Observable.create<DataHolder> { emitter ->
+
+            Log.d(TAG, "%^%^% Post-State Energy Calculation - (${thread()}) %^%^%")
             if (efficientLookup()) {
                 starValidator(queryEnergyStar())
                         .observeOn(schedulers.subscribeOn)
@@ -139,35 +155,42 @@ abstract class EBase(private val computable: Computable<*>,
                                                 dataHolderPostState.rows?.add(postRow)
                                             }
 
-                                            outgoingRows.dataHolder.add(dataHolderPostState)
-
                                             Log.d(TAG, "## Data Holder - POST STATE  - (${thread()}) ##")
-                                            Log.d(TAG, dataHolderPostState.header.toString())
-                                            Log.d(TAG, dataHolderPostState.rows.toString())
+                                            Log.d(TAG, dataHolderPostState.toString())
 
-                                            it.onNext(computable)
-                                            extra("OnComplete :: Efficient Data Row Processing - Done")
-                                            outgoingRows.saveFile()
-                                            it.onComplete()
-
+                                            emitter.onNext(dataHolderPostState)
+                                            emitter.onComplete()
                                         }
 
                             } else {
                                 computable.isEnergyStar = true
-                                it.onNext(computable)
-                                extra("OnComplete :: Energy Star - true")
-                                outgoingRows.saveFile()
-                                it.onComplete()
+                                emitter.onComplete()
                             }
 
+                            extra("Post [On Complete] - Run Away Thread.")
+
                         }
-            } else {
-                it.onNext(computable)
-                extra("OnComplete :: Energy Efficiency Lookup - false")
-                outgoingRows.saveFile()
-                it.onComplete()
             }
 
+        }
+
+    }
+
+
+    /**
+     * Collect the Various Energy Calculation - Concat them
+     * Write the result to the CSV - Emit back Computable
+     * */
+    fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
+        initialize()
+        return Observable.create<Computable<*>> { emitter ->
+            Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra))
+                    .subscribe({ outgoingRows.dataHolder.add(it) }, {}, {
+                        Log.d(TAG, "Concat Operation - PRE | POST - [ON COMPLETE] - Save Data - (${thread()})")
+                        outgoingRows.saveFile()
+                        emitter.onNext(computable)
+                        emitter.onComplete()
+                    })
         }
 
     }
@@ -222,6 +245,11 @@ abstract class EBase(private val computable: Computable<*>,
         }
     }
 
+
+    /**
+     * Get the Weekly Hours Map Ready
+     * This should decide where to look - [PreAudit or Individual]
+     * */
     private fun mappedUsageHours(): Map<EDay, String?> {
         val usage = mutableListOf<String>()
 
@@ -238,6 +266,7 @@ abstract class EBase(private val computable: Computable<*>,
         })
     }
 
+    //ToDo - ReWrite this later !!
     fun costElectricity(energyUsed: Double, usage: EnergyUsage, utility: EnergyUtility): Double {
         val regex = "^.*TOU$".toRegex()
         val usageByPeak = usage.mappedPeakHourYearly()

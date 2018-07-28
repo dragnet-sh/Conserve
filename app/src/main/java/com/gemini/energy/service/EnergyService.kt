@@ -80,12 +80,12 @@ class EnergyService(
      * */
     private fun doWork(callback: (status: Boolean) -> Unit) {
         Log.d(TAG, "####### DO WORK - COUNT [${taskHolder.count()}] - (${thread()}) #######")
-        taskHolder.merge()
+        disposables.add(taskHolder.merge()
                 .observeOn(schedulers.observeOn)
                 .subscribe({}, {}, {
                     Log.d(TAG, "**** Merge - [ON COMPLETE] ****")
                     callback(true) // << ** The final Exit Point ** >> //
-                })
+                }))
     }
 
     /**
@@ -117,7 +117,7 @@ class EnergyService(
     private fun thread() = Thread.currentThread().name
 
     companion object {
-        private const val TAG = "Gemini.EnergyService"
+        private const val TAG = "Gemini.Energy.Service"
     }
 
 }
