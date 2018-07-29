@@ -223,7 +223,6 @@ abstract class EBase(private val computable: Computable<*>,
     abstract fun preStateFields(): MutableList<String>
     abstract fun postStateFields(): MutableList<String>
     abstract fun computedFields(): MutableList<String>
-    abstract fun vacationDays(): Int
 
     abstract fun cost(vararg params: Any): Double
 
@@ -286,7 +285,7 @@ abstract class EBase(private val computable: Computable<*>,
     fun costElectricity(powerUsed: Double, usage: EnergyUsage, utility: EnergyUtility): Double {
         val regex = "^.*TOU$".toRegex()
         val usageByPeak = usage.mappedPeakHourYearly()
-        val usageByYear = usage.yearly() - vacationDays()
+        val usageByYear = usage.yearly() //ToDo - Figure out a way to adjust the Usage Hours by negating the Vacation Days
 
         if (electricRateStructure.matches(regex)) {
 

@@ -43,10 +43,6 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
             .toString()
 
 
-    override fun vacationDays(): Int {
-        return preAudit["Number of Vacation days"] as Int
-    }
-
     /**
      * Define all the fields here - These would be used to Generate the Outgoing Rows.
      * */
