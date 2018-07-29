@@ -25,8 +25,8 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
      * Energy Cost Calculation Formula
      * */
     override fun cost(vararg params: Any): Double {
-        val energyUsed = (params[0] as Double) / 24
-        return costElectricity(energyUsed, operatingHours, electricityUtility)
+        val powerUsed = (params[0] as Double) / 24
+        return costElectricity(powerUsed, operatingHours, electricityUtility)
     }
 
     /**
