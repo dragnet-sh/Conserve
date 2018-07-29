@@ -70,13 +70,17 @@ abstract class EBase(private val computable: Computable<*>,
             Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra))
                     .subscribe({
 
+                        // **** This is the Main Collecting Bucket for all the Computed Data **** //
                         synchronized(outgoingRows.dataHolder) {
                             outgoingRows.dataHolder.add(it)
                         }
 
                     }, {}, {
                         Log.d(TAG, "Concat Operation - PRE | POST - [ON COMPLETE] - Save Data - (${thread()})")
+
+                        // **** For Each Computable - Once the Collector finishes collecting - Writes that result **** //
                         outgoingRows.save()
+
                         emitter.onNext(computable)
                         emitter.onComplete()
                     })
@@ -278,26 +282,26 @@ abstract class EBase(private val computable: Computable<*>,
     }
 
     //ToDo - ReWrite this later !!
-    fun costElectricity(energyUsed: Double, usage: EnergyUsage, utility: EnergyUtility): Double {
+    fun costElectricity(powerUsed: Double, usage: EnergyUsage, utility: EnergyUtility): Double {
         val regex = "^.*TOU$".toRegex()
         val usageByPeak = usage.mappedPeakHourYearly()
         val usageByYear = usage.yearly()
 
         if (electricRateStructure.matches(regex)) {
 
-            var summer = usageByPeak[ERateKey.SummerOn]!! * energyUsed * utility.structure[ERateKey.SummerOn.value]!![0].toDouble()
-            summer += usageByPeak[ERateKey.SummerPart]!! * energyUsed * utility.structure[ERateKey.SummerPart.value]!![0].toDouble()
-            summer += usageByPeak[ERateKey.SummerOff]!! * energyUsed * utility.structure[ERateKey.SummerOff.value]!![0].toDouble()
+            var summer = usageByPeak[ERateKey.SummerOn]!! * powerUsed * utility.structure[ERateKey.SummerOn.value]!![0].toDouble()
+            summer += usageByPeak[ERateKey.SummerPart]!! * powerUsed * utility.structure[ERateKey.SummerPart.value]!![0].toDouble()
+            summer += usageByPeak[ERateKey.SummerOff]!! * powerUsed * utility.structure[ERateKey.SummerOff.value]!![0].toDouble()
 
-            var winter = usageByPeak[ERateKey.WinterPart]!! * energyUsed * utility.structure[ERateKey.WinterPart.value]!![0].toDouble()
-            winter += usageByPeak[ERateKey.WinterOff]!! * energyUsed * utility.structure[ERateKey.WinterOff.value]!![0].toDouble()
+            var winter = usageByPeak[ERateKey.WinterPart]!! * powerUsed * utility.structure[ERateKey.WinterPart.value]!![0].toDouble()
+            winter += usageByPeak[ERateKey.WinterOff]!! * powerUsed * utility.structure[ERateKey.WinterOff.value]!![0].toDouble()
 
             return (summer + winter)
 
         } else {
 
-            val summer = usageByYear * energyUsed * utility.structure[ERateKey.SummerNone.value]!![0].toDouble()
-            val winter = usageByYear * energyUsed * utility.structure[ERateKey.WinterNone.value]!![0].toDouble()
+            val summer = usageByYear * powerUsed * utility.structure[ERateKey.SummerNone.value]!![0].toDouble()
+            val winter = usageByYear * powerUsed * utility.structure[ERateKey.WinterNone.value]!![0].toDouble()
 
             return (summer + winter)
 
