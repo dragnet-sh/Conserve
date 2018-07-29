@@ -289,19 +289,19 @@ abstract class EBase(private val computable: Computable<*>,
 
         if (electricRateStructure.matches(regex)) {
 
-            var summer = usageByPeak[ERateKey.SummerOn]!! * powerUsed * utility.structure[ERateKey.SummerOn.value]!![0].toDouble()
-            summer += usageByPeak[ERateKey.SummerPart]!! * powerUsed * utility.structure[ERateKey.SummerPart.value]!![0].toDouble()
-            summer += usageByPeak[ERateKey.SummerOff]!! * powerUsed * utility.structure[ERateKey.SummerOff.value]!![0].toDouble()
+            var summer = usageByPeak[ERateKey.SummerOn]!! * .504 * powerUsed * utility.structure[ERateKey.SummerOn.value]!![0].toDouble()
+            summer += usageByPeak[ERateKey.SummerPart]!! * .504 * powerUsed * utility.structure[ERateKey.SummerPart.value]!![0].toDouble()
+            summer += usageByPeak[ERateKey.SummerOff]!! * .504 * powerUsed * utility.structure[ERateKey.SummerOff.value]!![0].toDouble()
 
-            var winter = usageByPeak[ERateKey.WinterPart]!! * powerUsed * utility.structure[ERateKey.WinterPart.value]!![0].toDouble()
-            winter += usageByPeak[ERateKey.WinterOff]!! * powerUsed * utility.structure[ERateKey.WinterOff.value]!![0].toDouble()
+            var winter = usageByPeak[ERateKey.WinterPart]!! * .496 * powerUsed * utility.structure[ERateKey.WinterPart.value]!![0].toDouble()
+            winter += usageByPeak[ERateKey.WinterOff]!! * .496 * powerUsed * utility.structure[ERateKey.WinterOff.value]!![0].toDouble()
 
             return (summer + winter)
 
         } else {
 
-            val summer = usageByYear * powerUsed * utility.structure[ERateKey.SummerNone.value]!![0].toDouble()
-            val winter = usageByYear * powerUsed * utility.structure[ERateKey.WinterNone.value]!![0].toDouble()
+            val summer = usageByYear * .504 * powerUsed * utility.structure[ERateKey.SummerNone.value]!![0].toDouble()
+            val winter = usageByYear * .496 * powerUsed * utility.structure[ERateKey.WinterNone.value]!![0].toDouble()
 
             return (summer + winter)
 
