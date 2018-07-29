@@ -26,6 +26,10 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
      * */
     override fun cost(vararg params: Any): Double {
         val powerUsed = (params[0] as Double) / 24
+
+        val vacationDays = preAudit["Number of Vacation days"] // This is how you pull the data from preaudit
+        // Somehow i need to pass this value to Operating Hours and do the Adjustment
+
         return costElectricity(powerUsed, operatingHours, electricityUtility)
     }
 
