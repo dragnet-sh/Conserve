@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import com.gemini.energy.R
 import com.gemini.energy.databinding.ActivityHomeDetailBinding
 import com.gemini.energy.presentation.audit.detail.adapter.DetailPagerAdapter
@@ -62,9 +63,9 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
             linlaHeaderProgress.visibility = View.VISIBLE
             energyService.run(callback = {
                 Log.d(TAG, "\\m/ End of Computation \\m/ - (${Thread.currentThread().name})")
-                if (it) {
-                    linlaHeaderProgress.visibility = View.GONE
-                }
+                linlaHeaderProgress.visibility = View.GONE
+                val message = if (it) { "Success" } else { "Failed" }
+                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
             })
         }
         else -> super.onOptionsItemSelected(item)
