@@ -37,11 +37,11 @@ class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
      * Energy Efficiency Lookup Query Definition
      * */
     override fun efficientLookup() = true
-    override fun queryFilter() = JSONObject()
+    override fun queryEfficientFilter() = JSONObject()
             .put("data.style_type", featureData["Product Type"])
             .put("data.total_volume", JSONObject()
-                    .put("\$gte\"", featureData["Total Volume"] as Double - 2)
-                    .put("\$lte\"", featureData["Total Volume"] as Double + 2))
+                    .put("\$gte", featureData["Total Volume"] as Double - 2)
+                    .put("\$lte", featureData["Total Volume"] as Double + 2))
             .toString()
 
 
