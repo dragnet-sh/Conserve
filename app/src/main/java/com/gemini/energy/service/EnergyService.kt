@@ -47,9 +47,9 @@ class EnergyService(
                                 Log.d(TAG, "**** Computables Iterable - (${thread()}) ****")
                                 Log.d(TAG, eachComputable.toString())
                                 getComputable(eachComputable)
-                                        .subscribe {
+                                        .subscribe({
                                             taskHolder.add(it)
-                                        }
+                                        }, { Log.d(TAG, "##### Error !! Error !! Error #####"); }, {})
                             }, {}, {
                                 Log.d(TAG, "**** Computables Iterable - [ON COMPLETE] ****")
                                 doWork(callback) // << ** Executed Only One Time ** >> //
@@ -82,7 +82,7 @@ class EnergyService(
         Log.d(TAG, "####### DO WORK - COUNT [${taskHolder.count()}] - (${thread()}) #######")
         disposables.add(taskHolder.merge()
                 .observeOn(schedulers.observeOn)
-                .subscribe({}, {}, {
+                .subscribe({}, { callback(false) }, {
                     Log.d(TAG, "**** Merge - [ON COMPLETE] ****")
                     callback(true) // << ** The final Exit Point ** >> //
                 }))
