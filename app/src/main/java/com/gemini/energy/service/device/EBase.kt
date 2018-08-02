@@ -11,7 +11,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.functions.BiFunction
 import io.reactivex.functions.Function
 import okhttp3.OkHttpClient
 import org.json.JSONObject
@@ -136,7 +135,7 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     private fun calculateEnergyPostState(extra: (param: String) -> Unit): Observable<DataHolder> {
 
-        class DataHolderMapper : Function<JsonArray, DataHolder> {
+        class Mapper : Function<JsonArray, DataHolder> {
 
             override fun apply(response: JsonArray): DataHolder {
 
@@ -179,13 +178,10 @@ abstract class EBase(private val computable: Computable<*>,
 
         }
 
-        return Observable.zip(
-                starValidator(queryEnergyStar()),
-                efficientAlternative(queryEfficientFilter()),
-                BiFunction<Boolean, JsonArray, DataHolder> { validator, response ->
-                    DataHolderMapper().apply(response)
-                })
-
+        return starValidator(queryEnergyStar())
+                .flatMap { if (it && efficientLookup()) {
+                    efficientAlternative(queryEfficientFilter()).map(Mapper())
+                } else { Observable.just(DataHolder())} }
     }
 
     companion object {
@@ -212,17 +208,9 @@ abstract class EBase(private val computable: Computable<*>,
     }
 
     private fun starValidator(query: String): Observable<Boolean> {
-        return Observable.create<Boolean> {
-            parseAPIService.fetchPlugload(query)
-                    .subscribeOn(schedulers.subscribeOn)
-                    .observeOn(schedulers.observeOn)
-                    .subscribe { response ->
-                        val rows = response.getAsJsonArray("results")
-                        Log.d(TAG, "Star Validator Count - ${rows.count()}")
-                        it.onNext(rows.count() == 0)
-                        it.onComplete()
-                    }
-        }
+        return parseAPIService.fetchPlugload(query)
+                .map { it.getAsJsonArray("results").count() == 0 }
+                .toObservable()
     }
 
     private fun efficientAlternative(query: String): Observable<JsonArray> {
