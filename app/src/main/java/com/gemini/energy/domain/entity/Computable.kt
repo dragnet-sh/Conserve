@@ -3,6 +3,7 @@ package com.gemini.energy.domain.entity
 import android.util.Log
 import com.gemini.energy.presentation.util.BaseRowType
 import com.gemini.energy.presentation.util.EZoneType
+import com.gemini.energy.service.OutgoingRows
 import com.google.gson.JsonElement
 
 data class Computable<SubType>(
@@ -37,14 +38,19 @@ data class Computable<SubType>(
          * The following parameters are used for Energy Efficient Equivalent
          * */
         var isEnergyStar: Boolean,
-        var efficientAlternative: List<JsonElement>?) {
+        var efficientAlternative: List<JsonElement>?,
+
+        /**
+         * These are the Outgoing Rows to be written to a file
+         * */
+        var outgoingRows: OutgoingRows?) {
 
     constructor(): this(
             NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
-            null, null, null, false, null)
+            null, null, null, false, null, null)
 
     constructor(auditScopeSubType: SubType) : this(NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
-            auditScopeSubType, null, null, false, null)
+            auditScopeSubType, null, null, false, null, null)
 
     fun mappedFeatureAuditScope(): HashMap<String, Any> = featureMapper(featureAuditScope)
     fun mappedFeaturePreAudit(): HashMap<String, Any> = featureMapper(featurePreAudit)
