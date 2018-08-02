@@ -51,7 +51,7 @@ class EnergyService(
                                             synchronized(taskHolder) {
                                                 taskHolder.add(it)
                                             }
-                                        }, { Log.d(TAG, "##### Error !! Error !! Error #####"); }, {})
+                                        }, { Log.d(TAG, "##### Error !! Error !! Error #####"); it.printStackTrace() }, {})
                             }, {}, {
                                 Log.d(TAG, "**** Computables Iterable - [ON COMPLETE] ****")
                                 doWork(callback) // << ** Executed Only One Time ** >> //
