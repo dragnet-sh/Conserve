@@ -48,7 +48,9 @@ class EnergyService(
                                 Log.d(TAG, eachComputable.toString())
                                 getComputable(eachComputable)
                                         .subscribe({
-                                            taskHolder.add(it)
+                                            synchronized(taskHolder) {
+                                                taskHolder.add(it)
+                                            }
                                         }, { Log.d(TAG, "##### Error !! Error !! Error #####"); }, {})
                             }, {}, {
                                 Log.d(TAG, "**** Computables Iterable - [ON COMPLETE] ****")
@@ -82,7 +84,10 @@ class EnergyService(
         Log.d(TAG, "####### DO WORK - COUNT [${taskHolder.count()}] - (${thread()}) #######")
         disposables.add(taskHolder.merge()
                 .observeOn(schedulers.observeOn)
-                .subscribe({}, { callback(false) }, {
+                .subscribe({}, { exception ->
+                    exception.printStackTrace()
+                    callback(false)
+                }, {
                     Log.d(TAG, "**** Merge - [ON COMPLETE] ****")
                     callback(true) // << ** The final Exit Point ** >> //
                 }))
