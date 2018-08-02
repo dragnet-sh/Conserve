@@ -55,6 +55,15 @@ abstract class EBase(private val computable: Computable<*>,
         base.outgoingRows.dataHolder = mutableListOf()
         base.preconditions = Preconditions()
 
+        laborCost(JSONObject()
+                .put("data.zipcode", 95021)
+                .put("data.profession", "Electrician")
+                .toString())
+                .subscribe {
+                    Log.d(TAG, "----- LABOR COST ------")
+                    Log.d(TAG, it.toString())
+                }
+
     }
 
     private fun thread() = Thread.currentThread().name
@@ -219,6 +228,12 @@ abstract class EBase(private val computable: Computable<*>,
                 .toObservable()
     }
 
+    private fun laborCost(query: String): Observable<JsonArray> {
+        return parseAPIService.fetchLaborCost(query)
+                .map { it.getAsJsonArray("results") }
+                .toObservable()
+    }
+
 
     /**
      * Get the Weekly Hours Map Ready
@@ -278,6 +293,9 @@ abstract class EBase(private val computable: Computable<*>,
         interface ParseAPIService {
             @GET("classes/PlugLoad")
             fun fetchPlugload(@Query("where") where: String): Single<JsonObject>
+
+            @GET("classes/LaborCost")
+            fun fetchLaborCost(@Query("where") where: String): Single<JsonObject>
         }
 
         companion object {
