@@ -55,15 +55,6 @@ abstract class EBase(private val computable: Computable<*>,
         base.outgoingRows.dataHolder = mutableListOf()
         base.preconditions = Preconditions()
 
-        laborCost(JSONObject()
-                .put("data.zipcode", 95021)
-                .put("data.profession", "Electrician")
-                .toString())
-                .subscribe {
-                    Log.d(TAG, "----- LABOR COST ------")
-                    Log.d(TAG, it.toString())
-                }
-
     }
 
     private fun thread() = Thread.currentThread().name
@@ -209,12 +200,15 @@ abstract class EBase(private val computable: Computable<*>,
 
     abstract fun cost(vararg params: Any): Double
 
-    private fun queryEnergyStar(): String {
-        val json = JSONObject()
-        json.put("data.company_name", featureData["Company"])
-        json.put("data.model_number", featureData["Model Number"])
-        return json.toString()
-    }
+    private fun queryEnergyStar() = JSONObject()
+            .put("data.company_name", featureData["Company"])
+            .put("data.model_number", featureData["Model Number"])
+            .toString()
+
+    private fun queryLaborCost() = JSONObject()
+                .put("data.zipcode", 95021)
+                .put("data.profession", "Electrician")
+                .toString()
 
     private fun starValidator(query: String): Observable<Boolean> {
         return parseAPIService.fetchPlugload(query)
