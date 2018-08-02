@@ -69,26 +69,22 @@ abstract class EBase(private val computable: Computable<*>,
     fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
         initialize()
         validatePreConditions()
-        return Observable.create<Computable<*>> { emitter ->
-            Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra))
-                    .subscribe({
 
-                        // **** This is the Main Collecting Bucket for all the Computed Data **** //
-                        synchronized(outgoingRows.dataHolder) {
-                            outgoingRows.dataHolder.add(it)
-                        }
-
-                    }, { emitter.onError(it) }, {
-
-                        Log.d(TAG, "Concat Operation - PRE | POST - [ON COMPLETE] - Save Data - (${thread()})")
-
-                        // **** For Each Computable - Once the Collector finishes collecting - Writes that result **** //
-                        outgoingRows.save()
-
-                        emitter.onNext(computable)
-                        emitter.onComplete()
-                    })
+        class Mapper : Function<DataHolder, Computable<*>> {
+            override fun apply(dataHolder: DataHolder): Computable<*> {
+                synchronized(outgoingRows.dataHolder) {
+                    outgoingRows.dataHolder.add(dataHolder)
+                }
+                computable.outgoingRows = outgoingRows
+                return computable
+            }
         }
+
+        return Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra))
+                .map(Mapper()).doOnComplete {
+                    Log.d(TAG, "$$$$$$$ SUPER.COMPUTE.CONCAT.COMPLETE $$$$$$$")
+                    outgoingRows.save()
+                }
 
     }
 
@@ -100,44 +96,36 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     private fun calculateEnergyPreState(extra: (param: String) -> Unit): Observable<DataHolder> {
 
-        return Observable.create<DataHolder> { emitter ->
-
-            Log.d(TAG, "%^%^% Pre-State Energy Calculation - (${thread()}) %^%^%")
+        fun initDataHolder(): DataHolder {
             val dataHolderPreState = DataHolder()
+
             dataHolderPreState.header?.addAll(featureDataFields())
             dataHolderPreState.computable = computable
             dataHolderPreState.fileName = "${Date().time}_pre_state.csv"
 
-            val preRow = mutableMapOf<String, String>()
-
-            //ToDo: Is this really necessary ??
-            featureDataFields().forEach { field ->
-                val value = featureData[field]
-                preRow[field] = when (value) {
-                    is String       -> value
-                    is Int          -> value.toString()
-                    is Double       -> value.toString()
-                    else            -> ""
-                }
-            }
-
-            val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"]
-            dailyEnergyUsed?.let {
-                val cost = cost(it)
-                dataHolderPreState.header?.add("__electric_cost")
-                preRow["__electric_cost"] = cost.toString()
-            }
-
-            dataHolderPreState.rows?.add(preRow)
-
-            Log.d(TAG, "## Data Holder - PRE STATE - (${thread()}) ##")
-            Log.d(TAG, dataHolderPreState.toString())
-
-            emitter.onNext(dataHolderPreState)
-            emitter.onComplete()
-
-            extra("Post [On Complete] - Run Away Thread.")
+            return dataHolderPreState
         }
+
+        Log.d(TAG, "%^%^% Pre-State Energy Calculation - (${thread()}) %^%^%")
+        val dataHolderPreState = initDataHolder()
+        val preRow = mutableMapOf<String, String>()
+        featureDataFields().forEach { field ->
+            preRow[field] = if (featureData.containsKey(field)) featureData[field].toString() else ""
+        }
+
+        val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"]
+        dailyEnergyUsed?.let {
+            val cost = cost(it)
+            dataHolderPreState.header?.add("__electric_cost")
+            preRow["__electric_cost"] = cost.toString()
+        }
+
+        dataHolderPreState.rows?.add(preRow)
+
+        Log.d(TAG, "## Data Holder - PRE STATE - (${thread()}) ##")
+        Log.d(TAG, dataHolderPreState.toString())
+
+        return Observable.just(dataHolderPreState)
 
     }
 
