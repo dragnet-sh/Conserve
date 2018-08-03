@@ -72,14 +72,17 @@ abstract class EBase(private val computable: Computable<*>,
         class Mapper : Function<DataHolder, Computable<*>> {
             override fun apply(dataHolder: DataHolder): Computable<*> {
                 synchronized(outgoingRows.dataHolder) {
-                    outgoingRows.dataHolder.add(dataHolder)
+                    if (dataHolder.path.isNotEmpty()) {
+                        outgoingRows.dataHolder.add(dataHolder)
+                    }
                 }
                 computable.outgoingRows = outgoingRows
                 return computable
             }
         }
 
-        return Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra))
+        return Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra),
+                calculateEnergySavings(extra), calculateCostSavings(extra))
                 .map(Mapper()).doOnComplete {
                     Log.d(TAG, "$$$$$$$ SUPER.COMPUTE.CONCAT.COMPLETE $$$$$$$")
                     outgoingRows.save()
@@ -88,6 +91,16 @@ abstract class EBase(private val computable: Computable<*>,
     }
 
     private fun validatePreConditions() = preconditions.validate()
+
+
+    private fun calculateEnergySavings(extra: (param: String) -> Unit): Observable<DataHolder> {
+        return Observable.just(DataHolder())
+    }
+
+
+    private fun calculateCostSavings(extra: (param: String) -> Unit): Observable<DataHolder> {
+        return Observable.just(DataHolder())
+    }
 
     /**
      * Pre State - Energy Calculation
@@ -120,6 +133,7 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         dataHolderPreState.rows?.add(preRow)
+        computable.energyPreState = preRow
 
         Log.d(TAG, "## Data Holder - PRE STATE - (${thread()}) ##")
         Log.d(TAG, dataHolderPreState.toString())
@@ -142,7 +156,7 @@ abstract class EBase(private val computable: Computable<*>,
                 Log.d(TAG, "### Efficient Alternate Count - [${response.count()}] - ###")
 
                 val jsonElements = response.map { it.asJsonObject.get("data") }
-                computable.efficientAlternative = jsonElements
+                computable.energyPostState = jsonElements
 
                 val dataHolderPostState = initDataHolder()
 
@@ -206,8 +220,8 @@ abstract class EBase(private val computable: Computable<*>,
             .toString()
 
     private fun queryLaborCost() = JSONObject()
-                .put("data.zipcode", 95021)
-                .put("data.profession", "Electrician")
+                .put("data.zipcode", preAudit["ZipCode"])
+                .put("data.profession", preAudit["Profession"])
                 .toString()
 
     private fun starValidator(query: String): Observable<Boolean> {
