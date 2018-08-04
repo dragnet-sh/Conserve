@@ -43,7 +43,7 @@ class DataHolder {
         return "fileName: [$fileName]\n" +
                 "path: [$path]\n" +
                 "header: $header\n" +
-                "rows: $rows"
+                "rows count: [${rows?.count()}]"
     }
 
 }
