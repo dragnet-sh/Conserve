@@ -208,9 +208,8 @@ abstract class EBase(private val computable: Computable<*>,
                 Log.d(TAG, "### Efficient Alternate Count - [${response.count()}] - ###")
 
                 val jsonElements = response.map { it.asJsonObject.get("data") }
-                computable.energyPostState = jsonElements
-
                 val dataHolderPostState = initDataHolder()
+                val costCollector= mutableListOf<Double>()
 
                 jsonElements.forEach { element ->
                     val postRow = mutableMapOf<String, String>()
@@ -222,11 +221,23 @@ abstract class EBase(private val computable: Computable<*>,
                     val postDailyEnergyUsed = element.asJsonObject.get("daily_energy_use").asDouble
                     val cost = cost(postDailyEnergyUsed)
                     postRow["__electric_cost"] = cost.toString()
+
+                    costCollector.add(cost)
                     dataHolderPostState.rows?.add(postRow)
+                    computable.energyPostState?.add(postRow)
                 }
 
                 Log.d(TAG, "## Data Holder - POST STATE  - (${thread()}) ##")
                 Log.d(TAG, dataHolderPostState.toString())
+
+                val costMinimum = costCollector.min()
+                val efficientAlternative = dataHolderPostState.rows?.filter {
+                    it.getValue("__electric_cost").toDouble() == costMinimum
+                }
+
+                computable.energyPostStateLeastCost = efficientAlternative
+                Log.d(TAG, "Minimum Cost : [$costMinimum]")
+                Log.d(TAG, "Efficient Alternative : ${computable.energyPostStateLeastCost}")
 
                 return dataHolderPostState
             }
