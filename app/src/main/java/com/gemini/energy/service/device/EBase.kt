@@ -27,9 +27,11 @@ abstract class EBase(private val computable: Computable<*>,
                      val outgoingRows: OutgoingRows) {
 
     lateinit var schedulers: Schedulers
-    lateinit var gasUtility: EnergyUtility
+    private lateinit var gasUtility: EnergyUtility
     lateinit var electricityUtility: EnergyUtility
     lateinit var preconditions: Preconditions
+
+    lateinit var powerTimeChange: PowerTimeChange
 
     var preAudit: Map<String, Any> = mapOf()
     var featureData: Map<String, Any> = mapOf()
@@ -61,6 +63,11 @@ abstract class EBase(private val computable: Computable<*>,
         base.outgoingRows.computable = computable
         base.outgoingRows.dataHolder = mutableListOf()
         base.preconditions = Preconditions()
+
+        base.powerTimeChange = PowerTimeChange()
+        base.powerTimeChange.energyUsageSpecific = base.energyUsageSpecific
+        base.powerTimeChange.energyUsageBusiness = base.energyUsageBusiness
+        base.powerTimeChange.featureData = base.featureData
 
     }
 
@@ -101,6 +108,89 @@ abstract class EBase(private val computable: Computable<*>,
 
 
     /**
+     * Compares the following Parameters between Pre | Post
+     *
+     * 1. Power Change
+     * 2. Time Change
+     * 3. Power Time Change
+     * */
+    class PowerTimeChange {
+
+        lateinit var energyUsageSpecific: EnergyUsage
+        lateinit var energyUsageBusiness: EnergyUsage
+        lateinit var featureData: Map<String, Any>
+
+        var checkPowerChange = false
+        var checkTimeChange = false
+        var checkPowerTimeChange = false
+
+        var energyPowerChange = 0.0
+        var energyTimeChange = 0.0
+        var energyPowerTimeChange = 0.0
+
+        fun delta(computable: Computable<*>): PowerTimeChange {
+
+            /**
+             * Usage Hours
+             * */
+            val preRunHours = energyUsageSpecific.yearly()
+            val postRunHours = energyUsageBusiness.yearly()
+
+            /**
+             * Energy Use
+             * */
+            val preHourlyEnergyUse = featureData["Daily Energy Used (kWh)"] as Double
+            var postHourlyEnergyUse = 0.0
+
+            if (computable.energyPostStateLeastCost.count() > 0) {
+                val energyEfficientAlternative = computable.energyPostStateLeastCost[0]
+                val energyUse = energyEfficientAlternative.getValue("daily_energy_use")
+                postHourlyEnergyUse = energyUse.toDouble()
+            }
+
+            /**
+             * Compute Power
+             * */
+            val prePower = preHourlyEnergyUse / 24
+            val postPower = postHourlyEnergyUse / 24
+
+            /**
+             * Compute Power Time Change Delta
+             * */
+            energyPowerChange = preRunHours * (prePower - postPower)
+            energyTimeChange = (preRunHours - postRunHours) * prePower
+            energyPowerTimeChange = (preRunHours - postRunHours) * (prePower - postPower)
+
+            /**
+             * Validate Power Time Change - Set the appropriate Flag
+             * */
+            checkPowerChange = energyPowerChange != 0.0 && energyTimeChange == 0.0
+            checkTimeChange = energyPowerChange == 0.0 && energyTimeChange != 0.0
+            checkPowerTimeChange = energyPowerChange != 0.0 && energyTimeChange != 0.0
+
+            Log.d(TAG, "Energy Power Change : ($energyPowerChange)")
+            Log.d(TAG, "Energy Time Change : ($energyTimeChange)")
+            Log.d(TAG, "Energy Power Time Change : ($energyPowerTimeChange)")
+
+            Log.d(TAG, "Check Power Change : ($checkPowerChange)")
+            Log.d(TAG, "Check Time Change : ($checkTimeChange)")
+            Log.d(TAG, "Check Power Time Change : ($checkPowerTimeChange)")
+
+            return this
+
+        }
+
+        fun energySaving() = when {
+            checkPowerChange            -> energyPowerChange
+            checkTimeChange             -> energyTimeChange
+            checkPowerTimeChange        -> energyPowerTimeChange
+            else                        -> 0.0
+        }
+
+    }
+
+
+    /**
      * Energy Cost Saving - Calculates the Energy Saved via examining the 3 cases
      * 1. Power Change
      * 2. Time Change
@@ -124,56 +214,28 @@ abstract class EBase(private val computable: Computable<*>,
 
         class Mapper : Function<DataHolder, DataHolder> {
             override fun apply(dataHolder: DataHolder): DataHolder {
+
+                val ptc = powerTimeChange.delta(computable)
+
                 Log.d(TAG, "%^%^% Energy Savings Calculation - (${thread()}) %^%^%")
                 Log.d(TAG, "Energy Post State [Item Count] : (${computable.energyPostState?.count()})")
 
-                val preRunHours = energyUsageSpecific.yearly()
-                val postRunHours = energyUsageBusiness.yearly()
-
-                val preHourlyEnergyUse = featureData["Daily Energy Used (kWh)"] as Double
-                var postHourlyEnergyUse = 0.0
-
-                if (computable.energyPostStateLeastCost.count() > 0) {
-                    val energyEfficientAlternative = computable.energyPostStateLeastCost[0]
-                    val cost = energyEfficientAlternative.getValue("__electric_cost")
-                    postHourlyEnergyUse = cost.toDouble()
-                }
-
-                val prePower = preHourlyEnergyUse / 24
-                val postPower = postHourlyEnergyUse / 24
-
-                fun energyPowerChange() = preRunHours * (prePower - postPower)
-                fun energyTimeChange() = (preRunHours - postRunHours) * prePower
-                fun energyPowerTimeChange() = (preRunHours - postRunHours) * (prePower - postPower)
-
-                fun checkPowerChange() = energyPowerChange() != 0.0 && energyTimeChange() == 0.0
-                fun checkTimeChange() = energyPowerChange() == 0.0 && energyTimeChange() != 0.0
-                fun checkPowerTimeChange() = energyPowerChange() != 0.0 && energyTimeChange() != 0.0
-
-                Log.d(TAG, "Energy Power Change : (${energyPowerChange()})")
-                Log.d(TAG, "Energy Time Change : (${energyTimeChange()})")
-                Log.d(TAG, "Energy Power Time Change : (${energyPowerTimeChange()})")
-
-                Log.d(TAG, "Check Power Change : (${checkPowerChange()})")
-                Log.d(TAG, "Check Time Change : (${checkTimeChange()})")
-                Log.d(TAG, "Check Power Time Change : (${checkPowerTimeChange()})")
-
-                val energySaving = when {
-                    checkPowerChange()          -> energyPowerChange()
-                    checkTimeChange()           -> energyTimeChange()
-                    checkPowerTimeChange()      -> energyPowerTimeChange()
-                    else                        -> 0.0
-                }
-
+                /**
+                 * Final Energy Saving
+                 * */
+                val energySaving = ptc.energySaving()
                 Log.d(TAG, "Energy Saving : ($energySaving)")
 
+                /**
+                 * Prepare the Outgoing Rows
+                 * */
                 dataHolder.rows?.add(mapOf(
-                        "__check_power_change" to checkPowerChange().toString(),
-                        "__check_time_change" to checkTimeChange().toString(),
-                        "__check_power_time_change" to checkPowerTimeChange().toString(),
-                        "__energy_power_change" to energyPowerChange().toString(),
-                        "__energy_time_change" to energyTimeChange().toString(),
-                        "__energy_power_time_change" to energyPowerTimeChange().toString(),
+                        "__check_power_change" to ptc.checkPowerChange.toString(),
+                        "__check_time_change" to ptc.checkTimeChange.toString(),
+                        "__check_power_time_change" to ptc.checkPowerTimeChange.toString(),
+                        "__energy_power_change" to ptc.energyPowerChange.toString(),
+                        "__energy_time_change" to ptc.energyTimeChange.toString(),
+                        "__energy_power_time_change" to ptc.energyPowerTimeChange.toString(),
                         "__energy_saving" to energySaving.toString()
                 ))
 
@@ -188,6 +250,106 @@ abstract class EBase(private val computable: Computable<*>,
 
 
     private fun calculateCostSavings(extra: (param: String) -> Unit): Observable<DataHolder> {
+
+        class Mapper : Function<DataHolder, DataHolder> {
+            override fun apply(dataHolder: DataHolder): DataHolder {
+
+                /**
+                 * Pre Usage Hours - Mapped Peak Hours (Specific)
+                 * */
+                val preUsageByPeak= energyUsageSpecific.mappedPeakHourYearly()
+                val preHoursOnPeakPricing = preUsageByPeak[ERateKey.SummerOn]!! * .504
+                val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 + preUsageByPeak[ERateKey.WinterPart]!! * .496
+                val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 + preUsageByPeak[ERateKey.WinterOff]!! * .496
+
+                /**
+                 * Post Usage Hours - Mapped Peak Hours (Business)
+                 * */
+                val postUsageByPeak = energyUsageBusiness.mappedPeakHourYearly()
+                val postHoursOnPeakPricing = postUsageByPeak[ERateKey.SummerOn]!! * .504
+                val postHoursOnPartPeakPricing = postUsageByPeak[ERateKey.SummerPart]!! * .504 + postUsageByPeak[ERateKey.WinterPart]!! * .496
+                val postHoursOnOffPeakPricing = postUsageByPeak[ERateKey.SummerOff]!! * .504 + postUsageByPeak[ERateKey.WinterOff]!! * .496
+
+                /**
+                 * Utility Rate - Electricity
+                 * */
+                val peakPrice = electricityUtility.structure[ERateKey.SummerOn.value]!![0].toDouble()
+                val partPeakPrice =
+                        (electricityUtility.structure[ERateKey.SummerPart.value]!![0].toDouble()
+                                        + electricityUtility.structure[ERateKey.WinterPart.value]!![0].toDouble()) / 2
+                val offPeakPrice =
+                        (electricityUtility.structure[ERateKey.SummerOff.value]!![0].toDouble()
+                                + electricityUtility.structure[ERateKey.WinterOff.value]!![0].toDouble()) / 2
+
+                /**
+                 * Utility Rate - Gas
+                 * */
+                val winterRate = 0.0
+                val summerRate = 0.0
+
+                /**
+                 * @materialCost - Parse API Energy Efficient Database
+                 * @laborCost - Parse API Labor Cost
+                 * */
+                val materialCost = 0.0
+                val laborCost = 0.0
+
+                val implementationCost = 0.0
+                val totalEnergyCostSavingsPlaceholderYears = 0.0
+                val maintenanceCostSavings = 0.0
+                val otherEquipmentSavings = 0.0
+
+                /**
+                 * Parse API - Rebate
+                 * */
+                val incentives = 0.0
+
+
+                /**
+                 * Business Hours - (PreAudit)*/
+                val hoursOfOperation = energyUsageBusiness.yearly()
+
+
+                val blendedEnergyRate = 0.0
+                val blendedDemandRate = 0.0
+
+                /**
+                 * Utility Rate Structure
+                 * */
+                val getRateSchedule = electricRateStructure
+
+                val checkForGas = false
+
+                /**
+                 * Energy Usage - Efficient Alternative (Post State)
+                 * */
+                fun energyUse() = if (computable.energyPostStateLeastCost.count() > 0) {
+                    val energyEfficientAlternative = computable.energyPostStateLeastCost[0]
+                    energyEfficientAlternative.getValue("daily_energy_use").toDouble()
+                } else { 0.0 }
+                val energyUse = energyUse()
+
+                /**
+                 * Power, Time Change or Both
+                 * */
+                val ptc = powerTimeChange.delta(computable)
+                val powerChangeCheck = ptc.checkPowerChange
+                val timeChangeCheck = ptc.checkTimeChange
+                val powerTimeChangeCheck = ptc.checkPowerTimeChange
+
+                /**
+                 * Applicable to Post State having multiple Energy Column
+                 * */
+                val multiplePowerCheck = true
+                val multipleTimeCheck = true
+                val multiplePowerTimeCheck = true
+
+
+                return dataHolder
+            }
+        }
+
+
         return Observable.just(DataHolder())
     }
 
