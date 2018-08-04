@@ -35,6 +35,9 @@ abstract class EBase(private val computable: Computable<*>,
     var featureData: Map<String, Any> = mapOf()
     private var electricRateStructure: String = RATE
 
+    private val energyUsageBusiness = EnergyUsage()
+    private val energyUsageSpecific = EnergyUsage()
+
     private fun initialize() {
         val base = this
 
@@ -51,6 +54,10 @@ abstract class EBase(private val computable: Computable<*>,
                 Electricity(electricRateStructure)).build()
 
         base.operatingHours.initUsage(mappedUsageHours()).build()
+
+        base.energyUsageBusiness.initUsage(mappedBusinessHours()).build()
+        base.energyUsageSpecific.initUsage(mappedSpecificHours()).build()
+
         base.outgoingRows.computable = computable
         base.outgoingRows.dataHolder = mutableListOf()
         base.preconditions = Preconditions()
@@ -82,10 +89,10 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         return Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra),
-                calculateEnergySavings(extra), calculateCostSavings(extra))
+                calculateEnergySavings(extra))
                 .map(Mapper()).doOnComplete {
                     Log.d(TAG, "$$$$$$$ SUPER.COMPUTE.CONCAT.COMPLETE $$$$$$$")
-                    outgoingRows.save()
+//                    outgoingRows.save()
                 }
 
     }
@@ -94,7 +101,51 @@ abstract class EBase(private val computable: Computable<*>,
 
 
     private fun calculateEnergySavings(extra: (param: String) -> Unit): Observable<DataHolder> {
+
+        class Mapper : Function<DataHolder, DataHolder> {
+            override fun apply(dataHolder: DataHolder): DataHolder {
+                Log.d(TAG, "%^%^% Energy Savings Calculation - (${thread()}) %^%^%")
+                Log.d(TAG, "Energy Post State [Item Count] : (${computable.energyPostState?.count()})")
+
+                val preRunHours = energyUsageSpecific.yearly()
+                val postRunHours = energyUsageBusiness.yearly()
+
+                val preHourlyEnergyUse = featureData["Daily Energy Used (kWh)"] as Double
+                val postHourlyEnergyUse = 0.0 //ToDo - Get this from the Post State Database
+
+                val prePower = preHourlyEnergyUse / 24
+                val postPower = postHourlyEnergyUse / 24
+
+                fun energyPowerChange() = preRunHours * (prePower - postPower)
+                fun energyTimeChange() = (preRunHours - postRunHours) * prePower
+                fun energy() = (preRunHours - postRunHours) * (prePower - postPower)
+
+                fun checkPowerChange() = energyPowerChange() != 0.0 && energyTimeChange() == 0.0
+                fun checkTimeChange() = energyPowerChange() == 0.0 && energyTimeChange() != 0.0
+                fun checkPowerTimeChange() = energyPowerChange() != 0.0 && energyTimeChange() != 0.0
+
+                Log.d(TAG, "Energy Power Change : (${energyPowerChange()})")
+                Log.d(TAG, "Energy Time Change : (${energyTimeChange()})")
+                Log.d(TAG, "Energy : (${energy()})")
+
+                Log.d(TAG, "Check Power Change : (${checkPowerChange()})")
+                Log.d(TAG, "Check Time Change : (${checkTimeChange()})")
+                Log.d(TAG, "Check Power Time Change : (${checkPowerTimeChange()})")
+
+                val energySavings = when {
+                    checkPowerChange()          -> energyPowerChange()
+                    checkTimeChange()           -> energyTimeChange()
+                    checkPowerTimeChange()      -> energy()
+                    else                        -> 0.0
+                }
+
+                return dataHolder
+
+            }
+        }
+
         return Observable.just(DataHolder())
+                .map(Mapper())
     }
 
 
@@ -153,6 +204,7 @@ abstract class EBase(private val computable: Computable<*>,
 
             override fun apply(response: JsonArray): DataHolder {
 
+                Log.d(TAG, "%^%^% Post-State Energy Calculation - (${thread()}) %^%^%")
                 Log.d(TAG, "### Efficient Alternate Count - [${response.count()}] - ###")
 
                 val jsonElements = response.map { it.asJsonObject.get("data") }
@@ -253,6 +305,38 @@ abstract class EBase(private val computable: Computable<*>,
         for (eDay in EDay.values()) {
             if (preAudit.containsKey(eDay.value)) {
                 usage.add(preAudit[eDay.value] as String)
+            } else {usage.add("")}
+        }
+
+        Log.d(TAG, usage.toString())
+
+        return EDay.values().associateBy({ it }, {
+            usage[EDay.values().indexOf(it)]
+        })
+    }
+
+    private fun mappedBusinessHours(): Map<EDay, String?> {
+        val usage = mutableListOf<String>()
+
+        for (eDay in EDay.values()) {
+            if (preAudit.containsKey(eDay.value)) {
+                usage.add(preAudit[eDay.value] as String)
+            } else {usage.add("")}
+        }
+
+        Log.d(TAG, usage.toString())
+
+        return EDay.values().associateBy({ it }, {
+            usage[EDay.values().indexOf(it)]
+        })
+    }
+
+    private fun mappedSpecificHours(): Map<EDay, String?> {
+        val usage = mutableListOf<String>()
+
+        for (eDay in EDay.values()) {
+            if (featureData.containsKey(eDay.value)) {
+                usage.add(featureData[eDay.value] as String)
             } else {usage.add("")}
         }
 
