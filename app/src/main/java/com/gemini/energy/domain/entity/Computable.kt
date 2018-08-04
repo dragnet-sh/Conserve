@@ -40,7 +40,7 @@ data class Computable<SubType>(
         var isEnergyStar: Boolean,
         var energyPreState: Map<String, String>?,
         var energyPostState: MutableList<Map<String, String>>?,
-        var energyPostStateLeastCost: List<Map<String, String>>?,
+        var energyPostStateLeastCost: List<Map<String, String>>,
 
         /**
          * These are the Outgoing Rows to be written to a file
