@@ -96,7 +96,7 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         return Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra),
-                calculateEnergySavings(extra))
+                calculateEnergySavings(extra), calculateCostSavings(extra))
                 .map(Mapper()).doOnComplete {
                     Log.d(TAG, "$$$$$$$ SUPER.COMPUTE.CONCAT.COMPLETE $$$$$$$")
                     outgoingRows.save()
@@ -181,10 +181,10 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         fun energySaving() = when {
-            checkPowerChange            -> energyPowerChange
-            checkTimeChange             -> energyTimeChange
-            checkPowerTimeChange        -> energyPowerTimeChange
-            else                        -> 0.0
+            checkPowerChange -> energyPowerChange
+            checkTimeChange -> energyTimeChange
+            checkPowerTimeChange -> energyPowerTimeChange
+            else -> 0.0
         }
 
     }
@@ -192,9 +192,8 @@ abstract class EBase(private val computable: Computable<*>,
 
     /**
      * Energy Cost Saving - Calculates the Energy Saved via examining the 3 cases
-     * 1. Power Change
-     * 2. Time Change
-     * 3. Both Power and Time Change
+     * Power Change | Time Change | Both Power Time Change
+     * Via PowerTimeChange (helper class)
      * */
     private fun calculateEnergySavings(extra: (param: String) -> Unit): Observable<DataHolder> {
 
@@ -251,13 +250,27 @@ abstract class EBase(private val computable: Computable<*>,
 
     private fun calculateCostSavings(extra: (param: String) -> Unit): Observable<DataHolder> {
 
+        val energyCostSavingHeader = listOf("__energy_cost_saving", "__demand_cost_saving",
+                "__implementation_cost", "__total_cost_saved", "__payback_period_months", "__payback_period_years")
+
+        fun initDataHolder(): DataHolder {
+            val dataHolderPostState = DataHolder()
+            dataHolderPostState.header?.addAll(energyCostSavingHeader)
+
+            dataHolderPostState.computable = computable
+            dataHolderPostState.fileName = "${Date().time}_energy_cost_savings.csv"
+
+            return dataHolderPostState
+        }
+
         class Mapper : Function<DataHolder, DataHolder> {
+
             override fun apply(dataHolder: DataHolder): DataHolder {
 
                 /**
                  * Pre Usage Hours - Mapped Peak Hours (Specific)
                  * */
-                val preUsageByPeak= energyUsageSpecific.mappedPeakHourYearly()
+                val preUsageByPeak = energyUsageSpecific.mappedPeakHourYearly()
                 val preHoursOnPeakPricing = preUsageByPeak[ERateKey.SummerOn]!! * .504
                 val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 + preUsageByPeak[ERateKey.WinterPart]!! * .496
                 val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 + preUsageByPeak[ERateKey.WinterOff]!! * .496
@@ -276,40 +289,38 @@ abstract class EBase(private val computable: Computable<*>,
                 val peakPrice = electricityUtility.structure[ERateKey.SummerOn.value]!![0].toDouble()
                 val partPeakPrice =
                         (electricityUtility.structure[ERateKey.SummerPart.value]!![0].toDouble()
-                                        + electricityUtility.structure[ERateKey.WinterPart.value]!![0].toDouble()) / 2
+                                + electricityUtility.structure[ERateKey.WinterPart.value]!![0].toDouble()) / 2
                 val offPeakPrice =
                         (electricityUtility.structure[ERateKey.SummerOff.value]!![0].toDouble()
                                 + electricityUtility.structure[ERateKey.WinterOff.value]!![0].toDouble()) / 2
 
                 /**
-                 * Utility Rate - Gas
+                 * Utility Rate - Gas // Need to wire this up !!
                  * */
                 val winterRate = 0.0
                 val summerRate = 0.0
 
                 /**
-                 * @materialCost - Parse API Energy Efficient Database
-                 * @laborCost - Parse API Labor Cost
+                 * Parse API Energy Efficient Database - materialCost
+                 * Parse API Labor Cost - laborCost
                  * */
-                val materialCost = 0.0
-                val laborCost = 0.0
+                val materialCost = 0.0 // The Post State - Energy Efficient Database does'nt have this - Need to add a column
+                val laborCost = 0.0 // Already have the API in place
 
-                val implementationCost = 0.0
-                val totalEnergyCostSavingsPlaceholderYears = 0.0
+                /**
+                 * ToDo - Where do we get these values from ??
+                 * */
                 val maintenanceCostSavings = 0.0
                 val otherEquipmentSavings = 0.0
 
                 /**
-                 * Parse API - Rebate
+                 * Parse API Energy Efficient Database - Rebate
                  * */
                 val incentives = 0.0
 
-
                 /**
-                 * Business Hours - (PreAudit)*/
-                val hoursOfOperation = energyUsageBusiness.yearly()
-
-
+                 * Fetch these from the Utility Rate Structure
+                 * */
                 val blendedEnergyRate = 0.0
                 val blendedDemandRate = 0.0
 
@@ -318,6 +329,9 @@ abstract class EBase(private val computable: Computable<*>,
                  * */
                 val getRateSchedule = electricRateStructure
 
+                /**
+                 * Flag to denote a gas based equipment
+                 * */
                 val checkForGas = false
 
                 /**
@@ -326,7 +340,10 @@ abstract class EBase(private val computable: Computable<*>,
                 fun energyUse() = if (computable.energyPostStateLeastCost.count() > 0) {
                     val energyEfficientAlternative = computable.energyPostStateLeastCost[0]
                     energyEfficientAlternative.getValue("daily_energy_use").toDouble()
-                } else { 0.0 }
+                } else {
+                    0.0
+                }
+
                 val energyUse = energyUse()
 
                 /**
@@ -339,18 +356,173 @@ abstract class EBase(private val computable: Computable<*>,
 
                 /**
                  * Applicable to Post State having multiple Energy Column
+                 * It's false for most of the devices except - Oven (Need to verify which other devices' are applicable)
                  * */
-                val multiplePowerCheck = true
-                val multipleTimeCheck = true
-                val multiplePowerTimeCheck = true
+                val multiplePowerCheck = false
+                val multipleTimeCheck = false
+                val multiplePowerTimeCheck = false
 
+                /**
+                 * Power Value
+                 * Case 1 : Multiple Power | Time Check -- @powerValues
+                 * Case 2 : Single Power | Time -- @powerValue
+                 * */
+                val powerValues = listOf(0.0, 0.0)
+                val powerValue = 0.0
+
+
+                /**
+                 * <<< Energy Cost Saving >>>
+                 * */
+                fun energyCostSaving(): Double {
+
+                    /**
+                     * Energy Cost Savings Calculations - [TOU Based Savings]
+                     *
+                     * Multiple Power - Time
+                     * Single Power - Time
+                     * */
+                    fun electricityCostsCalcMultiplePowerChange(powerValues: List<Double>): Double {
+                        var cost = 0.0
+                        powerValues.forEach { powerValue ->
+                            cost +=
+                                    preHoursOnPeakPricing * powerValue * peakPrice +
+                                    preHoursOnPartPeakPricing * powerValue * partPeakPrice +
+                                    preHoursOnOffPeakPricing * powerValue * offPeakPrice
+                        }
+
+                        return cost
+                    }
+
+                    fun electricityCostsCalcMultipleTimeChange(powerValues: List<Double>): Double {
+                        var cost = 0.0
+                        val deltaPeak = preHoursOnPeakPricing - postHoursOnPeakPricing
+                        val deltaPartPeak = preHoursOnPartPeakPricing - postHoursOnPartPeakPricing
+                        val deltaOffPeak = preHoursOnOffPeakPricing - postHoursOnOffPeakPricing
+                        powerValues.forEach { powerValue ->
+                            cost +=
+                                    deltaPeak * powerValue * peakPrice +
+                                    deltaPartPeak * powerValue * partPeakPrice +
+                                    deltaOffPeak * powerValue * offPeakPrice
+                        }
+
+                        return cost
+                    }
+
+                    fun electricityCostsCalcPowerChange(powerValue: Double) =
+                            electricityCostsCalcMultiplePowerChange(listOf(powerValue))
+
+                    fun electricityCostsCalcTimeChange(powerValue: Double) =
+                            electricityCostsCalcMultipleTimeChange(listOf(powerValue))
+
+                    /**
+                     * Energy Cost Savings - Case 1 : TOU Based
+                     * */
+                    fun findTimeOfUseCostSavings() = when {
+
+                        multiplePowerCheck -> electricityCostsCalcMultiplePowerChange(powerValues)
+                        multipleTimeCheck || multiplePowerTimeCheck -> electricityCostsCalcMultipleTimeChange(powerValues)
+
+                        powerChangeCheck -> electricityCostsCalcPowerChange(powerValue)
+                        timeChangeCheck || powerTimeChangeCheck -> electricityCostsCalcTimeChange(powerValue)
+
+                        else -> 0.0
+
+                    }
+
+                    /**
+                     * Energy Cost Savings - Case 2 : Non TOU Based
+                     * */
+                    fun findNonTimeOfUseCostSavings(energyUse: Double) = energyUse * blendedEnergyRate
+
+                    /**
+                     * Energy Cost Savings - Case 3 : Gas Based
+                     * */
+                    fun gasCostSavings(energyUse: Double) =
+                            (energyUse / 99976.1) * ((winterRate + summerRate)) / 2
+
+                    /**
+                     * Main Block
+                     * */
+                    val matchTimeOfUse = getRateSchedule.matches("^.*TOU$".toRegex())
+
+                    fun negate(flag: Boolean) = !flag
+                    var energyCostSavings = 0.0
+                    energyCostSavings = when {
+
+                        matchTimeOfUse -> findTimeOfUseCostSavings()
+                        negate(matchTimeOfUse) -> findNonTimeOfUseCostSavings(energyUse)
+                        checkForGas -> gasCostSavings(energyUse)
+                        else -> 0.0
+
+                    }
+
+                    return energyCostSavings
+
+                }
+
+
+                /**
+                 * <<< Demand Cost Saving >>>
+                 * */
+                fun demandCostSaving(): Double {
+
+                    fun demandCostSavingsYearCalc(power: Double) = blendedDemandRate * power * 12
+
+                    var demandCostSavings = 0.0
+                    demandCostSavings = when {
+                        powerValue > 0 && powerValues.count() == 0 -> demandCostSavingsYearCalc(powerValue)
+                        powerValue <= 0 && powerValues.count() > 0 -> demandCostSavingsYearCalc(powerValues[0])
+                        else -> 0.0
+                    }
+
+                    return demandCostSavings
+
+                }
+
+
+                /**
+                 * <<< Implementation Cost >>>
+                 * */
+                fun implementationCost() = (materialCost + laborCost) - incentives
+
+
+                /**
+                 * <<< Total Cost Saved >>>
+                 * */
+                fun totalCostSaved() = energyCostSaving() + maintenanceCostSavings + otherEquipmentSavings + demandCostSaving()
+
+
+                /**
+                 * <<< Payback Period - Months >>>
+                 * */
+                fun paybackPeriodMonths() = (implementationCost() / totalCostSaved()) / 12
+
+
+                /**
+                 * <<< Payback Period - Years >>>
+                 * */
+                fun paybackPeriodYears() = (implementationCost() / totalCostSaved())
+
+
+                /**
+                 * Prepare the Outgoing Rows
+                 * */
+                dataHolder.rows?.add(mapOf(
+                        "__energy_cost_saving" to energyCostSaving().toString(),
+                        "__demand_cost_saving" to demandCostSaving().toString(),
+                        "__implementation_cost" to implementationCost().toString(),
+                        "__total_cost_saved" to totalCostSaved().toString(),
+                        "__payback_period_months" to paybackPeriodMonths().toString(),
+                        "__payback_period_years" to paybackPeriodYears().toString()
+                ))
 
                 return dataHolder
             }
         }
 
-
-        return Observable.just(DataHolder())
+        return Observable.just(initDataHolder())
+                .map(Mapper())
     }
 
     /**
@@ -409,7 +581,7 @@ abstract class EBase(private val computable: Computable<*>,
 
                 val jsonElements = response.map { it.asJsonObject.get("data") }
                 val dataHolderPostState = initDataHolder()
-                val costCollector= mutableListOf<Double>()
+                val costCollector = mutableListOf<Double>()
 
                 jsonElements.forEach { element ->
                     val postRow = mutableMapOf<String, String>()
@@ -456,9 +628,13 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         return starValidator(queryEnergyStar())
-                .flatMap { if (it && efficientLookup()) {
-                    efficientAlternative(queryEfficientFilter()).map(Mapper())
-                } else { Observable.just(DataHolder())} }
+                .flatMap {
+                    if (it && efficientLookup()) {
+                        efficientAlternative(queryEfficientFilter()).map(Mapper())
+                    } else {
+                        Observable.just(DataHolder())
+                    }
+                }
     }
 
     companion object {
@@ -483,9 +659,9 @@ abstract class EBase(private val computable: Computable<*>,
             .toString()
 
     private fun queryLaborCost() = JSONObject()
-                .put("data.zipcode", preAudit["ZipCode"])
-                .put("data.profession", preAudit["Profession"])
-                .toString()
+            .put("data.zipcode", preAudit["ZipCode"])
+            .put("data.profession", preAudit["Profession"])
+            .toString()
 
     private fun starValidator(query: String): Observable<Boolean> {
         return parseAPIService.fetchPlugload(query)
@@ -516,7 +692,9 @@ abstract class EBase(private val computable: Computable<*>,
         for (eDay in EDay.values()) {
             if (preAudit.containsKey(eDay.value)) {
                 usage.add(preAudit[eDay.value] as String)
-            } else {usage.add("")}
+            } else {
+                usage.add("")
+            }
         }
 
         Log.d(TAG, usage.toString())
@@ -532,7 +710,9 @@ abstract class EBase(private val computable: Computable<*>,
         for (eDay in EDay.values()) {
             if (preAudit.containsKey(eDay.value)) {
                 usage.add(preAudit[eDay.value] as String)
-            } else {usage.add("")}
+            } else {
+                usage.add("")
+            }
         }
 
         Log.d(TAG, usage.toString())
@@ -548,7 +728,9 @@ abstract class EBase(private val computable: Computable<*>,
         for (eDay in EDay.values()) {
             if (featureData.containsKey(eDay.value)) {
                 usage.add(featureData[eDay.value] as String)
-            } else {usage.add("")}
+            } else {
+                usage.add("")
+            }
         }
 
         Log.d(TAG, usage.toString())
