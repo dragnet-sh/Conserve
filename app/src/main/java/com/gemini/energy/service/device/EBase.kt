@@ -92,7 +92,7 @@ abstract class EBase(private val computable: Computable<*>,
                 calculateEnergySavings(extra))
                 .map(Mapper()).doOnComplete {
                     Log.d(TAG, "$$$$$$$ SUPER.COMPUTE.CONCAT.COMPLETE $$$$$$$")
-//                    outgoingRows.save()
+                    outgoingRows.save()
                 }
 
     }
@@ -100,7 +100,27 @@ abstract class EBase(private val computable: Computable<*>,
     private fun validatePreConditions() = preconditions.validate()
 
 
+    /**
+     * Energy Cost Saving - Calculates the Energy Saved via examining the 3 cases
+     * 1. Power Change
+     * 2. Time Change
+     * 3. Both Power and Time Change
+     * */
     private fun calculateEnergySavings(extra: (param: String) -> Unit): Observable<DataHolder> {
+
+        val energySavingHeader = listOf("__check_power_change", "__check_time_change",
+                "__check_power_time_change", "__energy_power_change", "__energy_time_change",
+                "__energy_power_time_change", "__energy_saving")
+
+        fun initDataHolder(): DataHolder {
+            val dataHolderPostState = DataHolder()
+            dataHolderPostState.header?.addAll(energySavingHeader)
+
+            dataHolderPostState.computable = computable
+            dataHolderPostState.fileName = "${Date().time}_energy_savings.csv"
+
+            return dataHolderPostState
+        }
 
         class Mapper : Function<DataHolder, DataHolder> {
             override fun apply(dataHolder: DataHolder): DataHolder {
@@ -111,14 +131,20 @@ abstract class EBase(private val computable: Computable<*>,
                 val postRunHours = energyUsageBusiness.yearly()
 
                 val preHourlyEnergyUse = featureData["Daily Energy Used (kWh)"] as Double
-                val postHourlyEnergyUse = 0.0 //ToDo - Get this from the Post State Database
+                var postHourlyEnergyUse = 0.0
+
+                if (computable.energyPostStateLeastCost.count() > 0) {
+                    val energyEfficientAlternative = computable.energyPostStateLeastCost[0]
+                    val cost = energyEfficientAlternative.getValue("__electric_cost")
+                    postHourlyEnergyUse = cost.toDouble()
+                }
 
                 val prePower = preHourlyEnergyUse / 24
                 val postPower = postHourlyEnergyUse / 24
 
                 fun energyPowerChange() = preRunHours * (prePower - postPower)
                 fun energyTimeChange() = (preRunHours - postRunHours) * prePower
-                fun energy() = (preRunHours - postRunHours) * (prePower - postPower)
+                fun energyPowerTimeChange() = (preRunHours - postRunHours) * (prePower - postPower)
 
                 fun checkPowerChange() = energyPowerChange() != 0.0 && energyTimeChange() == 0.0
                 fun checkTimeChange() = energyPowerChange() == 0.0 && energyTimeChange() != 0.0
@@ -126,25 +152,37 @@ abstract class EBase(private val computable: Computable<*>,
 
                 Log.d(TAG, "Energy Power Change : (${energyPowerChange()})")
                 Log.d(TAG, "Energy Time Change : (${energyTimeChange()})")
-                Log.d(TAG, "Energy : (${energy()})")
+                Log.d(TAG, "Energy Power Time Change : (${energyPowerTimeChange()})")
 
                 Log.d(TAG, "Check Power Change : (${checkPowerChange()})")
                 Log.d(TAG, "Check Time Change : (${checkTimeChange()})")
                 Log.d(TAG, "Check Power Time Change : (${checkPowerTimeChange()})")
 
-                val energySavings = when {
+                val energySaving = when {
                     checkPowerChange()          -> energyPowerChange()
                     checkTimeChange()           -> energyTimeChange()
-                    checkPowerTimeChange()      -> energy()
+                    checkPowerTimeChange()      -> energyPowerTimeChange()
                     else                        -> 0.0
                 }
+
+                Log.d(TAG, "Energy Saving : ($energySaving)")
+
+                dataHolder.rows?.add(mapOf(
+                        "__check_power_change" to checkPowerChange().toString(),
+                        "__check_time_change" to checkTimeChange().toString(),
+                        "__check_power_time_change" to checkPowerTimeChange().toString(),
+                        "__energy_power_change" to energyPowerChange().toString(),
+                        "__energy_time_change" to energyTimeChange().toString(),
+                        "__energy_power_time_change" to energyPowerTimeChange().toString(),
+                        "__energy_saving" to energySaving.toString()
+                ))
 
                 return dataHolder
 
             }
         }
 
-        return Observable.just(DataHolder())
+        return Observable.just(initDataHolder())
                 .map(Mapper())
     }
 
@@ -235,7 +273,7 @@ abstract class EBase(private val computable: Computable<*>,
                     it.getValue("__electric_cost").toDouble() == costMinimum
                 }
 
-                computable.energyPostStateLeastCost = efficientAlternative
+                computable.energyPostStateLeastCost = efficientAlternative ?: mutableListOf()
                 Log.d(TAG, "Minimum Cost : [$costMinimum]")
                 Log.d(TAG, "Efficient Alternative : ${computable.energyPostStateLeastCost}")
 
