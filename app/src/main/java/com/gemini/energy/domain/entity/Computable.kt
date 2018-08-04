@@ -38,7 +38,8 @@ data class Computable<SubType>(
          * The following parameters are used for Energy Efficient Equivalent
          * */
         var isEnergyStar: Boolean,
-        var efficientAlternative: List<JsonElement>?,
+        var energyPreState: Map<String, String>?,
+        var energyPostState: List<JsonElement>?,
 
         /**
          * These are the Outgoing Rows to be written to a file
@@ -47,10 +48,10 @@ data class Computable<SubType>(
 
     constructor(): this(
             NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
-            null, null, null, false, null, null)
+            null, null, null, false, null, null, null)
 
     constructor(auditScopeSubType: SubType) : this(NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
-            auditScopeSubType, null, null, false, null, null)
+            auditScopeSubType, null, null, false, null, null, null)
 
     fun mappedFeatureAuditScope(): HashMap<String, Any> = featureMapper(featureAuditScope)
     fun mappedFeaturePreAudit(): HashMap<String, Any> = featureMapper(featurePreAudit)
@@ -59,7 +60,6 @@ data class Computable<SubType>(
         val outgoing = hashMapOf<String, Any>()
         features?.let { featureList ->
             featureList
-                    .filter { discard(it.valueString.isNullOrEmpty()) }
                     .forEach { feature ->
                         val key = feature.key!!
                         val value = typeMapper(feature.valueString, feature.dataType)
@@ -71,16 +71,17 @@ data class Computable<SubType>(
         return outgoing
     }
 
-    private fun typeMapper(value: String?, type: String?) = when (type) {
-        BaseRowType.IntRow.value        -> value.toString().toInt()
-        BaseRowType.DecimalRow.value    -> value.toString().toDouble()
-        else                            -> value.toString()
-    }
+    private fun typeMapper(value: String?, type: String?) = cleanup(value, type)
 
     companion object {
         private const val EMPTY = ""
         private const val NONE = -1
-        private fun discard(boolean: Boolean) = !boolean
+        private fun cleanup(value: String?, type: String?) =
+                when (type) {
+                    BaseRowType.IntRow.value            -> if (!value.isNullOrEmpty()) value.toString().toInt() else 0
+                    BaseRowType.DecimalRow.value        -> if (!value.isNullOrEmpty()) value.toString().toDouble() else 0.0
+                    else                                -> if (!value.isNullOrEmpty()) value.toString() else EMPTY
+                }
     }
 
     override fun toString(): String {
