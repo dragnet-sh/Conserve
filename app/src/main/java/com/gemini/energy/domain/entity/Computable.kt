@@ -39,7 +39,8 @@ data class Computable<SubType>(
          * */
         var isEnergyStar: Boolean,
         var energyPreState: Map<String, String>?,
-        var energyPostState: List<JsonElement>?,
+        var energyPostState: MutableList<Map<String, String>>?,
+        var energyPostStateLeastCost: List<Map<String, String>>?,
 
         /**
          * These are the Outgoing Rows to be written to a file
@@ -48,10 +49,13 @@ data class Computable<SubType>(
 
     constructor(): this(
             NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
-            null, null, null, false, null, null, null)
+            null, null, null, false,
+            null, mutableListOf(), mutableListOf(), null)
 
-    constructor(auditScopeSubType: SubType) : this(NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
-            auditScopeSubType, null, null, false, null, null, null)
+    constructor(auditScopeSubType: SubType) : this(NONE, EMPTY, NONE, EMPTY, NONE, EMPTY,
+            null, auditScopeSubType, null, null,
+            false, null, mutableListOf(), mutableListOf(), null)
+
 
     fun mappedFeatureAuditScope(): HashMap<String, Any> = featureMapper(featureAuditScope)
     fun mappedFeaturePreAudit(): HashMap<String, Any> = featureMapper(featurePreAudit)
