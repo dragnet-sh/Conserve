@@ -146,8 +146,8 @@ enum class ERateKey(val value: String) {
     WinterTransport("winter_first_4000_therms"),
     Surcharge("surcharge"),
 
-    GasWinter("gas-winter"),
-    GasSummer("gas-summer"),
+    GasWinter("winter_first_4000_therms"),
+    GasSummer("summer_first_4000_therms"),
 
     None("none");
 
