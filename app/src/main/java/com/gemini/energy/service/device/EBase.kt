@@ -22,7 +22,8 @@ import retrofit2.http.Query
 import java.util.*
 
 abstract class EBase(private val computable: Computable<*>,
-                     private val energyUtility: EnergyUtility,
+                     private val energyUtilityGas: EnergyUtility,
+                     private val energyUtilityElectricity: EnergyUtility,
                      val operatingHours: EnergyUsage,
                      val outgoingRows: OutgoingRows) {
 
@@ -50,9 +51,10 @@ abstract class EBase(private val computable: Computable<*>,
         base.featureData = computable.mappedFeatureAuditScope()
         base.preAudit = computable.mappedFeaturePreAudit()
 
-        base.gasUtility = energyUtility.initUtility(Gas()).build()
+        base.gasUtility = energyUtilityGas.initUtility(Gas()).build()
+
         base.electricRateStructure = preAudit["Electric Rate Structure"] as String
-        base.electricityUtility = energyUtility.initUtility(
+        base.electricityUtility = energyUtilityElectricity.initUtility(
                 Electricity(electricRateStructure)).build()
 
         base.operatingHours.initUsage(mappedUsageHours()).build()
@@ -168,13 +170,13 @@ abstract class EBase(private val computable: Computable<*>,
             checkTimeChange = energyPowerChange == 0.0 && energyTimeChange != 0.0
             checkPowerTimeChange = energyPowerChange != 0.0 && energyTimeChange != 0.0
 
-            Log.d(TAG, "Energy Power Change : ($energyPowerChange)")
-            Log.d(TAG, "Energy Time Change : ($energyTimeChange)")
-            Log.d(TAG, "Energy Power Time Change : ($energyPowerTimeChange)")
+            Log.d(TAG, "----::::---- Energy Power Change : ($energyPowerChange) ----::::----")
+            Log.d(TAG, "----::::---- Energy Time Change : ($energyTimeChange) ----::::----")
+            Log.d(TAG, "----::::---- Energy Power Time Change : ($energyPowerTimeChange) ----::::----")
 
-            Log.d(TAG, "Check Power Change : ($checkPowerChange)")
-            Log.d(TAG, "Check Time Change : ($checkTimeChange)")
-            Log.d(TAG, "Check Power Time Change : ($checkPowerTimeChange)")
+            Log.d(TAG, "----::::---- Check Power Change : ($checkPowerChange) ----::::----")
+            Log.d(TAG, "----::::---- Check Time Change : ($checkTimeChange) ----::::----")
+            Log.d(TAG, "----::::---- Check Power Time Change : ($checkPowerTimeChange) ----::::----")
 
             return this
 
@@ -278,6 +280,11 @@ abstract class EBase(private val computable: Computable<*>,
                 val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 + preUsageByPeak[ERateKey.WinterPart]!! * .496
                 val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 + preUsageByPeak[ERateKey.WinterOff]!! * .496
 
+                Log.d(TAG, "----::::---- Pre Usage By Peak ($preUsageByPeak) ----::::----")
+                Log.d(TAG, "----::::---- Pre Hours On Peak Pricing ($preHoursOnPeakPricing) ----::::----")
+                Log.d(TAG, "----::::---- Pre Hours On Part Peak Pricing ($preHoursOnPartPeakPricing) ----::::----")
+                Log.d(TAG, "----::::---- Pre Hours On Off Peak Pricing ($preHoursOnOffPeakPricing) ----::::----")
+
                 /**
                  * Post Usage Hours - Mapped Peak Hours (Business)
                  * */
@@ -286,8 +293,14 @@ abstract class EBase(private val computable: Computable<*>,
                 val postHoursOnPartPeakPricing = postUsageByPeak[ERateKey.SummerPart]!! * .504 + postUsageByPeak[ERateKey.WinterPart]!! * .496
                 val postHoursOnOffPeakPricing = postUsageByPeak[ERateKey.SummerOff]!! * .504 + postUsageByPeak[ERateKey.WinterOff]!! * .496
 
+                Log.d(TAG, "----::::---- Post Usage By Peak ($postUsageByPeak) ----::::----")
+                Log.d(TAG, "----::::---- Post Hours On Peak Pricing ($postHoursOnPeakPricing) ----::::----")
+                Log.d(TAG, "----::::---- Post Hours On Part Peak Pricing ($postHoursOnPartPeakPricing) ----::::----")
+                Log.d(TAG, "----::::---- Post Hours On Off Peak Pricing ($postHoursOnOffPeakPricing) ----::::----")
+
                 /**
                  * Utility Rate - Electricity
+                 * ToDo - Verify if dividing by 2 is correct to find the average between the Summer | Winter Rate
                  * */
                 val peakPrice = electricityUtility.structure[ERateKey.SummerOn.value]!![0].toDouble()
                 val partPeakPrice =
@@ -297,26 +310,36 @@ abstract class EBase(private val computable: Computable<*>,
                         (electricityUtility.structure[ERateKey.SummerOff.value]!![0].toDouble()
                                 + electricityUtility.structure[ERateKey.WinterOff.value]!![0].toDouble()) / 2
 
+                Log.d(TAG, "----::::---- Electricity Peak Price ($peakPrice) ----::::----")
+                Log.d(TAG, "----::::---- Electricity Part Peak Price ($partPeakPrice) ----::::----")
+                Log.d(TAG, "----::::---- Electricity Off Peak Price ($offPeakPrice) ----::::----")
+
                 /**
-                 * Utility Rate - Gas // Need to wire this up !!
+                 * Utility Rate - Gas
                  * */
-                val winterRate = 0.0
-                val summerRate = 0.0
+                val winterRate = gasUtility.structure[ERateKey.GasWinter.value]!![0].toDouble()
+                val summerRate = gasUtility.structure[ERateKey.GasSummer.value]!![0].toDouble()
+
+                Log.d(TAG, "----::::---- Gas Winter Rate ($winterRate) ----::::----")
+                Log.d(TAG, "----::::---- Gas Summer Rate ($summerRate) ----::::----")
 
                 /**
                  * Parse API Energy Efficient Database - materialCost
                  * Parse API Labor Cost - laborCost
                  * */
-                val materialCost = 0.0 // The Post State - Energy Efficient Database does'nt have this - Need to add a column
+                val materialCost = 0.0 //ToDo - Need to add a column in the Post State - Verify ??
                 val laborCost = computable.laborCost
 
-                Log.d(TAG, "----::::---- LABOR COST ($laborCost) ----::::----")
+                Log.d(TAG, "----::::---- Labor Cost ($laborCost) ----::::----")
 
                 /**
                  * ToDo - Where do we get these values from ??
                  * */
                 val maintenanceCostSavings = 0.0
                 val otherEquipmentSavings = 0.0
+
+                Log.d(TAG, "----::::---- Maintenance Cost Savings ($maintenanceCostSavings) ----::::----")
+                Log.d(TAG, "----::::---- Other Equipment Savings ($otherEquipmentSavings) ----::::----")
 
                 /**
                  * Parse API Energy Efficient Database - Rebate
@@ -329,21 +352,46 @@ abstract class EBase(private val computable: Computable<*>,
                 }
                 val incentives = rebate()
 
+                Log.d(TAG, "----::::---- Incentive ($incentives) ----::::----")
+
+
                 /**
                  * Fetch these from the Utility Rate Structure
+                 * ToDo - Verify if A1 | A10 | E19 qualify as Non TOU
+                 * ToDo - Verify if dividing by 2 is correct to find the average between the Summer | Winter Rate
                  * */
-                val blendedEnergyRate = 0.0
-                val blendedDemandRate = 0.0
+                var blendedEnergyRate = 0.0
+                if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
+                    blendedEnergyRate = (electricityUtility.structure[ERateKey.SummerNone.value]!![0].toDouble() +
+                            electricityUtility.structure[ERateKey.WinterNone.value]!![0].toDouble()) / 2
+                }
+
+                Log.d(TAG, "----::::---- Blended Energy Rate ($blendedEnergyRate) ----::::----")
+
+                val blendedDemandRate = if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
+                    (electricityUtility.structure[ERateKey.SummerNone.value]!![2].toDouble() +
+                            electricityUtility.structure[ERateKey.WinterNone.value]!![2].toDouble()) / 2
+                } else {
+                    (electricityUtility.structure[ERateKey.SummerOff.value]!![2].toDouble() +
+                            electricityUtility.structure[ERateKey.WinterOff.value]!![2].toDouble()) / 2
+                }
+
+                Log.d(TAG, "----::::---- Blended Demand Rate ($blendedDemandRate) ----::::----")
 
                 /**
                  * Utility Rate Structure
                  * */
                 val getRateSchedule = electricRateStructure
 
+                Log.d(TAG, "----::::---- Rate Schedule ($getRateSchedule) ----::::----")
+
                 /**
                  * Flag to denote a gas based equipment
+                 * ToDo - Need to set this dynamically - There could be cases where a appliance could use both Electricity and Gas
                  * */
                 val checkForGas = false
+
+                Log.d(TAG, "----::::---- Check For Gas ($checkForGas) ----::::----")
 
                 /**
                  * Energy Usage - Efficient Alternative (Post State)
@@ -357,6 +405,8 @@ abstract class EBase(private val computable: Computable<*>,
 
                 val energyUse = energyUse()
 
+                Log.d(TAG, "----::::---- Energy Use ($energyUse) ----::::----")
+
                 /**
                  * Power, Time Change or Both
                  * */
@@ -365,21 +415,35 @@ abstract class EBase(private val computable: Computable<*>,
                 val timeChangeCheck = ptc.checkTimeChange
                 val powerTimeChangeCheck = ptc.checkPowerTimeChange
 
+                Log.d(TAG, "----::::---- Power Change Check ($powerChangeCheck) ----::::----")
+                Log.d(TAG, "----::::---- Time Change Check ($timeChangeCheck) ----::::----")
+                Log.d(TAG, "----::::---- Power Time Change Check ($powerTimeChangeCheck) ----::::----")
+
+
                 /**
                  * Applicable to Post State having multiple Energy Column
                  * It's false for most of the devices except - Oven (Need to verify which other devices' are applicable)
+                 * ToDo - Need to set this dynamically - This is true for cases with multiple Power Values i.e Oven at the moment
                  * */
                 val multiplePowerCheck = false
                 val multipleTimeCheck = false
                 val multiplePowerTimeCheck = false
 
+                Log.d(TAG, "----::::---- Multiple Power Check ($multiplePowerCheck) ----::::----")
+                Log.d(TAG, "----::::---- Multiple Time Check ($multipleTimeCheck) ----::::----")
+                Log.d(TAG, "----::::---- Multiple Power Time Check ($multiplePowerTimeCheck) ----::::----")
+
                 /**
                  * Power Value
                  * Case 1 : Multiple Power | Time Check -- @powerValues
                  * Case 2 : Single Power | Time -- @powerValue
+                 * ToDo - Need to Populate these from the Post State - Will do it when implementing Oven
                  * */
                 val powerValues = listOf(0.0, 0.0)
                 val powerValue = 0.0
+
+                Log.d(TAG, "----::::---- Power Values ($powerValues) ----::::----")
+                Log.d(TAG, "----::::---- Power Value ($powerValue) ----::::----")
 
 
                 /**
