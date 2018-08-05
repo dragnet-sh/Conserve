@@ -191,7 +191,7 @@ abstract class EBase(private val computable: Computable<*>,
 
 
     /**
-     * Energy Cost Saving - Calculates the Energy Saved via examining the 3 cases
+     * Energy Saving - Calculates the Energy Saved via examining the 3 cases
      * Power Change | Time Change | Both Power Time Change
      * Via PowerTimeChange (helper class)
      * */
@@ -248,6 +248,9 @@ abstract class EBase(private val computable: Computable<*>,
     }
 
 
+    /**
+     * Energy Cost Saving
+     * */
     private fun calculateCostSavings(extra: (param: String) -> Unit): Observable<DataHolder> {
 
         val energyCostSavingHeader = listOf("__energy_cost_saving", "__demand_cost_saving",
@@ -305,7 +308,9 @@ abstract class EBase(private val computable: Computable<*>,
                  * Parse API Labor Cost - laborCost
                  * */
                 val materialCost = 0.0 // The Post State - Energy Efficient Database does'nt have this - Need to add a column
-                val laborCost = 0.0 // Already have the API in place
+                val laborCost = computable.laborCost
+
+                Log.d(TAG, "----::::---- LABOR COST ($laborCost) ----::::----")
 
                 /**
                  * ToDo - Where do we get these values from ??
@@ -316,7 +321,13 @@ abstract class EBase(private val computable: Computable<*>,
                 /**
                  * Parse API Energy Efficient Database - Rebate
                  * */
-                val incentives = 0.0
+                fun rebate() = if (computable.energyPostStateLeastCost.count() > 0) {
+                    val energyEfficientAlternative = computable.energyPostStateLeastCost[0]
+                    energyEfficientAlternative.getValue("rebate").toDouble()
+                } else {
+                    0.0
+                }
+                val incentives = rebate()
 
                 /**
                  * Fetch these from the Utility Rate Structure
@@ -521,8 +532,17 @@ abstract class EBase(private val computable: Computable<*>,
             }
         }
 
-        return Observable.just(initDataHolder())
-                .map(Mapper())
+        fun prerequisite() = laborCost(queryLaborCost())
+                .flatMap { response ->
+                    val jsonElements = response.map { it.asJsonObject.get("data") }
+                    if (jsonElements.count() > 0) {
+                        val cost = jsonElements[0].asJsonObject.get("cost").asDouble
+                        computable.laborCost = cost
+                    }
+                    Observable.just(initDataHolder())
+                }
+
+        return prerequisite().map(Mapper())
     }
 
     /**
@@ -658,9 +678,10 @@ abstract class EBase(private val computable: Computable<*>,
             .put("data.model_number", featureData["Model Number"])
             .toString()
 
+    //ToDo: Verify where the Labor Cost Parameters are supposed to go.
     private fun queryLaborCost() = JSONObject()
-            .put("data.zipcode", preAudit["ZipCode"])
-            .put("data.profession", preAudit["Profession"])
+            .put("data.zipcode", featureData["ZipCode"] ?: 0)
+            .put("data.profession", featureData["Profession"] ?: "none")
             .toString()
 
     private fun starValidator(query: String): Observable<Boolean> {
