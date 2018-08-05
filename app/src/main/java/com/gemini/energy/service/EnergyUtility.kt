@@ -93,11 +93,11 @@ interface IUtility {
 class Electricity(private val rateStructure: String) : IUtility {
 
     enum class EKey(val index: Int) { Season(1), Peak(4) }
-    enum class EValue(val index: Int) { EnergyCharge(5), Average(6) }
+    enum class EValue(val index: Int) { EnergyCharge(5), Average(6), Demand(3)}
 
     override fun getKey(columns: List<String>) = listOf(columns[EKey.Season.index] + "-" + columns[EKey.Peak.index])
     override fun getValue(columns: List<String>, header: String) = listOf(listOf(columns[EValue.EnergyCharge.index],
-            columns[EValue.Average.index]))
+            columns[EValue.Average.index], columns[EValue.Demand.index]))
 
     override fun getResourcePath() = "utility/pge_electric.csv"
     override fun getSeparator(): Char = ','
