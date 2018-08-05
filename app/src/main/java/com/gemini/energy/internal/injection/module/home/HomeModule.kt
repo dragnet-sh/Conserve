@@ -191,10 +191,12 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
-        internal fun provideEnergyService(schedulers: Schedulers, auditGateway: AuditGateway,
-                                          energyUtility: EnergyUtility, energyUsage: EnergyUsage, outgoingRows: OutgoingRows):
+        internal fun provideEnergyService(context: Context, schedulers: Schedulers, auditGateway: AuditGateway,
+                                          energyUtilityElectricity: EnergyUtility,
+                                          energyUsage: EnergyUsage, outgoingRows: OutgoingRows):
                 EnergyService {
-            return EnergyService(schedulers, auditGateway, energyUtility, energyUsage, outgoingRows)
+            return EnergyService(context, schedulers, auditGateway,
+                    energyUtilityElectricity, energyUsage, outgoingRows)
         }
 
         //**** End :: Energy Services **** //
