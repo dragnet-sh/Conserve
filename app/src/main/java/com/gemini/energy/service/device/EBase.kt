@@ -54,8 +54,18 @@ abstract class EBase(private val computable: Computable<*>,
         base.gasUtility = energyUtilityGas.initUtility(Gas()).build()
 
         base.electricRateStructure = preAudit["Electric Rate Structure"] as String
+//        base.electricRateStructure = if (electricRateStructure.isEmpty()) RATE else electricRateStructure
+
+        Log.d(TAG, "%%%%%%% RATE STRUCTURE CHECKER %%%%%%%")
+        Log.d(TAG, electricRateStructure)
+
         base.electricityUtility = energyUtilityElectricity.initUtility(
                 Electricity(electricRateStructure)).build()
+
+
+        Log.d(TAG, "%%%%%%% OBJECT CHECKER %%%%%%%")
+        Log.d(TAG, gasUtility.toString())
+        Log.d(TAG, electricityUtility.toString())
 
         base.operatingHours.initUsage(mappedUsageHours()).build()
 
@@ -302,13 +312,21 @@ abstract class EBase(private val computable: Computable<*>,
                  * Utility Rate - Electricity
                  * ToDo - Verify if dividing by 2 is correct to find the average between the Summer | Winter Rate
                  * */
-                val peakPrice = electricityUtility.structure[ERateKey.SummerOn.value]!![0].toDouble()
-                val partPeakPrice =
-                        (electricityUtility.structure[ERateKey.SummerPart.value]!![0].toDouble()
-                                + electricityUtility.structure[ERateKey.WinterPart.value]!![0].toDouble()) / 2
-                val offPeakPrice =
-                        (electricityUtility.structure[ERateKey.SummerOff.value]!![0].toDouble()
-                                + electricityUtility.structure[ERateKey.WinterOff.value]!![0].toDouble()) / 2
+
+                var peakPrice = 0.0
+                var partPeakPrice = 0.0
+                var offPeakPrice = 0.0
+
+                if (electricRateStructure.matches("^.*TOU$".toRegex())) {
+
+                    peakPrice = electricityUtility.structure[ERateKey.SummerOn.value]!![0].toDouble()
+                    partPeakPrice =
+                            (electricityUtility.structure[ERateKey.SummerPart.value]!![0].toDouble()
+                                    + electricityUtility.structure[ERateKey.WinterPart.value]!![0].toDouble()) / 2
+                    offPeakPrice =
+                            (electricityUtility.structure[ERateKey.SummerOff.value]!![0].toDouble()
+                                    + electricityUtility.structure[ERateKey.WinterOff.value]!![0].toDouble()) / 2
+                }
 
                 Log.d(TAG, "----::::---- Electricity Peak Price ($peakPrice) ----::::----")
                 Log.d(TAG, "----::::---- Electricity Part Peak Price ($partPeakPrice) ----::::----")
@@ -359,6 +377,7 @@ abstract class EBase(private val computable: Computable<*>,
                  * Fetch these from the Utility Rate Structure
                  * ToDo - Verify if A1 | A10 | E19 qualify as Non TOU
                  * ToDo - Verify if dividing by 2 is correct to find the average between the Summer | Winter Rate
+                 * ToDo - Demand Charge can be Empty - Right now i have added 0 in the CSV for the empty ones - need to fix this
                  * */
                 var blendedEnergyRate = 0.0
                 if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
