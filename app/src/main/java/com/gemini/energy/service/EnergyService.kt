@@ -1,6 +1,7 @@
 
 package com.gemini.energy.service
 
+import android.content.Context
 import android.util.Log
 import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
@@ -13,9 +14,10 @@ import io.reactivex.rxkotlin.merge
 
 
 class EnergyService(
+        private val context: Context,
         private val schedulers: Schedulers,
         private val auditGateway: AuditGateway,
-        private val energyUtility: EnergyUtility,
+        private val energyUtilityElectricity: EnergyUtility,
         private val energyUsage: EnergyUsage,
         private val outgoingRows: OutgoingRows) {
 
@@ -29,6 +31,12 @@ class EnergyService(
      * Holds the reference to the Observed Stream
      * */
     private var disposables: MutableList<Disposable> = mutableListOf()
+
+
+    /**
+     * Energy Utility Gas - Electricity
+     * */
+    private val energyUtilityGas = EnergyUtility(context)
 
 
     /**
@@ -111,7 +119,8 @@ class EnergyService(
             computable.featureAuditScope = featureAuditScope
             computable.featurePreAudit = featurePreAudit
 
-            return ComputableFactory.createFactory(computable, energyUtility, energyUsage,
+            return ComputableFactory.createFactory(computable, energyUtilityGas,
+                    energyUtilityElectricity, energyUsage,
                     outgoingRows).build().compute()
         }
 

@@ -19,11 +19,15 @@ abstract class ComputableFactory {
 
     companion object {
         lateinit var computable: Computable<*>
-        inline fun createFactory(computable: Computable<*>, energyUtility: EnergyUtility,
+        inline fun createFactory(computable: Computable<*>, energyUtilityGas: EnergyUtility,
+                                 energyUtilityElectricity: EnergyUtility,
                                  energyUsage: EnergyUsage, outgoingRows: OutgoingRows): ComputableFactory {
             this.computable = computable
             return when (computable.auditScopeType as EZoneType) {
-                EZoneType.Plugload                  -> PlugloadFactory(energyUtility, energyUsage, outgoingRows)
+
+                EZoneType.Plugload                  -> PlugloadFactory(energyUtilityGas,
+                        energyUtilityElectricity, energyUsage, outgoingRows)
+
                 EZoneType.HVAC                      -> HvacFactory()
                 EZoneType.Lighting                  -> LightingFactory()
                 EZoneType.Motors                    -> MotorFactory()
@@ -33,7 +37,8 @@ abstract class ComputableFactory {
     }
 }
 
-class PlugloadFactory(private val energyUtility: EnergyUtility,
+class PlugloadFactory(private val energyUtilityGas: EnergyUtility,
+                      private val energyUtilityElectricity: EnergyUtility,
                       private val energyUsage: EnergyUsage,
                       private val outgoingRows: OutgoingRows) : ComputableFactory() {
 
@@ -45,7 +50,10 @@ class PlugloadFactory(private val energyUtility: EnergyUtility,
             EApplianceType.Fryer                    -> Fryer()
             EApplianceType.IceMaker                 -> IceMaker()
             EApplianceType.RackOven                 -> RackOven()
-            EApplianceType.Refrigerator             -> Refrigerator(computable, energyUtility, energyUsage, outgoingRows)
+
+            EApplianceType.Refrigerator             -> Refrigerator(computable,
+                    energyUtilityGas, energyUtilityElectricity, energyUsage, outgoingRows)
+
             EApplianceType.SteamCooker              -> SteamCooker()
         }
     }

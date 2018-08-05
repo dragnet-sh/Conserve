@@ -10,9 +10,9 @@ import com.gemini.energy.service.device.EBase
 import io.reactivex.Observable
 import org.json.JSONObject
 
-class Refrigerator(computable: Computable<*>, energyUtility: EnergyUtility,
+class Refrigerator(computable: Computable<*>, energyUtilityGas: EnergyUtility, energyUtilityElectricity: EnergyUtility,
                    energyUsage: EnergyUsage, outgoingRows: OutgoingRows) :
-        EBase(computable, energyUtility, energyUsage, outgoingRows), IComputable {
+        EBase(computable, energyUtilityGas, energyUtilityElectricity, energyUsage, outgoingRows), IComputable {
 
     /**
      * Entry Point
