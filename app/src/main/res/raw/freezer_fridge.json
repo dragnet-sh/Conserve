@@ -72,6 +72,29 @@
       "id": "10"
     },
     {
+      "index": 17,
+      "section": "Labor Cost",
+      "elements": [
+        {
+          "index": 9,
+          "param": "ZipCode",
+          "dataType": "introw",
+          "validation": "",
+          "defaultValues": "",
+          "id": 171
+        },
+        {
+          "index": 10,
+          "param": "Profession",
+          "dataType": "pickerinputrow",
+          "validation": "",
+          "defaultValues": "01:Electrician,02:HVAC Mechanic,03:General Contractor",
+          "id": 172
+        }
+      ],
+      "id": "11"
+    },
+    {
       "index": 18,
       "section": "Operation Hours",
       "elements": [
