@@ -3,6 +3,7 @@ package com.gemini.energy.service
 
 import android.content.Context
 import android.util.Log
+import com.crashlytics.android.Crashlytics
 import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.domain.entity.Feature
@@ -62,7 +63,13 @@ class EnergyService(
                                             synchronized(taskHolder) {
                                                 taskHolder.add(it)
                                             }
-                                        }, { Log.d(TAG, "##### Error !! Error !! Error #####"); it.printStackTrace() }, {})
+                                        }, { exception ->
+
+                                            Log.d(TAG, "##### Error !! Error !! Error #####")
+                                            exception.printStackTrace()
+                                            Crashlytics.logException(exception)
+
+                                        }, {})
                             }, {}, {
                                 Log.d(TAG, "**** Computables Iterable - [ON COMPLETE] ****")
                                 doWork(callback) // << ** Executed Only One Time ** >> //
@@ -97,6 +104,7 @@ class EnergyService(
                 .observeOn(schedulers.observeOn)
                 .subscribe({}, { exception ->
                     exception.printStackTrace()
+                    Crashlytics.logException(exception)
                     callback(false)
                 }, {
                     Log.d(TAG, "**** Merge - [ON COMPLETE] ****")
