@@ -169,7 +169,10 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
             val output = process.inputStream.bufferedReader().use { it.readLines() }
             output.forEach {
                 if (it.matches(".*com\\.gemini\\.energy.*".toRegex())) {
-                    return "[0-9]{5}".toRegex().find(it)?.value
+                    Timber.d(it)
+                    val pid = "[0-9]{5}".toRegex().find(it)?.value
+                    Timber.d("PID :: $pid")
+                    return pid
                 }
             }
 
@@ -183,10 +186,10 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     private fun writeLog() {
         val writer = OutgoingRows(applicationContext)
         val directory = writer.getDocumentFolderPath(OutgoingRows.DEBUG)!!
-        val logFile = File(directory.toString(), "${Date().time}.log")
+        val logFile = File(directory.toString(), "${Date().time}.txt")
 
         val pid = getPid()
-        val logcat = "logcat --pid=$pid -f $logFile"
+        val logcat = "logcat -f $logFile"
         Timber.d(logcat)
 
         try {
