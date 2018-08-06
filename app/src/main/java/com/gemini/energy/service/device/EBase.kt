@@ -282,6 +282,8 @@ abstract class EBase(private val computable: Computable<*>,
 
             override fun apply(dataHolder: DataHolder): DataHolder {
 
+                Log.d(TAG, "----::::---- $computable ----::::----")
+
                 /**
                  * Pre Usage Hours - Mapped Peak Hours (Specific)
                  * */
