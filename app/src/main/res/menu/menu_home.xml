@@ -11,4 +11,9 @@
         android:title="Crunch"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/menu_debug"
+        android:title="Debug"
+        app:showAsAction="always" />
+
 </menu>

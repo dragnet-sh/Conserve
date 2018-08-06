@@ -20,10 +20,14 @@ import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.Navigator
 import com.gemini.energy.service.EnergyService
+import com.gemini.energy.service.OutgoingRows
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
 import kotlinx.android.synthetic.main.activity_home_detail.*
+import timber.log.Timber
+import java.io.File
+import java.util.*
 import javax.inject.Inject
 
 class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener {
@@ -64,10 +68,15 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
             energyService.run(callback = {
                 Log.d(TAG, "\\m/ End of Computation \\m/ - (${Thread.currentThread().name})")
                 linlaHeaderProgress.visibility = View.GONE
-                val message = if (it) { "Success" } else { "Failed" }
+                val message = if (it) {
+                    "Success"
+                } else {
+                    "Failed"
+                }
                 Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
             })
         }
+        R.id.menu_debug -> consume { writeLog() }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -145,6 +154,48 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     private fun showCreateAudit() {
         val dialogFragment = AuditDialogFragment()
         dialogFragment.show(supportFragmentManager, FRAG_DIALOG)
+    }
+
+    /**
+     * Utility Methods to Write Log to External Storage
+     * ToDo: Move these out of Activity
+     * */
+    private fun getPid(): String? {
+        val ps = "ps"
+
+        try {
+            val process = Runtime.getRuntime().exec(ps)
+            process.waitFor()
+            val output = process.inputStream.bufferedReader().use { it.readLines() }
+            output.forEach {
+                if (it.matches(".*com\\.gemini\\.energy.*".toRegex())) {
+                    return "[0-9]{5}".toRegex().find(it)?.value
+                }
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return null
+    }
+
+    private fun writeLog() {
+        val writer = OutgoingRows(applicationContext)
+        val directory = writer.getDocumentFolderPath(OutgoingRows.DEBUG)!!
+        val logFile = File(directory.toString(), "${Date().time}.log")
+
+        val pid = getPid()
+        val logcat = "logcat --pid=$pid -f $logFile"
+        Timber.d(logcat)
+
+        try {
+            Runtime.getRuntime().exec(logcat)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        Toast.makeText(applicationContext, "Log Created", Toast.LENGTH_SHORT).show()
     }
 
     companion object {
