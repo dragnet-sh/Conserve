@@ -136,7 +136,7 @@ class OutgoingRows(private val context: Context) {
     /**
      * Makes sure the Directory is created and all the folder structures are in place
      * */
-    private fun getDocumentFolderPath(subFolderPath: String? = null): File? {
+    fun getDocumentFolderPath(subFolderPath: String? = null): File? {
 
         val folderDir: File?
 
@@ -180,6 +180,7 @@ class OutgoingRows(private val context: Context) {
 
         private const val TAG = "OutgoingRows"
         private const val GEMINI = "gemini/"
+        const val DEBUG = "${GEMINI}debug/"
 
         /**
          * Creating a Comma Separated CSV Data String
