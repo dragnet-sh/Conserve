@@ -24,6 +24,10 @@
 
         <activity android:name=".presentation.type.TypeActivity"/>
 
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="4f535f347f6e57f8d00e2178042a1597733ece2b" />
+
     </application>
 
 </manifest>
