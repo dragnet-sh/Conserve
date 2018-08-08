@@ -116,7 +116,7 @@ class EnergyUsage {
             return this
         }
 
-        fun weeklyHours() = aggregate / 60
+        fun weeklyHours() = aggregate
         fun dailyHours() = weeklyHours() / 7
         fun yearlyHours() = dailyHours() * 365
 
@@ -124,7 +124,7 @@ class EnergyUsage {
             val clone = outgoing.clone() as HashMap<ERateKey, Double>
             ERateKey.getAllElectric().forEach {
                 val tmp = clone[it]
-                clone[it] = tmp!! / (60 * 7)
+                clone[it] = tmp!! / (60 * 24)
             }
 
             return clone
@@ -134,7 +134,7 @@ class EnergyUsage {
             val clone = outgoing.clone() as HashMap<ERateKey, Double>
             ERateKey.getAllElectric().forEach {
                 val tmp = clone[it]
-                clone[it] = tmp!! / 60
+                clone[it] = tmp!! / (60 * 24 * 7)
             }
 
             return clone
@@ -144,7 +144,7 @@ class EnergyUsage {
             val clone = outgoing.clone() as HashMap<ERateKey, Double>
             ERateKey.getAllElectric().forEach {
                 val tmp = clone[it]
-                clone[it] = (tmp!! / (60 * 7)) * 365
+                clone[it] = tmp!! / (60 * 24 * 7 * 365)
             }
 
             return clone
