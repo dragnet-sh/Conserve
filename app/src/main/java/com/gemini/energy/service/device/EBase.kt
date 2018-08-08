@@ -383,7 +383,7 @@ abstract class EBase(private val computable: Computable<*>,
                  * ToDo - Demand Charge can be Empty - Right now i have added 0 in the CSV for the empty ones - need to fix this
                  * */
               //We can not use blended energy rate because winter and summer energy are different. Therefore we need two
-              //distinct rates for summer and winter
+              //distinct rates for summer and winter [Kinslow]
                 var blendedEnergyRate = 0.0
                 if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
                     blendedEnergyRate = (electricityUtility.structure[ERateKey.SummerNone.value]!![0].toDouble() +
@@ -461,7 +461,7 @@ abstract class EBase(private val computable: Computable<*>,
                  * Power Value
                  * Case 1 : Multiple Power | Time Check -- @powerValues
                  * Case 2 : Single Power | Time -- @powerValue
-                 * ToDo - Need to Populate these from the Post State - Will do it when implementing Oven
+                 * ToDo - Need to Populate these from the Post State - [Kinslow] Will do it when implementing any device with two energy e.g., idle and preheat
                  * */
                 val powerValues = listOf(0.0, 0.0)
                 val powerValue = 0.0
@@ -481,6 +481,7 @@ abstract class EBase(private val computable: Computable<*>,
                      * Multiple Power - Time
                      * Single Power - Time
                      * */
+                  //PowerValue represents the change
                     fun electricityCostsCalcMultiplePowerChange(powerValues: List<Double>): Double {
                         var cost = 0.0
                         powerValues.forEach { powerValue ->
@@ -517,6 +518,8 @@ abstract class EBase(private val computable: Computable<*>,
                     /**
                      * Energy Cost Savings - Case 1 : TOU Based
                      * */
+                  //Return whatever is true [Kinslow]
+                  //If powerchange return powerchange & if timechange return timechange & if powertimechange return powertimechange [Kinslow]
                     fun findTimeOfUseCostSavings() = when {
 
                         multiplePowerCheck -> electricityCostsCalcMultiplePowerChange(powerValues)
@@ -532,6 +535,7 @@ abstract class EBase(private val computable: Computable<*>,
                     /**
                      * Energy Cost Savings - Case 2 : Non TOU Based
                      * */
+                  //Need to remove blendedEnergyRate for Summer and Winter and energyUse should be seperated too [Kinslow]
                     fun findNonTimeOfUseCostSavings(energyUse: Double) = energyUse * blendedEnergyRate
 
                     /**
