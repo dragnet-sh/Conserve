@@ -289,7 +289,7 @@ abstract class EBase(private val computable: Computable<*>,
                  * */
                 val preUsageByPeak = energyUsageSpecific.mappedPeakHourYearly()
                 val preHoursOnPeakPricing = preUsageByPeak[ERateKey.SummerOn]!! * .504
-                val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 + preUsageByPeak[ERateKey.WinterPart]!! * .496
+                val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 + preUsageByPeak[ERateKey.WinterPart]!! * .496 + preUsageByPeak[ERateKey.SummerOn]!! * .496
                 val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 + preUsageByPeak[ERateKey.WinterOff]!! * .496
 
                 Log.d(TAG, "----::::---- Pre Usage By Peak ($preUsageByPeak) ----::::----")
