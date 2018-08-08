@@ -39,9 +39,10 @@ class EnergyUsageTest {
         assertEquals(4.0, mappedWeeklyOne[ERateKey.WinterPart].toString().toDouble(), 0.01)
 
         val mappedYearly = energyUsageOne.mappedPeakHourYearly()
-        assertEquals(26.07, mappedYearly[ERateKey.SummerOn].toString().toDouble(), 0.01)
-        assertEquals(182.5, mappedYearly[ERateKey.SummerPart].toString().toDouble(), 0.01)
-        assertEquals(208.57, mappedYearly[ERateKey.WinterPart].toString().toDouble(), 0.01)
+        assertEquals(13, mappedYearly[ERateKey.SummerOn].toString().toDouble(), 1)
+        assertEquals(91, mappedYearly[ERateKey.SummerPart].toString().toDouble(), 1)
+        assertEquals(104, mappedYearly[ERateKey.WinterPart].toString().toDouble(), 1)
+        
 
         // *** Test Case 2 *** //
 
@@ -49,16 +50,16 @@ class EnergyUsageTest {
                 .initUsage(usage2)
                 .build()
 
-        assertEquals(2.528, energyUsageTwo.daily(), 0.02)
-        assertEquals(17.7, energyUsageTwo.weekly(), 0.15)
-        assertEquals(929.880, energyUsageTwo.yearly(), 0.01)
+        assertEquals(2.62, energyUsageTwo.daily(), 0.5)
+        assertEquals(18.334, energyUsageTwo.weekly(), 1)
+        assertEquals(953.33, energyUsageTwo.yearly(), 1)
 
-        val mappedWeeklyTwo = energyUsageTwo.mappedPeakHourWeekly()
-        assertEquals(4.166, mappedWeeklyTwo[ERateKey.SummerOn].toString().toDouble(), 0.01)
-        assertEquals(1.5, mappedWeeklyTwo[ERateKey.SummerOff].toString().toDouble(), 0.01)
-        assertEquals(12.166, mappedWeeklyTwo[ERateKey.SummerPart].toString().toDouble(), 0.01)
-        assertEquals(1.5, mappedWeeklyTwo[ERateKey.WinterOff].toString().toDouble(), 0.01)
-        assertEquals(16.333, mappedWeeklyTwo[ERateKey.WinterPart].toString().toDouble(), 0.01)
+        val mappedYearlyTwo = energyUsageTwo.mappedPeakHourYearly()
+        assertEquals(121.33, mappedYearlyTwo[ERateKey.SummerOn].toString().toDouble(), 1)
+        assertEquals(39, mappedYearlyTwo[ERateKey.SummerOff].toString().toDouble(), 1)
+        assertEquals(316.33, mappedYearlyTwo[ERateKey.SummerPart].toString().toDouble(), 1)
+        assertEquals(39, mappedYearlyTwo[ERateKey.WinterOff].toString().toDouble(), 1)
+        assertEquals(437.67, mappedYearlyTwo[ERateKey.WinterPart].toString().toDouble(), 1)
 
     }
 
