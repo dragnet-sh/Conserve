@@ -24,7 +24,7 @@ class EnergyUsageTest {
                 .initUsage(usage1)
                 .build()
 
-        assertEquals(0.571, energyUsageOne.daily(), 0.001)
+        assertEquals(0.5714, energyUsageOne.daily(), 0.001)
         assertEquals(4.0, energyUsageOne.weekly(), 0.01)
         assertEquals(208.5714, energyUsageOne.yearly(), 0.01)
 
