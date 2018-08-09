@@ -26,9 +26,7 @@ class Refrigerator(computable: Computable<*>, energyUtilityGas: EnergyUtility, e
      * */
     override fun cost(vararg params: Any): Double {
         val powerUsed = (params[0] as Double) / 24
-
-        val vacationDays = preAudit["Number of Vacation days"] // This is how you pull the data from preaudit
-        // Somehow i need to pass this value to Operating Hours and do the Adjustment
+        val vacationDays = preAudit["Number of Vacation days"]
 
         return costElectricity(powerUsed, operatingHours, electricityUtility)
     }
@@ -43,6 +41,13 @@ class Refrigerator(computable: Computable<*>, energyUtilityGas: EnergyUtility, e
                     .put("\$gte", featureData["Total Volume"] as Double - 2)
                     .put("\$lte", featureData["Total Volume"] as Double + 2))
             .toString()
+
+
+    /**
+     * State if the Equipment has a Post Usage Hours (Specific) ie. A separate set of
+     * Weekly Usage Hours apart from the PerAudit
+     * */
+    override fun usageHoursSpecific() = false
 
 
     /**
