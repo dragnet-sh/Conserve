@@ -53,6 +53,14 @@ class EnergyUsage {
             ERateKey.getAllElectric().forEach { outgoing[it] = 0.0 }
         }
 
+        /**
+         * 1. Loop through each of the Day
+         * 2. Extract the Usage Hours for the day
+         * 3. Loop until Current (start time) is less than the End (end time)
+         * 4. For each delta which is 1 min figure out where it goes in terms of the TOU
+         * 5. The Aggregate holds the number in minutes for the entire Weekly Usage Hours
+         * */
+
         fun run(usage: Map<EDay, String?>): PeakHourMapper {
 
             for ((_, hourRange) in usage) {
@@ -116,10 +124,25 @@ class EnergyUsage {
             return this
         }
 
+        /**
+         * The Aggregate is in Min divide it by 60 to get the Number of Hours
+         * */
         fun weeklyHours() = aggregate / 60
+
+        /**
+         * Dividing the Weekly Usage Hours by 7
+         * */
         fun dailyHours() = weeklyHours() / 7
+
+        /**
+         * Multiplying the Daily Hours by 365
+         * */
         fun yearlyHours() = dailyHours() * 365
 
+        /**
+         * Since the Aggregate is in Minutes we divide it by 60 to get Hours and Since this is the Usage Hours is
+         * for the Week we divide it by 7 to get the Daily Usage Hours Mapped for that TOU
+         * */
         fun mappedHoursDaily(): HashMap<ERateKey, Double> {
             val clone = outgoing.clone() as HashMap<ERateKey, Double>
             ERateKey.getAllElectric().forEach {
@@ -130,6 +153,9 @@ class EnergyUsage {
             return clone
         }
 
+        /**
+         * Dividing by 60 to get the Weekly Hours - Cause it's the Aggregate that is in Minutes
+         * */
         fun mappedHoursWeekly(): HashMap<ERateKey, Double> {
             val clone = outgoing.clone() as HashMap<ERateKey, Double>
             ERateKey.getAllElectric().forEach {
@@ -140,6 +166,11 @@ class EnergyUsage {
             return clone
         }
 
+        /**
+         * Dividing Aggregate by 60 gives the Hours
+         * Dividing by 7 gives the Daily Hours
+         * Multiplying by 365 gives the Hours for the Year
+         * */
         fun mappedHoursYearly(): HashMap<ERateKey, Double> {
             val clone = outgoing.clone() as HashMap<ERateKey, Double>
             ERateKey.getAllElectric().forEach {
