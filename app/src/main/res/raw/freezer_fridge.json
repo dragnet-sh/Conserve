@@ -9,7 +9,7 @@
           "param": "Product Type",
           "dataType": "pickerinputrow",
           "validation": "",
-          "defaultValues": "01:Undercounter,02:Reach-in,03:Work-Top Table,04:Milk or Beverage Cabinet,05:Roll-In,06:Other",
+          "defaultValues": "01:Reach-in,02:Undercounter,03:Other,04:Pass-Through,05:Roll-In,06:Work-Top Table,07:Milk or Beverage Cabinet,08:Wedge Case",
           "id": "101"
         },
         {
@@ -93,69 +93,6 @@
         }
       ],
       "id": "11"
-    },
-    {
-      "index": 18,
-      "section": "Operation Hours",
-      "elements": [
-        {
-          "index": 19,
-          "param": "Monday Operating Hours",
-          "dataType": "textrow",
-          "validation": "",
-          "defaultValues": "",
-          "id": "142"
-        },
-        {
-          "index": 20,
-          "param": "Tuesday Operating Hours",
-          "dataType": "textrow",
-          "validation": "",
-          "defaultValues": "",
-          "id": "143"
-        },
-        {
-          "index": 21,
-          "param": "Wednesday Operating Hours",
-          "dataType": "textrow",
-          "validation": "",
-          "defaultValues": "",
-          "id": "144"
-        },
-        {
-          "index": 22,
-          "param": "Thursday Operating Hours",
-          "dataType": "textrow",
-          "validation": "",
-          "defaultValues": "",
-          "id": "145"
-        },
-        {
-          "index": 23,
-          "param": "Friday Operating Hours",
-          "dataType": "textrow",
-          "validation": "",
-          "defaultValues": "",
-          "id": "146"
-        },
-        {
-          "index": 24,
-          "param": "Saturday Operating Hours",
-          "dataType": "textrow",
-          "validation": "",
-          "defaultValues": "",
-          "id": "147"
-        },
-        {
-          "index": 25,
-          "param": "Sunday Operating Hours",
-          "dataType": "textrow",
-          "validation": "",
-          "defaultValues": "",
-          "id": "148"
-        }
-      ],
-      "id": "14"
     }
   ]
 }
