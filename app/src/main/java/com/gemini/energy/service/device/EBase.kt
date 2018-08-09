@@ -184,6 +184,11 @@ abstract class EBase(private val computable: Computable<*>,
             checkTimeChange = energyTimeChange != 0.0
             checkPowerTimeChange = energyPowerChange != 0.0 && energyTimeChange != 0.0
 
+            Log.d(TAG, "----::::---- Pre Run Hours : ($preRunHours) ----::::----")
+            Log.d(TAG, "----::::---- Post Run Hours : ($postRunHours) ----::::----")
+            Log.d(TAG, "----::::---- Pre Power : ($prePower) ----::::----")
+            Log.d(TAG, "----::::---- Post Power : ($postPower) ----::::----")
+
             Log.d(TAG, "----::::---- Energy Power Change : ($energyPowerChange) ----::::----")
             Log.d(TAG, "----::::---- Energy Time Change : ($energyTimeChange) ----::::----")
             Log.d(TAG, "----::::---- Energy Power Time Change : ($energyPowerTimeChange) ----::::----")
@@ -196,6 +201,7 @@ abstract class EBase(private val computable: Computable<*>,
 
         }
 
+        //ToDo : Verify if only one of the following is supposed to be true or we could have more than one true values
         fun energySaving() = when {
             checkPowerChange            -> energyPowerChange
             checkTimeChange             -> energyTimeChange
@@ -230,6 +236,9 @@ abstract class EBase(private val computable: Computable<*>,
         class Mapper : Function<DataHolder, DataHolder> {
             override fun apply(dataHolder: DataHolder): DataHolder {
 
+                /**
+                 * The Power Time Change class takes in the computable and calculates the power delta
+                 * */
                 val ptc = powerTimeChange.delta(computable)
 
                 Log.d(TAG, "%^%^% Energy Savings Calculation - (${thread()}) %^%^%")
@@ -362,7 +371,7 @@ abstract class EBase(private val computable: Computable<*>,
                         try {
                             return computable.energyPostStateLeastCost[0].getValue("purchase_price_per_unit").toDouble()
                         } catch (exception: Exception) {
-                            exception.printStackTrace()
+                            Log.e(TAG, "Exception @ Purchase Price Unit - toDouble")
                         }
 
                     }
@@ -371,8 +380,9 @@ abstract class EBase(private val computable: Computable<*>,
                 }
 
                 val materialCost = purchasePricePerUnit()
-                val laborCost = computable.laborCost
+                Log.d(TAG, "----::::---- Material Cost ($materialCost) ----::::----")
 
+                val laborCost = computable.laborCost
                 Log.d(TAG, "----::::---- Labor Cost ($laborCost) ----::::----")
 
                 /**
@@ -394,7 +404,7 @@ abstract class EBase(private val computable: Computable<*>,
                         try {
                             return computable.energyPostStateLeastCost[0].getValue("rebate").toDouble()
                         } catch (exception: Exception) {
-                            exception.printStackTrace()
+                            Log.e(TAG, "Exception @ Rebate - toDouble")
                         }
 
                     }
@@ -736,8 +746,11 @@ abstract class EBase(private val computable: Computable<*>,
                 jsonElements.forEach { element ->
                     val postRow = mutableMapOf<String, String>()
                     postStateFields().forEach { key ->
-                        val value = element.asJsonObject.get(key)
-                        postRow[key] = value.asString
+                        var value = ""
+                        if (element.asJsonObject.has(key)) {
+                            value = element.asJsonObject.get(key).asString
+                        }
+                        postRow[key] = value
                     }
 
                     val postDailyEnergyUsed = element.asJsonObject.get("daily_energy_use").asDouble
@@ -896,7 +909,7 @@ abstract class EBase(private val computable: Computable<*>,
     fun costElectricity(powerUsed: Double, usage: EnergyUsage, utility: EnergyUtility): Double {
         val regex = "^.*TOU$".toRegex()
         val usageByPeak = usage.mappedPeakHourYearly()
-        val usageByYear = usage.yearly() //ToDo - Figure out a way to adjust the Usage Hours by negating the Vacation Days
+        val usageByYear = usage.yearly()
 
         if (electricRateStructure.matches(regex)) {
 
@@ -911,8 +924,16 @@ abstract class EBase(private val computable: Computable<*>,
 
         } else {
 
+            Log.d(TAG, "##### Non TOU - COST Calculation #####")
+            Log.d(TAG, ">>> Usage By Year : $usageByYear")
+            Log.d(TAG, ">>> Power Used : $powerUsed")
+            Log.d(TAG, ">>> Rate Summer : ${utility.structure[ERateKey.SummerNone.value]!![0]}")
+            Log.d(TAG, ">>> Rate Winter : ${utility.structure[ERateKey.WinterNone.value]!![0]}")
+
             val summer = usageByYear * .504 * powerUsed * utility.structure[ERateKey.SummerNone.value]!![0].toDouble()
             val winter = usageByYear * .496 * powerUsed * utility.structure[ERateKey.WinterNone.value]!![0].toDouble()
+
+            Log.d(TAG, ">>> Total Cost : ${summer + winter}")
 
             return (summer + winter)
 
