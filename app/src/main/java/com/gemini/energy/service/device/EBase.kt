@@ -52,16 +52,13 @@ abstract class EBase(private val computable: Computable<*>,
         base.preAudit = computable.mappedFeaturePreAudit()
 
         base.gasUtility = energyUtilityGas.initUtility(Gas()).build()
-
         base.electricRateStructure = preAudit["Electric Rate Structure"] as String
-//        base.electricRateStructure = if (electricRateStructure.isEmpty()) RATE else electricRateStructure
 
         Log.d(TAG, "%%%%%%% RATE STRUCTURE CHECKER %%%%%%%")
         Log.d(TAG, electricRateStructure)
 
         base.electricityUtility = energyUtilityElectricity.initUtility(
                 Electricity(electricRateStructure)).build()
-
 
         Log.d(TAG, "%%%%%%% OBJECT CHECKER %%%%%%%")
         Log.d(TAG, gasUtility.toString())
@@ -78,7 +75,13 @@ abstract class EBase(private val computable: Computable<*>,
 
         base.powerTimeChange = PowerTimeChange()
         base.powerTimeChange.energyUsageSpecific = base.energyUsageSpecific
-        base.powerTimeChange.energyUsageBusiness = base.energyUsageBusiness
+
+        /**
+         * If the Post Usage Hours is Empty (Specific) - Post Usage Equals to Pre Usage Hours (Business)
+         * */
+        base.powerTimeChange.energyUsageBusiness = if (usageHoursSpecific()) base.energyUsageBusiness
+        else base.energyUsageSpecific
+
         base.powerTimeChange.featureData = base.featureData
 
     }
@@ -168,8 +171,8 @@ abstract class EBase(private val computable: Computable<*>,
 
             /**
              * Compute Power Time Change Delta
+             * If there is no input for the Post Run Hours - Post Run Hours Should Equal to Pre Run Hours
              * */
-          //If no input for post run hours, post run hours should equal pre run hours
             energyPowerChange = preRunHours * (prePower - postPower)
             energyTimeChange = (preRunHours - postRunHours) * prePower
             energyPowerTimeChange = (preRunHours - postRunHours) * (prePower - postPower)
@@ -194,9 +197,9 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         fun energySaving() = when {
-            checkPowerChange -> energyPowerChange
-            checkTimeChange -> energyTimeChange
-            checkPowerTimeChange -> energyPowerTimeChange
+            checkPowerChange            -> energyPowerChange
+            checkTimeChange             -> energyTimeChange
+            checkPowerTimeChange        -> energyPowerTimeChange
             else -> 0.0
         }
 
@@ -290,8 +293,10 @@ abstract class EBase(private val computable: Computable<*>,
                  * */
                 val preUsageByPeak = energyUsageSpecific.mappedPeakHourYearly()
                 val preHoursOnPeakPricing = preUsageByPeak[ERateKey.SummerOn]!! * .504
-                val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 + preUsageByPeak[ERateKey.WinterPart]!! * .496 + preUsageByPeak[ERateKey.SummerOn]!! * .496
-                val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 + preUsageByPeak[ERateKey.WinterOff]!! * .496
+                val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 +
+                        preUsageByPeak[ERateKey.WinterPart]!! * .496 + preUsageByPeak[ERateKey.SummerOn]!! * .496
+                val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 +
+                        preUsageByPeak[ERateKey.WinterOff]!! * .496
 
                 Log.d(TAG, "----::::---- Pre Usage By Peak ($preUsageByPeak) ----::::----")
                 Log.d(TAG, "----::::---- Pre Hours On Peak Pricing ($preHoursOnPeakPricing) ----::::----")
@@ -303,8 +308,10 @@ abstract class EBase(private val computable: Computable<*>,
                  * */
                 val postUsageByPeak = energyUsageBusiness.mappedPeakHourYearly()
                 val postHoursOnPeakPricing = postUsageByPeak[ERateKey.SummerOn]!! * .504
-                val postHoursOnPartPeakPricing = postUsageByPeak[ERateKey.SummerPart]!! * .504 + postUsageByPeak[ERateKey.WinterPart]!! * .496 + postUsageByPeak[ERateKey.SummerOn]!! * .496
-                val postHoursOnOffPeakPricing = postUsageByPeak[ERateKey.SummerOff]!! * .504 + postUsageByPeak[ERateKey.WinterOff]!! * .496
+                val postHoursOnPartPeakPricing = postUsageByPeak[ERateKey.SummerPart]!! * .504 +
+                        postUsageByPeak[ERateKey.WinterPart]!! * .496 + postUsageByPeak[ERateKey.SummerOn]!! * .496
+                val postHoursOnOffPeakPricing = postUsageByPeak[ERateKey.SummerOff]!! * .504 +
+                        postUsageByPeak[ERateKey.WinterOff]!! * .496
 
                 Log.d(TAG, "----::::---- Post Usage By Peak ($postUsageByPeak) ----::::----")
                 Log.d(TAG, "----::::---- Post Hours On Peak Pricing ($postHoursOnPeakPricing) ----::::----")
@@ -348,7 +355,22 @@ abstract class EBase(private val computable: Computable<*>,
                  * Parse API Energy Efficient Database - materialCost
                  * Parse API Labor Cost - laborCost
                  * */
-                val materialCost = 0.0 //ToDo - Need to add a column in the Post State - Verify ??
+                fun purchasePricePerUnit(): Double {
+                    if ((computable.energyPostStateLeastCost.count() > 0) &&
+                            computable.energyPostStateLeastCost[0].containsKey("purchase_price_per_unit")) {
+
+                        try {
+                            return computable.energyPostStateLeastCost[0].getValue("purchase_price_per_unit").toDouble()
+                        } catch (exception: Exception) {
+                            exception.printStackTrace()
+                        }
+
+                    }
+
+                    return 0.0
+                }
+
+                val materialCost = purchasePricePerUnit()
                 val laborCost = computable.laborCost
 
                 Log.d(TAG, "----::::---- Labor Cost ($laborCost) ----::::----")
@@ -365,11 +387,19 @@ abstract class EBase(private val computable: Computable<*>,
                 /**
                  * Parse API Energy Efficient Database - Rebate
                  * */
-                fun rebate() = if (computable.energyPostStateLeastCost.count() > 0) {
-                    val energyEfficientAlternative = computable.energyPostStateLeastCost[0]
-                    energyEfficientAlternative.getValue("rebate").toDouble()
-                } else {
-                    0.0
+                fun rebate(): Double {
+                    if ((computable.energyPostStateLeastCost.count() > 0) &&
+                            computable.energyPostStateLeastCost[0].containsKey("rebate")) {
+
+                        try {
+                            return computable.energyPostStateLeastCost[0].getValue("rebate").toDouble()
+                        } catch (exception: Exception) {
+                            exception.printStackTrace()
+                        }
+
+                    }
+
+                    return 0.0
                 }
                 val incentives = rebate()
 
@@ -388,6 +418,14 @@ abstract class EBase(private val computable: Computable<*>,
                 if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
                     blendedEnergyRate = (electricityUtility.structure[ERateKey.SummerNone.value]!![0].toDouble() +
                             electricityUtility.structure[ERateKey.WinterNone.value]!![0].toDouble()) / 2
+                }
+
+
+                var blendedEnergyRateSummer = 0.0
+                var blendedEnergyRateWinter = 0.0
+                if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
+                    blendedEnergyRateSummer = electricityUtility.structure[ERateKey.SummerNone.value]!![0].toDouble()
+                    blendedEnergyRateWinter = electricityUtility.structure[ERateKey.WinterNone.value]!![0].toDouble()
                 }
 
                 Log.d(TAG, "----::::---- Blended Energy Rate ($blendedEnergyRate) ----::::----")
@@ -756,6 +794,7 @@ abstract class EBase(private val computable: Computable<*>,
 
     abstract fun queryEfficientFilter(): String
     abstract fun efficientLookup(): Boolean
+    abstract fun usageHoursSpecific(): Boolean
 
     abstract fun preAuditFields(): MutableList<String>
     abstract fun featureDataFields(): MutableList<String>
@@ -766,7 +805,7 @@ abstract class EBase(private val computable: Computable<*>,
     abstract fun cost(vararg params: Any): Double
 
     private fun queryEnergyStar() = JSONObject()
-            .put("data.company_name", featureData["Company"])
+            .put("data.company", featureData["Company"])
             .put("data.model_number", featureData["Model Number"])
             .toString()
 
