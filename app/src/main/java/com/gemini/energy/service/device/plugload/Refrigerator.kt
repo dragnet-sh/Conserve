@@ -28,7 +28,7 @@ class Refrigerator(computable: Computable<*>, energyUtilityGas: EnergyUtility, e
         val powerUsed = (params[0] as Double) / 24
         val vacationDays = preAudit["Number of Vacation days"]
 
-        return costElectricity(powerUsed, operatingHours, electricityUtility)
+        return costElectricity(powerUsed, super.energyUsageBusiness, electricityUtility)
     }
 
     /**
@@ -45,7 +45,7 @@ class Refrigerator(computable: Computable<*>, energyUtilityGas: EnergyUtility, e
 
     /**
      * State if the Equipment has a Post Usage Hours (Specific) ie. A separate set of
-     * Weekly Usage Hours apart from the PerAudit
+     * Weekly Usage Hours apart from the PreAudit
      * */
     override fun usageHoursSpecific() = false
 
