@@ -23,7 +23,7 @@ abstract class EBase(private val computable: Computable<*>,
                      val outgoingRows: OutgoingRows) {
 
     lateinit var schedulers: Schedulers
-    private lateinit var gasUtilityRate: UtilityRate
+    lateinit var gasUtilityRate: UtilityRate
     lateinit var electricityUtilityRate: UtilityRate
 
     private lateinit var powerTimeChange: PowerTimeChange
@@ -33,7 +33,7 @@ abstract class EBase(private val computable: Computable<*>,
     private var electricRateStructure: String = RATE
 
     val energyUsageBusiness = UsageHours()
-    private val energyUsageSpecific = UsageHours()
+    val energyUsageSpecific = UsageHours()
 
     private fun initialize() {
         val base = this
