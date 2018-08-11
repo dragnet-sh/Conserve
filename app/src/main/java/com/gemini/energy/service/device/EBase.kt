@@ -25,7 +25,6 @@ abstract class EBase(private val computable: Computable<*>,
     lateinit var schedulers: Schedulers
     private lateinit var gasUtilityRate: UtilityRate
     lateinit var electricityUtilityRate: UtilityRate
-    lateinit var preconditions: Preconditions
 
     private lateinit var powerTimeChange: PowerTimeChange
 
@@ -64,7 +63,6 @@ abstract class EBase(private val computable: Computable<*>,
 
         base.outgoingRows.computable = computable
         base.outgoingRows.dataHolder = mutableListOf()
-        base.preconditions = Preconditions()
 
         base.powerTimeChange = PowerTimeChange()
         base.powerTimeChange.usageHoursSpecific = base.energyUsageSpecific
@@ -88,7 +86,6 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     fun compute(extra: (param: String) -> Unit): Observable<Computable<*>> {
         initialize()
-        validatePreConditions()
 
         class Mapper : Function<DataHolder, Computable<*>> {
             override fun apply(dataHolder: DataHolder): Computable<*> {
@@ -110,8 +107,6 @@ abstract class EBase(private val computable: Computable<*>,
                 }
 
     }
-
-    private fun validatePreConditions() = preconditions.validate()
 
     /**
      * Pre State - Energy Calculation
