@@ -27,14 +27,12 @@ class CostElectric(private val usage: EnergyUsage, private val utility: EnergyUt
         return costSummer() + costWinter()
     }
 
+    /**
+     * Setting up the Correct Type of Hours and Rate [TOU | Non TOU]
+     * */
     private fun initialize() {
-        if (isTOU(structure)) {
-            hours = usage.timeOfUse()
-            rate = utility.timeOfUse()
-        } else {
-            hours = usage.nonTimeOfUse()
-            rate = utility.nonTimeOfUse()
-        }
+        hours = if (isTOU(structure)) usage.timeOfUse() else usage.nonTimeOfUse()
+        rate = if (isTOU(structure)) utility.timeOfUse() else utility.nonTimeOfUse()
     }
 
     /**
