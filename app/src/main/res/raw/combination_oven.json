@@ -59,6 +59,22 @@
           "validation": "",
           "default-values": "01:Yes,02:No",
           "id": "17"
+        },
+        {
+          "index": 18,
+          "param": "Production Capacity (Convection)",
+          "data-type": "decimalrow",
+          "validation": "",
+          "default-values": "",
+          "id": "18"
+        },
+        {
+          "index": 19,
+          "param": "Production Capacity (Steam)",
+          "data-type": "decimalrow",
+          "validation": "",
+          "default-values": "",
+          "id": "19"
         }
       ],
       "id": "1"
