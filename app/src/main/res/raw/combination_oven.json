@@ -17,7 +17,7 @@
           "param": "Fuel Type",
           "data-type": "pickerinputrow",
           "validation": "",
-          "default-values": "Gas,Electric",
+          "default-values": "01:Gas,02:Electric",
           "id": "12"
         },
         {
@@ -41,7 +41,7 @@
           "param": "Used During Peak",
           "data-type": "pickerinputrow",
           "validation": "",
-          "default-values": "Yes,No",
+          "default-values": "01:Yes,02:No",
           "id": "15"
         },
         {
@@ -57,7 +57,7 @@
           "param": "Control",
           "data-type": "pickerinputrow",
           "validation": "",
-          "default-values": "Yes,No",
+          "default-values": "01:Yes,02:No",
           "id": "17"
         }
       ],
