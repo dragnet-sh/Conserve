@@ -75,6 +75,38 @@
           "validation": "",
           "default-values": "",
           "id": "19"
+        },
+        {
+          "index": 101,
+          "param": "Pre-Heat Energy",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "101"
+        },
+        {
+          "index": 102,
+          "param": "Idle Energy",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "102"
+        },
+        {
+          "index": 103,
+          "param": "Water Use (Convection)",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "103"
+        },
+        {
+          "index": 104,
+          "param": "Water Use (Steam)",
+          "dataType": "decimalrow",
+          "validation": "",
+          "defaultValues": "",
+          "id": "104"
         }
       ],
       "id": "1"
