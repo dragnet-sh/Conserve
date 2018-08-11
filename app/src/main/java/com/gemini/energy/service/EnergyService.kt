@@ -2,7 +2,6 @@
 package com.gemini.energy.service
 
 import android.content.Context
-import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
@@ -14,6 +13,7 @@ import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
 import io.reactivex.rxkotlin.merge
+import timber.log.Timber
 
 
 class EnergyService(
@@ -42,24 +42,28 @@ class EnergyService(
     private val energyUtilityGas = UtilityRate(context)
 
 
-    /**
+    /**ØÚ
      * Energy Calculation - Main Entry Point
      * */
     fun run(callback: (status: Boolean) -> Unit) {
 
         cleanup()
 
-        Log.d(TAG, "------------------------------------\n" +
-                        ":::: Gemini Energy - Crunch Inc ::::\n" +
-                        "------------------------------------\n")
+        val welcome =
+
+                "------------------------------------\n" +
+                ":::: Gemini Energy - Crunch Inc ::::\n" +
+                "------------------------------------\n"
+
+        Timber.d(welcome)
 
         disposables.add(auditGateway.getComputable()
                 .subscribeOn(schedulers.subscribeOn)
                 .subscribe { computables ->
                     Observable.fromIterable(computables)
                             .subscribe({ eachComputable ->
-                                Log.d(TAG, "**** Computables Iterable - (${thread()}) ****")
-                                Log.d(TAG, eachComputable.toString())
+                                Timber.d("**** Computables Iterable - (${thread()}) ****")
+                                Timber.d(eachComputable.toString())
                                 getComputable(eachComputable)
                                         .subscribe({
                                             synchronized(taskHolder) {
@@ -67,13 +71,13 @@ class EnergyService(
                                             }
                                         }, { exception ->
 
-                                            Log.d(TAG, "##### Error !! Error !! Error #####")
+                                            Timber.d("##### Error !! Error !! Error #####")
                                             exception.printStackTrace()
                                             Crashlytics.logException(exception)
 
                                         }, {})
                             }, {}, {
-                                Log.d(TAG, "**** Computables Iterable - [ON COMPLETE] ****")
+                                Timber.d("**** Computables Iterable - [ON COMPLETE] ****")
                                 doWork(callback) // << ** Executed Only One Time ** >> //
                             })
                 })
@@ -84,12 +88,12 @@ class EnergyService(
      * Required to Clean Up Existing Disposables before a new CRUNCH begins
      * */
     private fun cleanup() {
-        Log.d(TAG, "Cleanup - (${thread()})")
+        Timber.d("Cleanup - (${thread()})")
         if (disposables.count() > 0) {
-            Log.d(TAG, "DISPOSABLE COUNT - [${disposables.count()}] - (${thread()})")
+            Timber.d("DISPOSABLE COUNT - [${disposables.count()}] - (${thread()})")
             disposables.forEach {
                 it.dispose()
-                Log.d(TAG, "POST DISPOSABLE - Status - [${it.isDisposed}]")
+                Timber.d("POST DISPOSABLE - Status - [${it.isDisposed}]")
             }
         }
 
@@ -101,7 +105,7 @@ class EnergyService(
      * Holds the Main Work - i.e Running each Energy Calculations for each of the IComputables
      * */
     private fun doWork(callback: (status: Boolean) -> Unit) {
-        Log.d(TAG, "####### DO WORK - COUNT [${taskHolder.count()}] - (${thread()}) #######")
+        Timber.d("####### DO WORK - COUNT [${taskHolder.count()}] - (${thread()}) #######")
         disposables.add(taskHolder.merge()
                 .observeOn(schedulers.observeOn)
                 .subscribe({}, { exception ->
@@ -109,7 +113,7 @@ class EnergyService(
                     Crashlytics.logException(exception)
                     callback(false)
                 }, {
-                    Log.d(TAG, "**** Merge - [ON COMPLETE] ****")
+                    Timber.d("**** Merge - [ON COMPLETE] ****")
                     callback(true) // << ** The final Exit Point ** >> //
                 }))
     }
@@ -142,10 +146,6 @@ class EnergyService(
     }
 
     private fun thread() = Thread.currentThread().name
-
-    companion object {
-        private const val TAG = "Gemini.Energy.Service"
-    }
 
 }
 

@@ -1,6 +1,5 @@
 package com.gemini.energy.service.device
 
-import android.util.Log
 import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.internal.AppSchedulers
@@ -15,6 +14,7 @@ import com.google.gson.JsonArray
 import io.reactivex.Observable
 import io.reactivex.functions.Function
 import org.json.JSONObject
+import timber.log.Timber
 
 abstract class EBase(private val computable: Computable<*>,
                      private val utilityRateGas: UtilityRate,
@@ -39,8 +39,8 @@ abstract class EBase(private val computable: Computable<*>,
     private fun initialize() {
         val base = this
 
-        Log.d(TAG, "<< COMPUTE :: ${identifier()} >> [Start] - (${thread()})")
-        Log.d(TAG, computable.toString())
+        Timber.d("<< COMPUTE :: ${identifier()} >> [Start] - (${thread()})")
+        Timber.d(computable.toString())
 
         base.schedulers = AppSchedulers()
         base.featureData = computable.mappedFeatureAuditScope()
@@ -49,15 +49,15 @@ abstract class EBase(private val computable: Computable<*>,
         base.gasUtilityRate = utilityRateGas.initUtility(Gas()).build()
         base.electricRateStructure = preAudit["Electric Rate Structure"] as String
 
-        Log.d(TAG, "%%%%%%% RATE STRUCTURE CHECKER %%%%%%%")
-        Log.d(TAG, electricRateStructure)
+        Timber.d("####### RATE STRUCTURE CHECKER #######")
+        Timber.d(electricRateStructure)
 
         base.electricityUtilityRate = utilityRateElectricity.initUtility(
                 Electricity(electricRateStructure)).build()
 
-        Log.d(TAG, "%%%%%%% OBJECT CHECKER %%%%%%%")
-        Log.d(TAG, gasUtilityRate.toString())
-        Log.d(TAG, electricityUtilityRate.toString())
+        Timber.d("####### OBJECT CHECKER #######")
+        Timber.d(gasUtilityRate.toString())
+        Timber.d(electricityUtilityRate.toString())
 
         base.energyUsageBusiness.initUsage(mappedBusinessHours()).build()
         base.energyUsageSpecific.initUsage(mappedSpecificHours()).build()
@@ -105,7 +105,7 @@ abstract class EBase(private val computable: Computable<*>,
         return Observable.concat(calculateEnergyPreState(extra), calculateEnergyPostState(extra),
                 calculateEnergySavings(extra), calculateCostSavings(extra))
                 .map(Mapper()).doOnComplete {
-                    Log.d(TAG, "$$$$$$$ SUPER.COMPUTE.CONCAT.COMPLETE $$$$$$$")
+                    Timber.d("$$$$$$$ SUPER.COMPUTE.CONCAT.COMPLETE $$$$$$$")
                     outgoingRows.save()
                 }
 
@@ -192,7 +192,6 @@ abstract class EBase(private val computable: Computable<*>,
     }
 
     companion object {
-        private const val TAG = "EBase"
         private const val RATE = "A-1 TOU"
     }
 
@@ -258,7 +257,7 @@ abstract class EBase(private val computable: Computable<*>,
             }
         }
 
-        Log.d(TAG, usage.toString())
+        Timber.d(usage.toString())
 
         return EDay.values().associateBy({ it }, {
             usage[EDay.values().indexOf(it)]
@@ -276,7 +275,7 @@ abstract class EBase(private val computable: Computable<*>,
             }
         }
 
-        Log.d(TAG, usage.toString())
+        Timber.d(usage.toString())
 
         return EDay.values().associateBy({ it }, {
             usage[EDay.values().indexOf(it)]
