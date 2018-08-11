@@ -1,6 +1,6 @@
 package com.gemini.energy.service
 
-import com.gemini.energy.presentation.util.ERateKey
+import com.gemini.energy.service.usage.IUsageType
 import timber.log.Timber
 
 interface ICost {
@@ -17,24 +17,30 @@ class CostElectric(private var energyUsage: EnergyUsage, private var utility: En
 
     override fun cost(): Double {
         val regex = "^.*TOU$".toRegex()
-        val usageByPeak = energyUsage.mappedPeakHourYearly()
         val usageByYear = energyUsage.yearly()
 
         if (electricRateStructure == NONE) { throw  EmptyRateStructureException("Rate Structure Empty") }
 
         if (electricRateStructure.matches(regex)) {
 
-            val costSummerOn = usageByPeak[ERateKey.SummerOn]!! * .504 * powerUsed * utility.structure[ERateKey.SummerOn.value]!![0].toDouble()
-            val costSummerPart = usageByPeak[ERateKey.SummerPart]!! * .504 * powerUsed * utility.structure[ERateKey.SummerPart.value]!![0].toDouble()
-            val costSummerOff = usageByPeak[ERateKey.SummerOff]!! * .504 * powerUsed * utility.structure[ERateKey.SummerOff.value]!![0].toDouble()
+            val hours = energyUsage.timeOfUse()
+            val rate = utility.timeOfUse()
 
-            val costWinterPart = usageByPeak[ERateKey.WinterPart]!! * .496 * powerUsed * utility.structure[ERateKey.WinterPart.value]!![0].toDouble()
-            val costWinterOff = usageByPeak[ERateKey.WinterOff]!! * .496 * powerUsed * utility.structure[ERateKey.WinterOff.value]!![0].toDouble()
+            val costSummerOn = hours.summerOn * powerUsed * rate.summerOn
+            val costSummerPart = hours.summerPart * powerUsed * rate.summerPart
+            val costSummerOff = hours.summerOff * powerUsed * rate.summerOff
+
+            val costWinterPart = hours.winterPart * powerUsed * rate.winterPart
+            val costWinterOff = hours.winterOff  * powerUsed * rate.winterOff
 
             val costAggregateSummer = costSummerOn + costSummerPart + costSummerOff
             val costAggregateWinter = costWinterPart + costWinterOff
 
-            Timber.d("##### TOU - COST Calculation #####")
+            Timber.d("## TOU Hours ##")
+            Timber.d(hours.toString())
+            Timber.d("## TOU Rate ##")
+            Timber.d(rate.toString())
+            Timber.d("## TOU Cost ##")
             Timber.d(">>> Cost Summer On : $costSummerOn")
             Timber.d(">>> Cost Summer Part : $costSummerPart")
             Timber.d(">>> Cost Summer Off : $costSummerOff")
@@ -49,14 +55,16 @@ class CostElectric(private var energyUsage: EnergyUsage, private var utility: En
 
         } else {
 
-            Timber.d("##### Non TOU - COST Calculation #####")
-            Timber.d(">>> Usage By Year : $usageByYear")
-            Timber.d(">>> Power Used : $powerUsed")
-            Timber.d(">>> Rate Summer : ${utility.structure[ERateKey.SummerNone.value]!![0]}")
-            Timber.d(">>> Rate Winter : ${utility.structure[ERateKey.WinterNone.value]!![0]}")
+            val hours = energyUsage.nonTimeOfUse()
+            val rate = utility.nonTimeOfUse()
 
-            val costSummer = usageByYear * .504 * powerUsed * utility.structure[ERateKey.SummerNone.value]!![0].toDouble()
-            val costWinter = usageByYear * .496 * powerUsed * utility.structure[ERateKey.WinterNone.value]!![0].toDouble()
+            Timber.d("## Non TOU Hours ##")
+            Timber.d(hours.toString())
+            Timber.d("## Non TOU Rate ##")
+            Timber.d(rate.toString())
+            Timber.d("## Non TOU Cost ##")
+            val costSummer = hours.summerNone * powerUsed * rate.summerNone
+            val costWinter = hours.winterNone * powerUsed * rate.winterNone
 
             Timber.d(">>> Cost Summer : $costSummer")
             Timber.d(">>> Cost Winter : $costWinter")
@@ -71,6 +79,7 @@ class CostElectric(private var energyUsage: EnergyUsage, private var utility: En
 
     companion object {
         private const val NONE = "none"
+        private val regex = "^.*TOU$".toRegex()
     }
 
 }
