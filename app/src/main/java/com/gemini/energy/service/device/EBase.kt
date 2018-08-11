@@ -284,8 +284,8 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     fun costElectricity(powerUsed: Double, usage: EnergyUsage, utility: EnergyUtility): Double {
         val costElectric = CostElectric(usage, utility)
-        costElectric.electricRateStructure = electricRateStructure
-        costElectric.powerUsed = powerUsed
+        costElectric.structure = electricRateStructure
+        costElectric.power = powerUsed
 
         return costElectric.cost()
     }

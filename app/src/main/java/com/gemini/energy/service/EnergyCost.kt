@@ -1,6 +1,8 @@
 package com.gemini.energy.service
 
 import com.gemini.energy.service.usage.IUsageType
+import com.gemini.energy.service.usage.TOU
+import com.gemini.energy.service.usage.TOUNone
 import timber.log.Timber
 
 interface ICost {
@@ -9,77 +11,127 @@ interface ICost {
 
 class EmptyRateStructureException(message: String) : Exception(message)
 
-class CostElectric(private var energyUsage: EnergyUsage, private var utility: EnergyUtility)
-    : ICost {
+class CostElectric(private val usage: EnergyUsage, private val utility: EnergyUtility) : ICost {
 
-    var electricRateStructure: String = NONE
-    var powerUsed: Double = 0.0
+    var structure: String = NONE
+    var power: Double = 0.0
+
+    private lateinit var hours: IUsageType
+    private lateinit var rate: IUsageType
 
     override fun cost(): Double {
-        val regex = "^.*TOU$".toRegex()
-        val usageByYear = energyUsage.yearly()
+        if (structure == NONE) { throw  EmptyRateStructureException("Rate Structure Empty") }
 
-        if (electricRateStructure == NONE) { throw  EmptyRateStructureException("Rate Structure Empty") }
+        initialize()
+        logIUsageType()
+        return costSummer() + costWinter()
+    }
 
-        if (electricRateStructure.matches(regex)) {
+    private fun initialize() {
+        if (isTOU(structure)) {
+            hours = usage.timeOfUse()
+            rate = utility.timeOfUse()
+        } else {
+            hours = usage.nonTimeOfUse()
+            rate = utility.nonTimeOfUse()
+        }
+    }
 
-            val hours = energyUsage.timeOfUse()
-            val rate = utility.timeOfUse()
+    /**
+     * Calculates the Summer Cost (Proper Usage Type Cast done via isTOU() flag check)
+     * */
+    private fun costSummer(): Double {
+        return if (isTOU(structure)) {
 
-            val costSummerOn = hours.summerOn * powerUsed * rate.summerOn
-            val costSummerPart = hours.summerPart * powerUsed * rate.summerPart
-            val costSummerOff = hours.summerOff * powerUsed * rate.summerOff
+            val hours = hours as TOU
+            val rate = rate as TOU
 
-            val costWinterPart = hours.winterPart * powerUsed * rate.winterPart
-            val costWinterOff = hours.winterOff  * powerUsed * rate.winterOff
+            val costSummerOn = hours.summerOn * power * rate.summerOn
+            val costSummerPart = hours.summerPart * power * rate.summerPart
+            val costSummerOff = hours.summerOff * power * rate.summerOff
 
-            val costAggregateSummer = costSummerOn + costSummerPart + costSummerOff
-            val costAggregateWinter = costWinterPart + costWinterOff
+            Timber.d("## TOU Cost - Summer ##")
+            Timber.d(">>> Summer On : $costSummerOn")
+            Timber.d(">>> Summer Part : $costSummerPart")
+            Timber.d(">>> Summer Off : $costSummerOff")
+
+            costSummerOn + costSummerPart + costSummerOff
+
+        } else {
+
+            val hours = hours as TOUNone
+            val rate = rate as TOUNone
+
+            val costSummerNone = hours.summerNone * power * rate.summerNone
+            Timber.d("## Non TOU Cost - Summer ##")
+            Timber.d(">>> Cost Summer None : $costSummerNone")
+
+            costSummerNone
+
+        }
+    }
+
+    /**
+     * Calculates the Winter Cost (Proper Usage Type Cast done via isTOU() flag check)
+     * */
+    private fun costWinter(): Double {
+        return if (isTOU(structure)) {
+
+            val hours = hours as TOU
+            val rate = rate as TOU
+
+            val costWinterPart = hours.winterPart * power * rate.winterPart
+            val costWinterOff = hours.winterOff  * power * rate.winterOff
+
+            Timber.d("## TOU Cost - Winter ##")
+            Timber.d(">>> Winter Part : $costWinterPart")
+            Timber.d(">>> Winter Off : $costWinterOff")
+
+            costWinterPart + costWinterOff
+
+        } else {
+
+            val hours = hours as TOUNone
+            val rate = rate as TOUNone
+
+            val costWinterNone = hours.winterNone * power * rate.winterNone
+            Timber.d("## NON TOU Cost - Winter ##")
+            Timber.d(">>> Winter None : $costWinterNone")
+
+            costWinterNone
+        }
+    }
+
+    private fun logIUsageType() {
+
+        if (isTOU(structure)) {
+
+            val hours = hours as TOU
+            val rate = rate as TOU
 
             Timber.d("## TOU Hours ##")
             Timber.d(hours.toString())
             Timber.d("## TOU Rate ##")
             Timber.d(rate.toString())
-            Timber.d("## TOU Cost ##")
-            Timber.d(">>> Cost Summer On : $costSummerOn")
-            Timber.d(">>> Cost Summer Part : $costSummerPart")
-            Timber.d(">>> Cost Summer Off : $costSummerOff")
-
-            Timber.d(">>> Cost Winter Part : $costWinterPart")
-            Timber.d(">>> Cost Winter Off : $costWinterOff")
-
-            val total = costAggregateSummer + costAggregateWinter
-            Timber.d(">>> Cost Total : $total")
-
-            return total
 
         } else {
 
-            val hours = energyUsage.nonTimeOfUse()
-            val rate = utility.nonTimeOfUse()
+            val hours = hours as TOUNone
+            val rate = rate as TOUNone
 
             Timber.d("## Non TOU Hours ##")
             Timber.d(hours.toString())
             Timber.d("## Non TOU Rate ##")
             Timber.d(rate.toString())
-            Timber.d("## Non TOU Cost ##")
-            val costSummer = hours.summerNone * powerUsed * rate.summerNone
-            val costWinter = hours.winterNone * powerUsed * rate.winterNone
-
-            Timber.d(">>> Cost Summer : $costSummer")
-            Timber.d(">>> Cost Winter : $costWinter")
-
-            val total = costSummer + costWinter
-            Timber.d(">>> Total Cost : $total")
-
-            return total
 
         }
+
     }
 
     companion object {
         private const val NONE = "none"
         private val regex = "^.*TOU$".toRegex()
+        private fun isTOU(rate: String) = rate.matches(regex)
     }
 
 }
