@@ -45,6 +45,16 @@ abstract class EBase(private val computable: Computable<*>,
         base.featureData = computable.mappedFeatureAuditScope()
         base.preAudit = computable.mappedFeaturePreAudit()
 
+        setupUtility(base)
+        setupUsage(base)
+        setupOutgoingRows(base)
+        setupPowerTimeChange(base)
+    }
+
+    /**
+     * Electricity | Gas Utility Rate Setup
+     * */
+    private fun setupUtility(base: EBase) {
         base.gasUtilityRate = utilityRateGas.initUtility(Gas()).build()
         base.electricRateStructure = preAudit["Electric Rate Structure"] as String
 
@@ -58,12 +68,34 @@ abstract class EBase(private val computable: Computable<*>,
         Timber.d(gasUtilityRate.toString())
         Timber.d(electricityUtilityRate.toString())
 
+    }
+
+    /**
+     * Operation Hours
+     * 1. PreAudit - Energy Usage Business (pre)
+     * 2. FeatureData - Energy Usage Specific (post)
+     * */
+    private fun setupUsage(base: EBase) {
         base.energyUsageBusiness.initUsage(mappedBusinessHours()).build()
         base.energyUsageSpecific.initUsage(mappedSpecificHours()).build()
+    }
 
+    /**
+     * Holds the data to be written of off to a CSV File - Generally the Energy Crunch Reports
+     * */
+    private fun setupOutgoingRows(base: EBase) {
         base.outgoingRows.computable = computable
         base.outgoingRows.dataHolder = mutableListOf()
+    }
 
+    /**
+     * To calculate Energy Efficiency and eventually Savings - It's important to figure out the change of
+     * the below mentioned 3 variables. Energy Calculations are based off of these.
+     * 1. Power
+     * 2. Time
+     * 3. Both Power and Time
+     * */
+    private fun setupPowerTimeChange(base: EBase) {
         base.powerTimeChange = PowerTimeChange()
         base.powerTimeChange.usageHoursSpecific = base.energyUsageSpecific
 
@@ -74,7 +106,6 @@ abstract class EBase(private val computable: Computable<*>,
         else base.energyUsageSpecific
 
         base.powerTimeChange.featureData = base.featureData
-
     }
 
     private fun thread() = Thread.currentThread().name
