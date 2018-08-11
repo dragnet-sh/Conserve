@@ -2,6 +2,8 @@ package com.gemini.energy.service
 
 import com.gemini.energy.presentation.util.EDay
 import com.gemini.energy.presentation.util.ERateKey
+import com.gemini.energy.service.usage.TOU
+import com.gemini.energy.service.usage.TOUNone
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
@@ -30,6 +32,36 @@ class EnergyUsage {
     fun mappedPeakHourWeekly() = mapper.mappedHoursWeekly()
     fun mappedPeakHourYearly() = mapper.mappedHoursYearly()
 
+    /**
+     * Mapped Peak Hour Yearly - Return Time Of Use Data Model
+     * */
+    fun timeOfUse(): TOU {
+        val usageByPeak = mapper.mappedHoursYearly()
+        return TOU(
+                usageByPeak[ERateKey.SummerOn]!! * WEIGHT_SUMMER,
+                usageByPeak[ERateKey.SummerPart]!! * WEIGHT_SUMMER,
+                usageByPeak[ERateKey.SummerOff]!! * WEIGHT_SUMMER,
+                usageByPeak[ERateKey.WinterPart]!! * WEIGHT_WINTER,
+                usageByPeak[ERateKey.WinterOff]!! * WEIGHT_WINTER
+        )
+    }
+
+    /**
+     * Mapped Peak Hour Yearly - Return Non Time Of Use Data Model
+     * */
+    fun nonTimeOfUse(): TOUNone {
+        val usageByPeak = mapper.mappedHoursYearly()
+        return TOUNone(
+                yearly() * WEIGHT_SUMMER,
+                yearly() * WEIGHT_WINTER
+        )
+    }
+
+    companion object {
+        private const val WEIGHT_SUMMER = .504
+        private const val WEIGHT_WINTER = .496
+    }
+
     fun initUsage(usage: Map<EDay, String?>): EnergyUsage {
         this.usage = usage
         return this
@@ -39,7 +71,6 @@ class EnergyUsage {
         this.mapper = PeakHourMapper().run(usage)
         return this
     }
-
 
     /**
      * Different Utility Company would have their own Specific Peak Hour Mapper

@@ -2,6 +2,8 @@ package com.gemini.energy.service
 
 import android.content.Context
 import com.gemini.energy.presentation.util.ERateKey
+import com.gemini.energy.service.usage.TOU
+import com.gemini.energy.service.usage.TOUNone
 
 open class EnergyUtility(private val context: Context) {
 
@@ -48,6 +50,28 @@ open class EnergyUtility(private val context: Context) {
         return this
     }
 
+    /**
+     * Mapped Peak Utility Rate Structure - Return Time Of Use Data Model
+     * */
+    fun timeOfUse(): TOU {
+        return TOU(
+                structure[ERateKey.SummerOn.value]!![0].toDouble(),
+                structure[ERateKey.SummerPart.value]!![0].toDouble(),
+                structure[ERateKey.SummerOff.value]!![0].toDouble(),
+                structure[ERateKey.WinterPart.value]!![0].toDouble(),
+                structure[ERateKey.WinterOff.value]!![0].toDouble()
+        )
+    }
+
+    /**
+     * Mapped Peak Utility Rate Structure - Return Non Time Of Use Data Model
+     * */
+    fun nonTimeOfUse(): TOUNone {
+        return TOUNone(
+                structure[ERateKey.SummerNone.value]!![0].toDouble(),
+                structure[ERateKey.WinterNone.value]!![0].toDouble()
+        )
+    }
 
     companion object {
 
