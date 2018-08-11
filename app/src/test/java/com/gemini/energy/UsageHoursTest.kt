@@ -12,8 +12,8 @@ class UsageHoursTest {
     @Test
     fun testPeakHourMapper() {
 
-        var usage1 = hashMapOf(EDay.Mon to "8:30 12:30")
-        var usage2 = hashMapOf(
+        val usage1 = hashMapOf(EDay.Mon to "8:30 12:30")
+        val usage2 = hashMapOf(
                 EDay.Mon to "8:30 12:30,14:50 20:00",
                 EDay.Tue to "12:00 1:00,8:00 12:30",
                 EDay.Fri to "7:30 11:40")
