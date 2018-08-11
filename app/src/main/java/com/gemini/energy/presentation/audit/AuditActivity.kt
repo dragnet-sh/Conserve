@@ -157,7 +157,7 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     }
 
     /**
-     * Utility Methods to Write Log to External Storage
+     * UtilityRate Methods to Write Log to External Storage
      * ToDo: Move these out of Activity
      * */
     private fun getPid(): String? {

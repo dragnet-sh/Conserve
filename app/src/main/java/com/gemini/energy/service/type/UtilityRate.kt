@@ -1,11 +1,9 @@
-package com.gemini.energy.service
+package com.gemini.energy.service.type
 
 import android.content.Context
 import com.gemini.energy.presentation.util.ERateKey
-import com.gemini.energy.service.usage.TOU
-import com.gemini.energy.service.usage.TOUNone
 
-open class EnergyUtility(private val context: Context) {
+open class UtilityRate(private val context: Context) {
 
     /**
      * The Rate Structure Gets Setup from the PreAudit
@@ -21,12 +19,12 @@ open class EnergyUtility(private val context: Context) {
     private fun getSeparator() = utility.getSeparator()
     private fun getRowIdentifier() = utility.getRowIdentifier()
 
-    fun initUtility(utility: IUtility): EnergyUtility {
+    fun initUtility(utility: IUtility): UtilityRate {
         this.utility = utility
         return this
     }
 
-    fun build(): EnergyUtility {
+    fun build(): UtilityRate {
         val inputStream= context.resources.assets.open(getResourcePath())
         val text = inputStream.bufferedReader().use { it.readText() }
         val collection = text.lines()
@@ -51,7 +49,7 @@ open class EnergyUtility(private val context: Context) {
     }
 
     /**
-     * Mapped Peak Utility Rate Structure - Return Time Of Use Data Model
+     * Mapped Peak UtilityRate Rate Structure - Return Time Of Use Data Model
      * */
     fun timeOfUse(): TOU {
         return TOU(
@@ -64,7 +62,7 @@ open class EnergyUtility(private val context: Context) {
     }
 
     /**
-     * Mapped Peak Utility Rate Structure - Return Non Time Of Use Data Model
+     * Mapped Peak UtilityRate Rate Structure - Return Non Time Of Use Data Model
      * */
     fun nonTimeOfUse(): TOUNone {
         return TOUNone(

@@ -2,17 +2,17 @@ package com.gemini.energy.service.device.plugload
 
 import android.util.Log
 import com.gemini.energy.domain.entity.Computable
-import com.gemini.energy.service.EnergyUsage
-import com.gemini.energy.service.EnergyUtility
+import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UtilityRate
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
 import io.reactivex.Observable
 import org.json.JSONObject
 
-class Refrigerator(computable: Computable<*>, energyUtilityGas: EnergyUtility, energyUtilityElectricity: EnergyUtility,
-                   energyUsage: EnergyUsage, outgoingRows: OutgoingRows) :
-        EBase(computable, energyUtilityGas, energyUtilityElectricity, energyUsage, outgoingRows), IComputable {
+class Refrigerator(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
+                   usageHours: UsageHours, outgoingRows: OutgoingRows) :
+        EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
 
     /**
      * Entry Point
@@ -28,7 +28,7 @@ class Refrigerator(computable: Computable<*>, energyUtilityGas: EnergyUtility, e
         val powerUsed = (params[0] as Double) / 24
         val vacationDays = preAudit["Number of Vacation days"]
 
-        return costElectricity(powerUsed, super.energyUsageBusiness, electricityUtility)
+        return costElectricity(powerUsed, super.energyUsageBusiness, electricityUtilityRate)
     }
 
     /**
@@ -44,8 +44,8 @@ class Refrigerator(computable: Computable<*>, energyUtilityGas: EnergyUtility, e
 
 
     /**
-     * State if the Equipment has a Post Usage Hours (Specific) ie. A separate set of
-     * Weekly Usage Hours apart from the PreAudit
+     * State if the Equipment has a Post UsageHours Hours (Specific) ie. A separate set of
+     * Weekly UsageHours Hours apart from the PreAudit
      * */
     override fun usageHoursSpecific() = false
 

@@ -1,8 +1,6 @@
 package com.gemini.energy.service
 
-import com.gemini.energy.service.usage.IUsageType
-import com.gemini.energy.service.usage.TOU
-import com.gemini.energy.service.usage.TOUNone
+import com.gemini.energy.service.type.*
 import timber.log.Timber
 
 interface ICost {
@@ -11,7 +9,7 @@ interface ICost {
 
 class EmptyRateStructureException(message: String) : Exception(message)
 
-class CostElectric(private val usage: EnergyUsage, private val utility: EnergyUtility) : ICost {
+class CostElectric(private val usageHours: UsageHours, private val utilityRate: UtilityRate) : ICost {
 
     var structure: String = NONE
     var power: Double = 0.0
@@ -31,12 +29,12 @@ class CostElectric(private val usage: EnergyUsage, private val utility: EnergyUt
      * Setting up the Correct Type of Hours and Rate [TOU | Non TOU]
      * */
     private fun initialize() {
-        hours = if (isTOU(structure)) usage.timeOfUse() else usage.nonTimeOfUse()
-        rate = if (isTOU(structure)) utility.timeOfUse() else utility.nonTimeOfUse()
+        hours = if (isTOU(structure)) usageHours.timeOfUse() else usageHours.nonTimeOfUse()
+        rate = if (isTOU(structure)) utilityRate.timeOfUse() else utilityRate.nonTimeOfUse()
     }
 
     /**
-     * Calculates the Summer Cost (Proper Usage Type Cast done via isTOU() flag check)
+     * Calculates the Summer Cost (Proper UsageHours Type Cast done via isTOU() flag check)
      * */
     private fun costSummer(): Double {
         return if (isTOU(structure)) {
@@ -70,7 +68,7 @@ class CostElectric(private val usage: EnergyUsage, private val utility: EnergyUt
     }
 
     /**
-     * Calculates the Winter Cost (Proper Usage Type Cast done via isTOU() flag check)
+     * Calculates the Winter Cost (Proper UsageHours Type Cast done via isTOU() flag check)
      * */
     private fun costWinter(): Double {
         return if (isTOU(structure)) {

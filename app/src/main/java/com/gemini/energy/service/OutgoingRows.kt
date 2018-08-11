@@ -115,7 +115,7 @@ class OutgoingRows(private val context: Context) {
 
 
     /**
-     * Utility Methods
+     * UtilityRate Methods
      * */
     private fun isExternalStorageWritable(): Boolean {
         val state = Environment.getExternalStorageState()

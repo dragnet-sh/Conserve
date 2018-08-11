@@ -1,32 +1,30 @@
-package com.gemini.energy.service
+package com.gemini.energy.service.type
 
 import com.gemini.energy.presentation.util.EDay
 import com.gemini.energy.presentation.util.ERateKey
-import com.gemini.energy.service.usage.TOU
-import com.gemini.energy.service.usage.TOUNone
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
 
-class EnergyUsage {
+class UsageHours {
 
     /**
-     * Usage Hours - Could either be from the PreAudit i.e. PRE
+     * UsageHours Hours - Could either be from the PreAudit i.e. PRE
      * or could be Device Specific i.e. POST
      * */
     private lateinit var usage: Map<EDay, String?>
     private lateinit var mapper: PeakHourMapper
 
     /**
-     * Average Usage - Utility Methods
+     * Average UsageHours - UtilityRate Methods
      * */
     fun daily() = mapper.dailyHours()
     fun weekly() = mapper.weeklyHours()
     fun yearly() = mapper.yearlyHours()
 
     /**
-     * Mapped Peak Hour by Utility Rate Structure
+     * Mapped Peak Hour by UtilityRate Rate Structure
      * */
     fun mappedPeakHourDaily() = mapper.mappedHoursDaily()
     fun mappedPeakHourWeekly() = mapper.mappedHoursWeekly()
@@ -50,7 +48,6 @@ class EnergyUsage {
      * Mapped Peak Hour Yearly - Return Non Time Of Use Data Model
      * */
     fun nonTimeOfUse(): TOUNone {
-        val usageByPeak = mapper.mappedHoursYearly()
         return TOUNone(
                 yearly() * WEIGHT_SUMMER,
                 yearly() * WEIGHT_WINTER
@@ -62,18 +59,18 @@ class EnergyUsage {
         private const val WEIGHT_WINTER = .496
     }
 
-    fun initUsage(usage: Map<EDay, String?>): EnergyUsage {
+    fun initUsage(usage: Map<EDay, String?>): UsageHours {
         this.usage = usage
         return this
     }
 
-    fun build(): EnergyUsage {
+    fun build(): UsageHours {
         this.mapper = PeakHourMapper().run(usage)
         return this
     }
 
     /**
-     * Different Utility Company would have their own Specific Peak Hour Mapper
+     * Different UtilityRate Company would have their own Specific Peak Hour Mapper
      * */
     class PeakHourMapper {
 
@@ -86,10 +83,10 @@ class EnergyUsage {
 
         /**
          * 1. Loop through each of the Day
-         * 2. Extract the Usage Hours for the day
+         * 2. Extract the UsageHours Hours for the day
          * 3. Loop until Current (start time) is less than the End (end time)
          * 4. For each delta which is 1 min figure out where it goes in terms of the TOU
-         * 5. The Aggregate holds the number in minutes for the entire Weekly Usage Hours
+         * 5. The Aggregate holds the number in minutes for the entire Weekly UsageHours Hours
          * */
 
         fun run(usage: Map<EDay, String?>): PeakHourMapper {
@@ -161,7 +158,7 @@ class EnergyUsage {
         fun weeklyHours() = aggregate / 60
 
         /**
-         * Dividing the Weekly Usage Hours by 7
+         * Dividing the Weekly UsageHours Hours by 7
          * */
         fun dailyHours() = weeklyHours() / 7
 
@@ -171,8 +168,8 @@ class EnergyUsage {
         fun yearlyHours() = dailyHours() * 365
 
         /**
-         * Since the Aggregate is in Minutes we divide it by 60 to get Hours and Since this is the Usage Hours is
-         * for the Week we divide it by 7 to get the Daily Usage Hours Mapped for that TOU
+         * Since the Aggregate is in Minutes we divide it by 60 to get Hours and Since this is the UsageHours Hours is
+         * for the Week we divide it by 7 to get the Daily UsageHours Hours Mapped for that TOU
          * */
         fun mappedHoursDaily(): HashMap<ERateKey, Double> {
             val clone = outgoing.clone() as HashMap<ERateKey, Double>

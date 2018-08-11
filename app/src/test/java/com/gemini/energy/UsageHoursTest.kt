@@ -2,12 +2,12 @@ package com.gemini.energy
 
 import com.gemini.energy.presentation.util.EDay
 import com.gemini.energy.presentation.util.ERateKey
-import com.gemini.energy.service.EnergyUsage
+import com.gemini.energy.service.type.UsageHours
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
 
-class EnergyUsageTest {
+class UsageHoursTest {
 
     @Test
     fun testPeakHourMapper() {
@@ -20,7 +20,7 @@ class EnergyUsageTest {
 
         // *** Test Case 1 *** //
 
-        val energyUsageOne = EnergyUsage()
+        val energyUsageOne = UsageHours()
                 .initUsage(usage1)
                 .build()
 
@@ -45,7 +45,7 @@ class EnergyUsageTest {
 
         // *** Test Case 2 *** //
 
-        val energyUsageTwo = EnergyUsage()
+        val energyUsageTwo = UsageHours()
                 .initUsage(usage2)
                 .build()
 

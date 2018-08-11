@@ -1,12 +1,12 @@
 package com.gemini.energy.service.crunch
 
 import com.gemini.energy.domain.entity.Computable
-import com.gemini.energy.service.EnergyUsage
+import com.gemini.energy.service.type.UsageHours
 import timber.log.Timber
 
 class PowerTimeChange {
-    lateinit var energyUsageSpecific: EnergyUsage
-    lateinit var energyUsageBusiness: EnergyUsage
+    lateinit var usageHoursSpecific: UsageHours
+    lateinit var usageHoursBusiness: UsageHours
     lateinit var featureData: Map<String, Any>
 
     var checkPowerChange = false
@@ -20,10 +20,10 @@ class PowerTimeChange {
     fun delta(computable: Computable<*>): PowerTimeChange {
 
         /**
-         * Usage Hours
+         * UsageHours Hours
          * */
-        val preRunHours = energyUsageSpecific.yearly()
-        val postRunHours = energyUsageBusiness.yearly()
+        val preRunHours = usageHoursSpecific.yearly()
+        val postRunHours = usageHoursBusiness.yearly()
 
         /**
          * Energy Use

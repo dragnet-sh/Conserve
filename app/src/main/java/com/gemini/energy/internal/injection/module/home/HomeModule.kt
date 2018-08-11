@@ -4,7 +4,6 @@ import android.arch.lifecycle.ViewModel
 import android.arch.lifecycle.ViewModelProvider
 import android.content.Context
 import com.gemini.energy.domain.Schedulers
-import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.domain.gateway.AuditGateway
 import com.gemini.energy.domain.interactor.*
 import com.gemini.energy.internal.injection.scope.HomeScope
@@ -31,6 +30,8 @@ import com.gemini.energy.presentation.type.feature.FeatureGetViewModel
 import com.gemini.energy.presentation.type.list.TypeListFragment
 import com.gemini.energy.presentation.type.list.TypeListViewModel
 import com.gemini.energy.service.*
+import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UtilityRate
 import com.mobsandgeeks.saripaar.Validator
 import dagger.Module
 import dagger.Provides
@@ -171,15 +172,15 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
-        internal fun provideEnergyUtility(context: Context): EnergyUtility {
-            return EnergyUtility(context)
+        internal fun provideEnergyUtility(context: Context): UtilityRate {
+            return UtilityRate(context)
         }
 
         @HomeScope
         @Provides
         @JvmStatic
-        internal fun provideEnergyUsage(): EnergyUsage {
-            return EnergyUsage()
+        internal fun provideEnergyUsage(): UsageHours {
+            return UsageHours()
         }
 
         @Provides
@@ -192,11 +193,11 @@ internal abstract class HomeModule {
         @Provides
         @JvmStatic
         internal fun provideEnergyService(context: Context, schedulers: Schedulers, auditGateway: AuditGateway,
-                                          energyUtilityElectricity: EnergyUtility,
-                                          energyUsage: EnergyUsage, outgoingRows: OutgoingRows):
+                                          utilityRateElectricity: UtilityRate,
+                                          usageHours: UsageHours, outgoingRows: OutgoingRows):
                 EnergyService {
             return EnergyService(context, schedulers, auditGateway,
-                    energyUtilityElectricity, energyUsage, outgoingRows)
+                    utilityRateElectricity, usageHours, outgoingRows)
         }
 
         //**** End :: Energy Services **** //

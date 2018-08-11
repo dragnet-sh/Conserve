@@ -7,20 +7,24 @@ import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.presentation.util.EDay
 import com.gemini.energy.service.*
 import com.gemini.energy.service.crunch.*
+import com.gemini.energy.service.type.Electricity
+import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UtilityRate
+import com.gemini.energy.service.type.Gas
 import com.google.gson.JsonArray
 import io.reactivex.Observable
 import io.reactivex.functions.Function
 import org.json.JSONObject
 
 abstract class EBase(private val computable: Computable<*>,
-                     private val energyUtilityGas: EnergyUtility,
-                     private val energyUtilityElectricity: EnergyUtility,
-                     val operatingHours: EnergyUsage,
+                     private val utilityRateGas: UtilityRate,
+                     private val utilityRateElectricity: UtilityRate,
+                     val operatingHours: UsageHours,
                      val outgoingRows: OutgoingRows) {
 
     lateinit var schedulers: Schedulers
-    private lateinit var gasUtility: EnergyUtility
-    lateinit var electricityUtility: EnergyUtility
+    private lateinit var gasUtilityRate: UtilityRate
+    lateinit var electricityUtilityRate: UtilityRate
     lateinit var preconditions: Preconditions
 
     private lateinit var powerTimeChange: PowerTimeChange
@@ -29,8 +33,8 @@ abstract class EBase(private val computable: Computable<*>,
     var featureData: Map<String, Any> = mapOf()
     private var electricRateStructure: String = RATE
 
-    val energyUsageBusiness = EnergyUsage()
-    private val energyUsageSpecific = EnergyUsage()
+    val energyUsageBusiness = UsageHours()
+    private val energyUsageSpecific = UsageHours()
 
     private fun initialize() {
         val base = this
@@ -42,18 +46,18 @@ abstract class EBase(private val computable: Computable<*>,
         base.featureData = computable.mappedFeatureAuditScope()
         base.preAudit = computable.mappedFeaturePreAudit()
 
-        base.gasUtility = energyUtilityGas.initUtility(Gas()).build()
+        base.gasUtilityRate = utilityRateGas.initUtility(Gas()).build()
         base.electricRateStructure = preAudit["Electric Rate Structure"] as String
 
         Log.d(TAG, "%%%%%%% RATE STRUCTURE CHECKER %%%%%%%")
         Log.d(TAG, electricRateStructure)
 
-        base.electricityUtility = energyUtilityElectricity.initUtility(
+        base.electricityUtilityRate = utilityRateElectricity.initUtility(
                 Electricity(electricRateStructure)).build()
 
         Log.d(TAG, "%%%%%%% OBJECT CHECKER %%%%%%%")
-        Log.d(TAG, gasUtility.toString())
-        Log.d(TAG, electricityUtility.toString())
+        Log.d(TAG, gasUtilityRate.toString())
+        Log.d(TAG, electricityUtilityRate.toString())
 
         base.energyUsageBusiness.initUsage(mappedBusinessHours()).build()
         base.energyUsageSpecific.initUsage(mappedSpecificHours()).build()
@@ -63,12 +67,12 @@ abstract class EBase(private val computable: Computable<*>,
         base.preconditions = Preconditions()
 
         base.powerTimeChange = PowerTimeChange()
-        base.powerTimeChange.energyUsageSpecific = base.energyUsageSpecific
+        base.powerTimeChange.usageHoursSpecific = base.energyUsageSpecific
 
         /**
-         * If the Post Usage Hours is Empty (Specific) - Post Usage Equals to Pre Usage Hours (Business)
+         * If the Post UsageHours Hours is Empty (Specific) - Post UsageHours Equals to Pre UsageHours Hours (Business)
          * */
-        base.powerTimeChange.energyUsageBusiness = if (usageHoursSpecific()) base.energyUsageBusiness
+        base.powerTimeChange.usageHoursBusiness = if (usageHoursSpecific()) base.energyUsageBusiness
         else base.energyUsageSpecific
 
         base.powerTimeChange.featureData = base.featureData
@@ -166,11 +170,11 @@ abstract class EBase(private val computable: Computable<*>,
 
         val mapper = CostSavings.Mapper()
         mapper.computable = computable
-        mapper.energyUsageSpecific = energyUsageSpecific
-        mapper.energyUsageBusiness = energyUsageBusiness
+        mapper.usageHoursSpecific = energyUsageSpecific
+        mapper.usageHoursBusiness = energyUsageBusiness
         mapper.electricRateStructure = electricRateStructure
-        mapper.electricityUtility = electricityUtility
-        mapper.gasUtility = gasUtility
+        mapper.electricityUtilityRate = electricityUtilityRate
+        mapper.gasUtilityRate = gasUtilityRate
         mapper.featureData = featureData
         mapper.powerTimeChange = powerTimeChange
 
@@ -239,7 +243,7 @@ abstract class EBase(private val computable: Computable<*>,
     }
 
     /**
-     * Usage Hours
+     * UsageHours Hours
      * 1. Pre - Business Hours (Found at PreAudit)
      * 2. Post - Specific Hours (Applicable for the individual Appliances)
      * */
@@ -282,8 +286,8 @@ abstract class EBase(private val computable: Computable<*>,
     /**
      * Computes the Electric Cost
      * */
-    fun costElectricity(powerUsed: Double, usage: EnergyUsage, utility: EnergyUtility): Double {
-        val costElectric = CostElectric(usage, utility)
+    fun costElectricity(powerUsed: Double, usageHours: UsageHours, utilityRate: UtilityRate): Double {
+        val costElectric = CostElectric(usageHours, utilityRate)
         costElectric.structure = electricRateStructure
         costElectric.power = powerUsed
 

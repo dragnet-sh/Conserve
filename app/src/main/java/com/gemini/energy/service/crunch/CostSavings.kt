@@ -3,8 +3,8 @@ package com.gemini.energy.service.crunch
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.presentation.util.ERateKey
 import com.gemini.energy.service.DataHolder
-import com.gemini.energy.service.EnergyUsage
-import com.gemini.energy.service.EnergyUtility
+import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UtilityRate
 import io.reactivex.functions.Function
 import timber.log.Timber
 import java.util.*
@@ -14,11 +14,11 @@ class CostSavings {
     class Mapper : Function<Unit, DataHolder> {
 
         lateinit var computable: Computable<*>
-        lateinit var energyUsageSpecific: EnergyUsage
-        lateinit var energyUsageBusiness: EnergyUsage
+        lateinit var usageHoursSpecific: UsageHours
+        lateinit var usageHoursBusiness: UsageHours
         lateinit var electricRateStructure: String
-        lateinit var electricityUtility: EnergyUtility
-        lateinit var gasUtility: EnergyUtility
+        lateinit var electricityUtilityRate: UtilityRate
+        lateinit var gasUtilityRate: UtilityRate
         lateinit var featureData: Map<String, Any>
         lateinit var powerTimeChange: PowerTimeChange
 
@@ -27,37 +27,37 @@ class CostSavings {
             Timber.d("----::::---- $computable ----::::----")
 
             /**
-             * Pre Usage Hours - Mapped Peak Hours (Specific)
+             * Pre UsageHours Hours - Mapped Peak Hours (Specific)
              * */
-            val preUsageByPeak = energyUsageSpecific.mappedPeakHourYearly()
+            val preUsageByPeak = usageHoursSpecific.mappedPeakHourYearly()
             val preHoursOnPeakPricing = preUsageByPeak[ERateKey.SummerOn]!! * .504
             val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 +
                     preUsageByPeak[ERateKey.WinterPart]!! * .496 + preUsageByPeak[ERateKey.SummerOn]!! * .496
             val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 +
                     preUsageByPeak[ERateKey.WinterOff]!! * .496
 
-            Timber.d("----::::---- Pre Usage By Peak ($preUsageByPeak) ----::::----")
+            Timber.d("----::::---- Pre UsageHours By Peak ($preUsageByPeak) ----::::----")
             Timber.d("----::::---- Pre Hours On Peak Pricing ($preHoursOnPeakPricing) ----::::----")
             Timber.d("----::::---- Pre Hours On Part Peak Pricing ($preHoursOnPartPeakPricing) ----::::----")
             Timber.d("----::::---- Pre Hours On Off Peak Pricing ($preHoursOnOffPeakPricing) ----::::----")
 
             /**
-             * Post Usage Hours - Mapped Peak Hours (Business)
+             * Post UsageHours Hours - Mapped Peak Hours (Business)
              * */
-            val postUsageByPeak = energyUsageBusiness.mappedPeakHourYearly()
+            val postUsageByPeak = usageHoursBusiness.mappedPeakHourYearly()
             val postHoursOnPeakPricing = postUsageByPeak[ERateKey.SummerOn]!! * .504
             val postHoursOnPartPeakPricing = postUsageByPeak[ERateKey.SummerPart]!! * .504 +
                     postUsageByPeak[ERateKey.WinterPart]!! * .496 + postUsageByPeak[ERateKey.SummerOn]!! * .496
             val postHoursOnOffPeakPricing = postUsageByPeak[ERateKey.SummerOff]!! * .504 +
                     postUsageByPeak[ERateKey.WinterOff]!! * .496
 
-            Timber.d("----::::---- Post Usage By Peak ($postUsageByPeak) ----::::----")
+            Timber.d("----::::---- Post UsageHours By Peak ($postUsageByPeak) ----::::----")
             Timber.d("----::::---- Post Hours On Peak Pricing ($postHoursOnPeakPricing) ----::::----")
             Timber.d("----::::---- Post Hours On Part Peak Pricing ($postHoursOnPartPeakPricing) ----::::----")
             Timber.d("----::::---- Post Hours On Off Peak Pricing ($postHoursOnOffPeakPricing) ----::::----")
 
             /**
-             * Utility Rate - Electricity
+             * UtilityRate Rate - Electricity
              * ToDo - Verify if dividing by 2 is correct to find the average between the Summer | Winter Rate
              * */
 
@@ -67,13 +67,13 @@ class CostSavings {
 
             if (electricRateStructure.matches("^.*TOU$".toRegex())) {
 
-                peakPrice = electricityUtility.structure[ERateKey.SummerOn.value]!![0].toDouble()
+                peakPrice = electricityUtilityRate.structure[ERateKey.SummerOn.value]!![0].toDouble()
                 partPeakPrice =
-                        (electricityUtility.structure[ERateKey.SummerPart.value]!![0].toDouble()
-                                + electricityUtility.structure[ERateKey.WinterPart.value]!![0].toDouble()) / 2
+                        (electricityUtilityRate.structure[ERateKey.SummerPart.value]!![0].toDouble()
+                                + electricityUtilityRate.structure[ERateKey.WinterPart.value]!![0].toDouble()) / 2
                 offPeakPrice =
-                        (electricityUtility.structure[ERateKey.SummerOff.value]!![0].toDouble()
-                                + electricityUtility.structure[ERateKey.WinterOff.value]!![0].toDouble()) / 2
+                        (electricityUtilityRate.structure[ERateKey.SummerOff.value]!![0].toDouble()
+                                + electricityUtilityRate.structure[ERateKey.WinterOff.value]!![0].toDouble()) / 2
             }
 
             Timber.d("----::::---- Electricity Peak Price ($peakPrice) ----::::----")
@@ -81,10 +81,10 @@ class CostSavings {
             Timber.d("----::::---- Electricity Off Peak Price ($offPeakPrice) ----::::----")
 
             /**
-             * Utility Rate - Gas
+             * UtilityRate Rate - Gas
              * */
-            val winterRate = gasUtility.structure[ERateKey.GasWinter.value]!![0].toDouble()
-            val summerRate = gasUtility.structure[ERateKey.GasSummer.value]!![0].toDouble()
+            val winterRate = gasUtilityRate.structure[ERateKey.GasWinter.value]!![0].toDouble()
+            val summerRate = gasUtilityRate.structure[ERateKey.GasSummer.value]!![0].toDouble()
 
             Timber.d("----::::---- Gas Winter Rate ($winterRate) ----::::----")
             Timber.d("----::::---- Gas Summer Rate ($summerRate) ----::::----")
@@ -146,7 +146,7 @@ class CostSavings {
 
 
             /**
-             * Fetch these from the Utility Rate Structure
+             * Fetch these from the UtilityRate Rate Structure
              * ToDo - Verify if A1 | A10 | E19 qualify as Non TOU
              * ToDo - Verify if dividing by 2 is correct to find the average between the Summer | Winter Rate
              * ToDo - Demand Charge can be Empty - Right now i have added 0 in the CSV for the empty ones - need to fix this
@@ -157,25 +157,25 @@ class CostSavings {
             var nonTOUEnergyRateSummer = 0.0
             var nonTOUEnergyRateWinter = 0.0
             if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
-                nonTOUEnergyRateSummer = electricityUtility.structure[ERateKey.SummerNone.value]!![0].toDouble()
-                nonTOUEnergyRateWinter = electricityUtility.structure[ERateKey.WinterNone.value]!![0].toDouble()
+                nonTOUEnergyRateSummer = electricityUtilityRate.structure[ERateKey.SummerNone.value]!![0].toDouble()
+                nonTOUEnergyRateWinter = electricityUtilityRate.structure[ERateKey.WinterNone.value]!![0].toDouble()
             }
 
             Timber.d("----::::---- Non TOU Energy Rate Summer ($nonTOUEnergyRateSummer) ----::::----")
             Timber.d("----::::---- Non TOU Energy Rate Winter ($nonTOUEnergyRateWinter) ----::::----")
 
             val blendedDemandRate = if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
-                (electricityUtility.structure[ERateKey.SummerNone.value]!![2].toDouble() +
-                        electricityUtility.structure[ERateKey.WinterNone.value]!![2].toDouble()) / 2
+                (electricityUtilityRate.structure[ERateKey.SummerNone.value]!![2].toDouble() +
+                        electricityUtilityRate.structure[ERateKey.WinterNone.value]!![2].toDouble()) / 2
             } else {
-                (electricityUtility.structure[ERateKey.SummerOff.value]!![2].toDouble() +
-                        electricityUtility.structure[ERateKey.WinterOff.value]!![2].toDouble()) / 2
+                (electricityUtilityRate.structure[ERateKey.SummerOff.value]!![2].toDouble() +
+                        electricityUtilityRate.structure[ERateKey.WinterOff.value]!![2].toDouble()) / 2
             }
 
             Timber.d("----::::---- Blended Demand Rate ($blendedDemandRate) ----::::----")
 
             /**
-             * Utility Rate Structure
+             * UtilityRate Rate Structure
              * */
             val getRateSchedule = electricRateStructure
 
@@ -190,7 +190,7 @@ class CostSavings {
             Timber.d("----::::---- Check For Gas ($checkForGas) ----::::----")
 
             /**
-             * Energy Usage - Efficient Alternative (Post State)
+             * Energy UsageHours - Efficient Alternative (Post State)
              * */
             fun energyUse(): Double {
                 if ((computable.energyPostStateLeastCost.count() > 0) &&

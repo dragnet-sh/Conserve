@@ -1,4 +1,4 @@
-package com.gemini.energy.service.usage
+package com.gemini.energy.service.type
 
 interface IUsageType
 

@@ -123,7 +123,7 @@ enum class EDay(val value: String) {
 
 
 /**
- * Utility Rate | Slabs
+ * UtilityRate Rate | Slabs
  * */
 enum class ERateKey(val value: String) {
     SummerOff("summer-off-peak"),

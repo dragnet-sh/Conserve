@@ -8,6 +8,8 @@ import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.domain.gateway.AuditGateway
+import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UtilityRate
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.functions.BiFunction
@@ -18,8 +20,8 @@ class EnergyService(
         private val context: Context,
         private val schedulers: Schedulers,
         private val auditGateway: AuditGateway,
-        private val energyUtilityElectricity: EnergyUtility,
-        private val energyUsage: EnergyUsage,
+        private val utilityRateElectricity: UtilityRate,
+        private val usageHours: UsageHours,
         private val outgoingRows: OutgoingRows) {
 
     /**
@@ -35,9 +37,9 @@ class EnergyService(
 
 
     /**
-     * Energy Utility Gas - Electricity
+     * Energy UtilityRate Gas - Electricity
      * */
-    private val energyUtilityGas = EnergyUtility(context)
+    private val energyUtilityGas = UtilityRate(context)
 
 
     /**
@@ -128,7 +130,7 @@ class EnergyService(
             computable.featurePreAudit = featurePreAudit
 
             return ComputableFactory.createFactory(computable, energyUtilityGas,
-                    energyUtilityElectricity, energyUsage,
+                    utilityRateElectricity, usageHours,
                     outgoingRows).build().compute()
         }
 

@@ -12,6 +12,8 @@ import com.gemini.energy.service.device.lighting.Halogen
 import com.gemini.energy.service.device.lighting.Incandescent
 import com.gemini.energy.service.device.lighting.LinearFluorescent
 import com.gemini.energy.service.device.plugload.*
+import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UtilityRate
 
 
 abstract class ComputableFactory {
@@ -19,14 +21,14 @@ abstract class ComputableFactory {
 
     companion object {
         lateinit var computable: Computable<*>
-        inline fun createFactory(computable: Computable<*>, energyUtilityGas: EnergyUtility,
-                                 energyUtilityElectricity: EnergyUtility,
-                                 energyUsage: EnergyUsage, outgoingRows: OutgoingRows): ComputableFactory {
+        inline fun createFactory(computable: Computable<*>, utilityRateGas: UtilityRate,
+                                 utilityRateElectricity: UtilityRate,
+                                 usageHours: UsageHours, outgoingRows: OutgoingRows): ComputableFactory {
             this.computable = computable
             return when (computable.auditScopeType as EZoneType) {
 
-                EZoneType.Plugload                  -> PlugloadFactory(energyUtilityGas,
-                        energyUtilityElectricity, energyUsage, outgoingRows)
+                EZoneType.Plugload                  -> PlugloadFactory(utilityRateGas,
+                        utilityRateElectricity, usageHours, outgoingRows)
 
                 EZoneType.HVAC                      -> HvacFactory()
                 EZoneType.Lighting                  -> LightingFactory()
@@ -37,9 +39,9 @@ abstract class ComputableFactory {
     }
 }
 
-class PlugloadFactory(private val energyUtilityGas: EnergyUtility,
-                      private val energyUtilityElectricity: EnergyUtility,
-                      private val energyUsage: EnergyUsage,
+class PlugloadFactory(private val utilityRateGas: UtilityRate,
+                      private val utilityRateElectricity: UtilityRate,
+                      private val usageHours: UsageHours,
                       private val outgoingRows: OutgoingRows) : ComputableFactory() {
 
     override fun build(): IComputable {
@@ -52,7 +54,7 @@ class PlugloadFactory(private val energyUtilityGas: EnergyUtility,
             EApplianceType.RackOven                 -> RackOven()
 
             EApplianceType.Refrigerator             -> Refrigerator(computable,
-                    energyUtilityGas, energyUtilityElectricity, energyUsage, outgoingRows)
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows)
 
             EApplianceType.SteamCooker              -> SteamCooker()
         }

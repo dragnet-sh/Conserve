@@ -67,3 +67,9 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
+
+# Mac DS_Store
+.DS_Store
+
+# Fabric
+app/fabric.properties
