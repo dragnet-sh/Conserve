@@ -1,43 +1,130 @@
 {
-  "geminiForm": [
+  "gemini-form": [
     {
       "index": 1,
       "section": "Combination Oven",
       "elements": [
         {
-          "index": 1,
+          "index": 11,
           "param": "Size (Steam Pans)",
-          "dataType": "decimalrow",
+          "data-type": "decimalrow",
           "validation": "",
-          "defaultValues": "",
-          "id": "101"
+          "default-values": "",
+          "id": "11"
         },
         {
-          "index": 2,
+          "index": 12,
           "param": "Fuel Type",
-          "dataType": "pickerinputrow",
+          "data-type": "pickerinputrow",
           "validation": "",
-          "defaultValues": "01:Gas,02:Electric",
-          "id": "102"
+          "default-values": "Gas,Electric",
+          "id": "12"
         },
         {
-          "index": 3,
+          "index": 13,
           "param": "Model Number",
-          "dataType": "textrow",
+          "data-type": "textrow",
           "validation": "",
-          "defaultValues": "",
-          "id": "103"
+          "default-values": "",
+          "id": "13"
         },
         {
-          "index": 4,
+          "index": 14,
           "param": "Company",
-          "dataType": "textrow",
+          "data-type": "textrow",
           "validation": "",
-          "defaultValues": "",
-          "id": "104"
+          "default-values": "",
+          "id": "14"
+        },
+        {
+          "index": 15,
+          "param": "Used During Peak",
+          "data-type": "pickerinputrow",
+          "validation": "",
+          "default-values": "Yes,No",
+          "id": "15"
+        },
+        {
+          "index": 16,
+          "param": "Age",
+          "data-type": "introw",
+          "validation": "",
+          "default-values": "",
+          "id": "16"
+        },
+        {
+          "index": 17,
+          "param": "Control",
+          "data-type": "pickerinputrow",
+          "validation": "",
+          "default-values": "Yes,No",
+          "id": "17"
         }
       ],
-      "id": "10"
+      "id": "1"
+    },
+    {
+      "index": 2,
+      "section": "Operation Hours",
+      "elements": [
+        {
+          "index": 21,
+          "param": "Monday Operating Hours",
+          "data-type": "textrow",
+          "validation": "",
+          "default-values": "",
+          "id": "21"
+        },
+        {
+          "index": 22,
+          "param": "Tuesday Operating Hours",
+          "data-type": "textrow",
+          "validation": "",
+          "default-values": "",
+          "id": "22"
+        },
+        {
+          "index": 23,
+          "param": "Wednesday Operating Hours",
+          "data-type": "textrow",
+          "validation": "",
+          "default-values": "",
+          "id": "23"
+        },
+        {
+          "index": 24,
+          "param": "Thursday Operating Hours",
+          "data-type": "textrow",
+          "validation": "",
+          "default-values": "",
+          "id": "24"
+        },
+        {
+          "index": 25,
+          "param": "Friday Operating Hours",
+          "data-type": "textrow",
+          "validation": "",
+          "default-values": "",
+          "id": "25"
+        },
+        {
+          "index": 26,
+          "param": "Saturday Operating Hours",
+          "data-type": "textrow",
+          "validation": "",
+          "default-values": "",
+          "id": "26"
+        },
+        {
+          "index": 27,
+          "param": "Sunday Operating Hours",
+          "data-type": "textrow",
+          "validation": "",
+          "default-values": "",
+          "id": "27"
+        }
+      ],
+      "id": "2"
     }
   ]
 }
