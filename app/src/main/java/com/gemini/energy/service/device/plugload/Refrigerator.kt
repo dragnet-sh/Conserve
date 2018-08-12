@@ -11,7 +11,7 @@ import io.reactivex.Observable
 import org.json.JSONObject
 import timber.log.Timber
 
-class Refrigerator(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
+class Refrigerator(private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
                    usageHours: UsageHours, outgoingRows: OutgoingRows) :
         EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
 
@@ -31,18 +31,9 @@ class Refrigerator(computable: Computable<*>, utilityRateGas: UtilityRate, utili
      * Cost - Pre State
      * */
     override fun costPreState(): Double {
-        var powerUsed = 0.0
-
-        try {
-            val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"]!! as Double
-            powerUsed = dailyEnergyUsed / 24
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
+        val powerUsed = hourlyEnergyUsagePre()[0]
         val costElectricity: Double
         costElectricity = costElectricity(powerUsed, super.energyUsageBusiness, super.electricityUtilityRate)
-
         return costElectricity
     }
 
@@ -50,20 +41,69 @@ class Refrigerator(computable: Computable<*>, utilityRateGas: UtilityRate, utili
      * Cost - Post State
      * */
     override fun costPostState(element: JsonElement): Double {
-        var powerUsed = 0.0
+        val powerUsed = hourlyEnergyUsagePost(element)[0]
+        val costElectricity: Double
+        costElectricity = costElectricity(powerUsed, super.energyUsageBusiness, super.electricityUtilityRate)
+        return costElectricity
+    }
+
+    /**
+     * PowerTimeChange >> Hourly Energy Use - Pre
+     * */
+    override fun hourlyEnergyUsagePre(): List<Double> {
+        var hourlyEnergy = 0.0
 
         try {
-            val postDailyEnergyUsed = element.asJsonObject.get("daily_energy_use").asDouble
-            powerUsed = postDailyEnergyUsed / 24
+            val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"]!! as Double
+            hourlyEnergy = dailyEnergyUsed / 24
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        val costElectricity: Double
-        costElectricity = costElectricity(powerUsed, super.energyUsageBusiness, super.electricityUtilityRate)
-
-        return costElectricity
+        return listOf(hourlyEnergy)
     }
+
+    /**
+     * PowerTimeChange >> Hourly Energy Use - Post
+     * */
+    override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> {
+        var hourlyEnergy = 0.0
+
+        try {
+            val postDailyEnergyUsed = element.asJsonObject.get("daily_energy_use").asDouble
+            hourlyEnergy = postDailyEnergyUsed / 24
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return listOf(hourlyEnergy)
+    }
+
+    /**
+     * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
+     * Pre and Post are the same for Refrigerator - 24 hrs
+     * */
+    override fun usageHoursPre(): Double = energyUsageBusiness.yearly()
+    override fun usageHoursPost(): Double = energyUsageBusiness.yearly()
+
+    /**
+     * PowerTimeChange >> Energy Efficiency Calculations
+     * */
+    override fun energyPowerChange(): Double {
+        val prePower = hourlyEnergyUsagePre()[0]
+        var postPower: Double
+        var delta = 0.0
+
+        computable.efficientAlternative?.let {
+            postPower = hourlyEnergyUsagePost(it)[0]
+            delta = usageHoursPre() * (prePower - postPower)
+        }
+
+        return delta
+    }
+
+    override fun energyTimeChange(): Double = 0.0
+    override fun energyPowerTimeChange(): Double = 0.0
 
     /**
      * Energy Efficiency Lookup Query Definition

@@ -4,12 +4,15 @@ import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.presentation.util.EDay
-import com.gemini.energy.service.*
+import com.gemini.energy.service.CostElectric
+import com.gemini.energy.service.DataHolder
+import com.gemini.energy.service.OutgoingRows
+import com.gemini.energy.service.ParseAPI
 import com.gemini.energy.service.crunch.*
 import com.gemini.energy.service.type.Electricity
+import com.gemini.energy.service.type.Gas
 import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
-import com.gemini.energy.service.type.Gas
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import io.reactivex.Observable
@@ -98,15 +101,9 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     private fun setupPowerTimeChange(base: EBase) {
         base.powerTimeChange = PowerTimeChange()
-        base.powerTimeChange.usageHoursSpecific = base.energyUsageSpecific
-
-        /**
-         * If the Post UsageHours Hours is Empty (Specific) - Post UsageHours Equals to Pre UsageHours Hours (Business)
-         * */
-        base.powerTimeChange.usageHoursBusiness = if (usageHoursSpecific()) base.energyUsageSpecific
-        else base.energyUsageBusiness
-
-        base.powerTimeChange.featureData = base.featureData
+        base.powerTimeChange.energyPowerChange = { base.energyPowerChange() }
+        base.powerTimeChange.energyTimeChange = { base.energyTimeChange() }
+        base.powerTimeChange.energyPowerTimeChange = { base.energyPowerTimeChange() }
     }
 
     private fun thread() = Thread.currentThread().name
@@ -240,6 +237,23 @@ abstract class EBase(private val computable: Computable<*>,
     abstract fun cost(vararg params: Any): Double
     abstract fun costPreState(): Double
     abstract fun costPostState(element: JsonElement): Double
+
+    /**
+     * Power Time Change
+     * */
+    abstract fun hourlyEnergyUsagePre(): List<Double>
+    abstract fun hourlyEnergyUsagePost(element: JsonElement): List<Double>
+
+    abstract fun usageHoursPre(): Double
+    abstract fun usageHoursPost(): Double
+
+    /**
+     * Energy Efficiency Calculations
+     * */
+    abstract fun energyPowerChange(): Double
+    abstract fun energyTimeChange(): Double
+    abstract fun energyPowerTimeChange():Double
+
 
     /**
      * Energy Cost Queries

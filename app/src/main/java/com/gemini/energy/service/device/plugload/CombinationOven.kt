@@ -112,6 +112,21 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
     override fun costPostState(element: JsonElement): Double = 0.0
 
     /**
+     * Power Time Change
+     * */
+    override fun hourlyEnergyUsagePre(): List<Double> = listOf()
+    override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> = listOf()
+    override fun usageHoursPre(): Double = 0.0
+    override fun usageHoursPost(): Double = 0.0
+
+    /**
+     * Energy Efficiency Calculations
+     * */
+    override fun energyPowerChange(): Double = 0.0
+    override fun energyTimeChange(): Double = 0.0
+    override fun energyPowerTimeChange(): Double = 0.0
+
+    /**
      * Energy Efficiency Lookup Query Definition
      * */
     override fun efficientLookup() = true
