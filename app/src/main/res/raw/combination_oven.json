@@ -6,82 +6,82 @@
       "elements": [
         {
           "index": 11,
+          "dataType": "introw",
+          "defaultValues": "",
           "param": "Size (Steam Pans)",
-          "data-type": "introw",
           "validation": "",
-          "default-values": "",
           "id": "11"
         },
         {
           "index": 12,
+          "dataType": "pickerinputrow",
+          "defaultValues": "01:Gas,02:Electric",
           "param": "Fuel Type",
-          "data-type": "pickerinputrow",
           "validation": "",
-          "default-values": "01:Gas,02:Electric",
           "id": "12"
         },
         {
           "index": 13,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Model Number",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "13"
         },
         {
           "index": 14,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Company",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "14"
         },
         {
           "index": 15,
+          "dataType": "pickerinputrow",
+          "defaultValues": "01:Yes,02:No",
           "param": "Used During Peak",
-          "data-type": "pickerinputrow",
           "validation": "",
-          "default-values": "01:Yes,02:No",
           "id": "15"
         },
         {
           "index": 16,
+          "dataType": "introw",
+          "defaultValues": "",
           "param": "Age",
-          "data-type": "introw",
           "validation": "",
-          "default-values": "",
           "id": "16"
         },
         {
           "index": 17,
+          "dataType": "pickerinputrow",
+          "defaultValues": "01:Yes,02:No",
           "param": "Control",
-          "data-type": "pickerinputrow",
           "validation": "",
-          "default-values": "01:Yes,02:No",
           "id": "17"
         },
         {
           "index": 18,
+          "dataType": "decimalrow",
+          "defaultValues": "",
           "param": "Preheat Energy",
-          "data-type": "decimalrow",
           "validation": "",
-          "default-values": "",
           "id": "18"
         },
         {
           "index": 19,
+          "dataType": "decimalrow",
+          "defaultValues": "",
           "param": "Convection Idle Rate",
-          "data-type": "decimalrow",
           "validation": "",
-          "default-values": "",
           "id": "19"
         },
         {
           "index": 110,
+          "dataType": "decimalrow",
+          "defaultValues": "",
           "param": "Steam Idle Rate",
-          "data-type": "decimalrow",
           "validation": "",
-          "default-values": "",
           "id": "110"
         }
       ],
@@ -93,58 +93,58 @@
       "elements": [
         {
           "index": 21,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Monday Operating Hours",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "21"
         },
         {
           "index": 22,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Tuesday Operating Hours",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "22"
         },
         {
           "index": 23,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Wednesday Operating Hours",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "23"
         },
         {
           "index": 24,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Thursday Operating Hours",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "24"
         },
         {
           "index": 25,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Friday Operating Hours",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "25"
         },
         {
           "index": 26,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Saturday Operating Hours",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "26"
         },
         {
           "index": 27,
+          "dataType": "textrow",
+          "defaultValues": "",
           "param": "Sunday Operating Hours",
-          "data-type": "textrow",
           "validation": "",
-          "default-values": "",
           "id": "27"
         }
       ],
