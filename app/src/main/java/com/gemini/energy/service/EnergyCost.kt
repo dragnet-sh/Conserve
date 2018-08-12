@@ -39,12 +39,9 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
     private fun costSummer(): Double {
         return if (isTOU(structure)) {
 
-            val hours = hours as TOU
-            val rate = rate as TOU
-
-            val costSummerOn = hours.summerOn * power * rate.summerOn
-            val costSummerPart = hours.summerPart * power * rate.summerPart
-            val costSummerOff = hours.summerOff * power * rate.summerOff
+            val costSummerOn = hours.summerOn() * power * rate.summerOn()
+            val costSummerPart = hours.summerPart() * power * rate.summerPart()
+            val costSummerOff = hours.summerOff() * power * rate.summerOff()
 
             Timber.d("## TOU Cost - Summer ##")
             Timber.d(">>> Summer On : $costSummerOn")
@@ -55,10 +52,7 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
 
         } else {
 
-            val hours = hours as TOUNone
-            val rate = rate as TOUNone
-
-            val costSummerNone = hours.summerNone * power * rate.summerNone
+            val costSummerNone = hours.summerNone() * power * rate.summerNone()
             Timber.d("## Non TOU Cost - Summer ##")
             Timber.d(">>> Cost Summer None : $costSummerNone")
 
@@ -73,11 +67,8 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
     private fun costWinter(): Double {
         return if (isTOU(structure)) {
 
-            val hours = hours as TOU
-            val rate = rate as TOU
-
-            val costWinterPart = hours.winterPart * power * rate.winterPart
-            val costWinterOff = hours.winterOff  * power * rate.winterOff
+            val costWinterPart = hours.winterPart() * power * rate.winterPart()
+            val costWinterOff = hours.winterOff()  * power * rate.winterOff()
 
             Timber.d("## TOU Cost - Winter ##")
             Timber.d(">>> Winter Part : $costWinterPart")
@@ -87,10 +78,7 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
 
         } else {
 
-            val hours = hours as TOUNone
-            val rate = rate as TOUNone
-
-            val costWinterNone = hours.winterNone * power * rate.winterNone
+            val costWinterNone = hours.winterNone() * power * rate.winterNone()
             Timber.d("## NON TOU Cost - Winter ##")
             Timber.d(">>> Winter None : $costWinterNone")
 
