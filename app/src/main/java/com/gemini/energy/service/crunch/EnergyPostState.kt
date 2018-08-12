@@ -3,6 +3,7 @@ package com.gemini.energy.service.crunch
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.service.DataHolder
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import io.reactivex.functions.Function
 import timber.log.Timber
 import java.util.*
@@ -12,7 +13,7 @@ class EnergyPostState {
     class Mapper : Function<JsonArray, DataHolder> {
         lateinit var postStateFields: MutableList<String>
         lateinit var computable: Computable<*>
-        lateinit var cost: (Double) -> Double
+        lateinit var cost: (JsonElement) -> Double
 
         override fun apply(response: JsonArray): DataHolder {
 
@@ -33,8 +34,7 @@ class EnergyPostState {
                     postRow[key] = value
                 }
 
-                val postDailyEnergyUsed = element.asJsonObject.get("daily_energy_use").asDouble
-                val cost = cost(postDailyEnergyUsed)
+                val cost = cost(element)
                 postRow["__electric_cost"] = cost.toString()
 
                 costCollector.add(cost)
