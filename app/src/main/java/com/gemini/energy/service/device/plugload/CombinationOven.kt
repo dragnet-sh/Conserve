@@ -51,11 +51,19 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
             // 2. This Equipment has either Gas or Electric. Need to implement the Gas Calculation over here inside this function.
             // 3. What will be the Usage Time to multiply with the Energy (PreHeat | Idle) ??
 
-            // ** Total Cost for Pre Heat Energy -- ??
-            // ** Total Cost for Idle Heat Energy -- ??
-
-            energyUsed = preHeatEnergy + idleEnergy
-            powerUsed = energyUsed / 24 // **** Assuming that it's energy consumed for a Day ****
+            // ** Total Cost for Pre Heat Energy -- ?? the pre heat energy is only for the first 15mins of each day.
+            // ** Total Cost for Idle Heat Energy -- ?? - the idle rates for all ovens are given as power values already so you just use them as they are
+            
+          // electric cost equation is: 
+                    // preHeatEnergy * .25 * summerenergyprice * 365 * .504 + preHeatEnergy * .25 * winterenergyprice * 365 * .496
+                    // + the equation you have below for computing the electric cost
+          
+          // gas cost equation is fine as you have it. 
+          
+          
+            energyUsed = preHeatEnergy + idleEnergy // should be just:
+            powerUsed = energyUsed / 24 //should be just: powerUsed = ((idlePower1 + idlePower2) / 2) + fanPower
+                      //the preHeatEnergy must stay seperate because it is only once a day as opposed to by hour
 
             waterUseConvection = featureData["Water Use (Convection)"]!! as Double
             waterUseSteam = featureData["Water Use (Steam)"]!! as Double
@@ -82,7 +90,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         if (isGas) {
             val winterRate = super.gasUtilityRate.structure[ERateKey.GasWinter.value]!![0].toDouble()
             val summerRate = super.gasUtilityRate.structure[ERateKey.GasSummer.value]!![0].toDouble()
-            costGas = (energyUsed / 99976.1) * ((winterRate + summerRate)) / 2
+            costGas = (energyUsed / 99976.1) * .25 * ((winterRate + summerRate) / 2) //added the .25 to account that the preheat is only 15 mins per day
         }
 
         /**
