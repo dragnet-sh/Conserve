@@ -25,12 +25,12 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
 
     companion object {
         private const val PRE_RUN_HOURS = 10.0 //@Anthony - Is this going to be a constant ??
-        private const val POST_RUN_HOURS = 5.0
     }
 
     private var isElectric = false
     private var isGas = false
 
+    //@Anthony - These will be populated from the Feature Data
     private var preDaysInOperation = 0.0
     private var preIdleEnergyRate1 = 0.0
     private var preIdleEnergyRate2 = 0.0
@@ -76,13 +76,16 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
         val adjustment = if (isGas) 3412 else 1
         val averageIdleRate = (preIdleEnergyRate1 + preIdleEnergyRate2) / 2
 
+        //@Anthony - I have broken down the equation for code maintainability and readability
         //@Anthony - The difference between Gas and Electric Energy was just the adjustment factor - please confirm.
         //@Anthony - Also we are using the Pre Audit Weekly Usage Hours i.e (energyUsageBusiness) to do Energy Calculations in the Pre Sate.
         val idleEnergy = averageIdleRate * energyUsageBusiness.yearly()
+
+        //@Anthony - Original PreHeatEnergy with just some Adjustment Factor ?? Is It ??
         val preHeatEnergy = (preHeatEnergy / 4) * preDaysInOperation
         val fanEnergy = (preFanEnergyRate - postFanEnergyRate) * energyUsageBusiness.yearly() * adjustment
 
-        //@Anthony - This energyUsed component is only being used for Gas - for electricity we are using powerUsed - please confirm ??
+        //@Anthony - This energyUsed component is only being used only for Gas - for electricity we are using powerUsed - please confirm ??
         val energyUsed= idleEnergy + preHeatEnergy + fanEnergy
 
         //should be just: powerUsed = ((idlePower1 + idlePower2) / 2) + fanPower
