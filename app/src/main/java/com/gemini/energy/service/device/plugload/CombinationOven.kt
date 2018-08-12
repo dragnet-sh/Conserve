@@ -7,6 +7,7 @@ import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
 import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
+import com.google.gson.JsonElement
 import io.reactivex.Observable
 import org.json.JSONObject
 import timber.log.Timber
@@ -39,8 +40,10 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         var isGas = false
 
         try {
-            val preHeatEnergy = featureData["Pre-Heat Energy"]!! as Double
-            val idleEnergy = featureData["Idle Energy"]!! as Double
+            val preHeatEnergy = featureData["Preheat Energy"]!! as Double
+            val convectionIdleRate = featureData["Convection Idle Rate"]!! as Double
+            val steamIdleRate = featureData["Steam Idle Rate"]!! as Double
+            val idleEnergy = convectionIdleRate + steamIdleRate
             val fuelType = featureData["Fuel Type"]!! as String
 
             isElectric = (fuelType == "Electric")
@@ -52,7 +55,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
             // 3. What will be the Usage Time to multiply with the Energy (PreHeat | Idle) ??
 
             // ** Total Cost for Pre Heat Energy -- ?? the pre heat energy is only for the first 15mins of each day.
-            // ** Total Cost for Idle Heat Energy -- ?? - the idle rates for all ovens are given as power values already so you just use them as they are
+            // ** Total Cost for Idle Heat Energy -- ?? - the idle structure for all ovens are given as power values already so you just use them as they are
             
           // electric cost equation is: 
                     // preHeatEnergy * .25 * summerenergyprice * 365 * .504 + preHeatEnergy * .25 * winterenergyprice * 365 * .496
@@ -91,7 +94,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         if (isGas) {
             val winterRate = super.gasUtilityRate.structure[ERateKey.GasWinter.value]!![0].toDouble()
             val summerRate = super.gasUtilityRate.structure[ERateKey.GasSummer.value]!![0].toDouble()
-            costGas = (energyUsed / 99976.1) * ((winterRate + summerRate) / 2) //use the gasenergyUsed to specify the gas equation I provided (see email) 
+            costGas = (energyUsed / 99976.1) * ((winterRate + summerRate) / 2) //use the gasenergyUsed to specify the gas equation I provided (see email)
         }
 
         /**
@@ -105,25 +108,16 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         return costElectricity + costGas + costWater
     }
 
+    override fun costPreState(): Double = 0.0
+    override fun costPostState(element: JsonElement): Double = 0.0
+
     /**
      * Energy Efficiency Lookup Query Definition
      * */
     override fun efficientLookup() = true
     override fun queryEfficientFilter() = JSONObject()
-
-            //Exact Match :: Size - Steam Pan
             .put("data.size", featureData["Size (Steam Pans)"])
-
-            //Tie Breaker :: Production Capacity [Convection]
-            .put("data.convection_production_capacity", JSONObject()
-                    .put("\$gte", featureData["Production Capacity (Convection)"] as Double))
-
-            //Tie Breaker :: Production Capacity [Steam]
-            .put("data.steam_production_capacity", JSONObject()
-                    .put("\$gte", featureData["Production Capacity (Steam)"] as Double))
-
             .toString()
-
 
     /**
      * State if the Equipment has a Post UsageHours Hours (Specific) ie. A separate set of
@@ -136,9 +130,8 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
      * */
     override fun preAuditFields() = mutableListOf("Number of Vacation days")
     override fun featureDataFields() = mutableListOf("Size (Steam Pans)", "Fuel Type", "Model Number",
-            "Company", "Used During Peak", "Age", "Control", "Production Capacity (Convection)",
-            "Production Capacity (Steam)", "Pre-Heat Energy", "Idle Energy", "Water Use (Convention)",
-            "Water Use (Steam)")
+            "Company", "Used During Peak", "Age", "Control", "Preheat Energy",
+            "Convection Idle Energy", "Steam Idle Rate")
 
     override fun preStateFields() = mutableListOf<String>()
     override fun postStateFields() = mutableListOf("company", "model_number", "size",

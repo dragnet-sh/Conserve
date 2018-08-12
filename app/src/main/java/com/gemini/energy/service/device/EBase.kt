@@ -11,6 +11,7 @@ import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
 import com.gemini.energy.service.type.Gas
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import io.reactivex.Observable
 import io.reactivex.functions.Function
 import org.json.JSONObject
@@ -102,8 +103,8 @@ abstract class EBase(private val computable: Computable<*>,
         /**
          * If the Post UsageHours Hours is Empty (Specific) - Post UsageHours Equals to Pre UsageHours Hours (Business)
          * */
-        base.powerTimeChange.usageHoursBusiness = if (usageHoursSpecific()) base.energyUsageBusiness
-        else base.energyUsageSpecific
+        base.powerTimeChange.usageHoursBusiness = if (usageHoursSpecific()) base.energyUsageSpecific
+        else base.energyUsageBusiness
 
         base.powerTimeChange.featureData = base.featureData
     }
@@ -150,7 +151,7 @@ abstract class EBase(private val computable: Computable<*>,
         energyPreState.computable = computable
 
         return energyPreState.getObservable {
-            cost(it)
+            costPreState()
         }
     }
 
@@ -163,7 +164,7 @@ abstract class EBase(private val computable: Computable<*>,
         mapper.computable = computable
         mapper.postStateFields = postStateFields()
         mapper.cost = {
-            cost(it)
+            costPostState(it)
         }
 
         return starValidator(queryEnergyStar())
@@ -231,7 +232,14 @@ abstract class EBase(private val computable: Computable<*>,
     abstract fun postStateFields(): MutableList<String>
     abstract fun computedFields(): MutableList<String>
 
+    /**
+     * Energy Cost Functions
+     * These are Consumed by the Energy Pre State - Post State | Energy - Cost Savings
+     * The Equipment Classes define how the calculations are supposed to be done
+     * */
     abstract fun cost(vararg params: Any): Double
+    abstract fun costPreState(): Double
+    abstract fun costPostState(element: JsonElement): Double
 
     /**
      * Energy Cost Queries
