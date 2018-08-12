@@ -37,53 +37,54 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
      * Calculates the Summer Cost (Proper UsageHours Type Cast done via isTOU() flag check)
      * */
     private fun costSummer(): Double {
-        return if (isTOU(structure)) {
 
-            val costSummerOn = hours.summerOn() * power * rate.summerOn()
-            val costSummerPart = hours.summerPart() * power * rate.summerPart()
-            val costSummerOff = hours.summerOff() * power * rate.summerOff()
+        val costSummerOn = hours.summerOn() * power * rate.summerOn()
+        val costSummerPart = hours.summerPart() * power * rate.summerPart()
+        val costSummerOff = hours.summerOff() * power * rate.summerOff()
 
+        if (isTOU(structure)) {
             Timber.d("## TOU Cost - Summer ##")
             Timber.d(">>> Summer On : $costSummerOn")
             Timber.d(">>> Summer Part : $costSummerPart")
             Timber.d(">>> Summer Off : $costSummerOff")
-
-            costSummerOn + costSummerPart + costSummerOff
-
-        } else {
-
-            val costSummerNone = hours.summerNone() * power * rate.summerNone()
-            Timber.d("## Non TOU Cost - Summer ##")
-            Timber.d(">>> Cost Summer None : $costSummerNone")
-
-            costSummerNone
-
         }
+
+        val summerTOU = costSummerOn + costSummerPart + costSummerOff
+        val summerTOUNone = hours.summerNone() * power * rate.summerNone()
+
+        if (isNoTOU(structure)) {
+            Timber.d("## Non TOU Cost - Summer ##")
+            Timber.d(">>> Cost Summer None : $summerTOUNone")
+        }
+
+        return summerTOU + summerTOUNone
+
     }
 
     /**
      * Calculates the Winter Cost (Proper UsageHours Type Cast done via isTOU() flag check)
      * */
     private fun costWinter(): Double {
-        return if (isTOU(structure)) {
 
-            val costWinterPart = hours.winterPart() * power * rate.winterPart()
-            val costWinterOff = hours.winterOff()  * power * rate.winterOff()
+        val costWinterPart = hours.winterPart() * power * rate.winterPart()
+        val costWinterOff = hours.winterOff() * power * rate.winterOff()
 
+        if (isTOU(structure)) {
             Timber.d("## TOU Cost - Winter ##")
             Timber.d(">>> Winter Part : $costWinterPart")
             Timber.d(">>> Winter Off : $costWinterOff")
-
-            costWinterPart + costWinterOff
-
-        } else {
-
-            val costWinterNone = hours.winterNone() * power * rate.winterNone()
-            Timber.d("## NON TOU Cost - Winter ##")
-            Timber.d(">>> Winter None : $costWinterNone")
-
-            costWinterNone
         }
+
+        val winterTOU = costWinterPart + costWinterOff
+        val winterTOUNone = hours.winterNone() * power * rate.winterNone()
+
+        if (isNoTOU(structure)) {
+            Timber.d("## NON TOU Cost - Winter ##")
+            Timber.d(">>> Winter None : $winterTOUNone")
+        }
+
+        return winterTOU + winterTOUNone
+
     }
 
     private fun logIUsageType() {
@@ -116,6 +117,7 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
         private const val NONE = "none"
         private val regex = "^.*TOU$".toRegex()
         private fun isTOU(rate: String) = rate.matches(regex)
+        private fun isNoTOU(rate: String) = !isTOU(rate)
     }
 
 }
