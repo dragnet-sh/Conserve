@@ -61,9 +61,10 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
           // gas cost equation is fine as you have it. 
           
           
-            energyUsed = preHeatEnergy + idleEnergy // should be just:
+            energyUsed = preHeatEnergy + idleEnergy // see email for correct energy equations for gas and electricity
             powerUsed = energyUsed / 24 //should be just: powerUsed = ((idlePower1 + idlePower2) / 2) + fanPower
                       //the preHeatEnergy must stay seperate because it is only once a day as opposed to by hour
+                      // this powerUsed equation I provided is specifically for electric ovens!!!
 
             waterUseConvection = featureData["Water Use (Convection)"]!! as Double
             waterUseSteam = featureData["Water Use (Steam)"]!! as Double
@@ -90,7 +91,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         if (isGas) {
             val winterRate = super.gasUtilityRate.structure[ERateKey.GasWinter.value]!![0].toDouble()
             val summerRate = super.gasUtilityRate.structure[ERateKey.GasSummer.value]!![0].toDouble()
-            costGas = (energyUsed / 99976.1) * .25 * ((winterRate + summerRate) / 2) //added the .25 to account that the preheat is only 15 mins per day
+            costGas = (energyUsed / 99976.1) * ((winterRate + summerRate) / 2) //use the gasenergyUsed to specify the gas equation I provided (see email) 
         }
 
         /**
