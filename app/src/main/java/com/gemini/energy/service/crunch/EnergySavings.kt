@@ -25,6 +25,7 @@ class EnergySavings {
              * */
             val energySaving = ptc.energySaving()
             Timber.d("Energy Saving : ($energySaving)")
+            Timber.d(ptc.toString())
 
             val energySavingHeader = listOf("__check_power_change", "__check_time_change",
                     "__check_power_time_change", "__energy_power_change", "__energy_time_change",
