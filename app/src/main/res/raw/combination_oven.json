@@ -6,7 +6,7 @@
       "elements": [
         {
           "index": 11,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Size (Steam Pans)",
           "validation": "",
