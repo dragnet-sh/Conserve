@@ -23,6 +23,7 @@ class EnergyPostState {
             val jsonElements = response.map { it.asJsonObject.get("data") }
             val dataHolderPostState = initDataHolder()
             val costCollector = mutableListOf<Double>()
+            val costToElement: MutableMap<Double, JsonElement> = hashMapOf()
 
             jsonElements.forEach { element ->
                 val postRow = mutableMapOf<String, String>()
@@ -38,6 +39,8 @@ class EnergyPostState {
                 postRow["__electric_cost"] = cost.toString()
 
                 costCollector.add(cost)
+                costToElement[cost] = element
+
                 dataHolderPostState.rows?.add(postRow)
                 computable.energyPostState?.add(postRow)
             }
@@ -51,6 +54,8 @@ class EnergyPostState {
             }
 
             computable.energyPostStateLeastCost = efficientAlternative ?: mutableListOf()
+            computable.efficientAlternative = costToElement[costMinimum]
+
             Timber.d("Minimum Cost : [$costMinimum]")
             Timber.d("Efficient Alternative : ${computable.energyPostStateLeastCost}")
 
