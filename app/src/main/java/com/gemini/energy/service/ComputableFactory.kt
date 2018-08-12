@@ -46,7 +46,8 @@ class PlugloadFactory(private val utilityRateGas: UtilityRate,
 
     override fun build(): IComputable {
         return when(computable.auditScopeSubType as EApplianceType) {
-            EApplianceType.CombinationOven          -> CombinationOven()
+            EApplianceType.CombinationOven          -> CombinationOven(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows)
             EApplianceType.ConvectionOven           -> ConvectionOven()
             EApplianceType.ConveyorOven             -> ConveyorOven()
             EApplianceType.Fryer                    -> Fryer()
