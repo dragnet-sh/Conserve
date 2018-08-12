@@ -12,7 +12,7 @@ import io.reactivex.Observable
 import org.json.JSONObject
 import timber.log.Timber
 
-class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
+class CombinationOven(private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
                       usageHours: UsageHours, outgoingRows: OutgoingRows) :
         EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
 
@@ -23,105 +23,129 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         return super.compute(extra = ({ Timber.d(it) }))
     }
 
-    /**
-     * Energy Cost Calculation Formula
-     * @Anthony - Please verify the Cost Function in Detail.
-     *
-     * ToDo - Note :: Need to make some slight changes to the EBase so that Cost function that is being defined here can be
-     * ToDo - reused by the Energy Efficient Alternative (It's already been done to a certain extent while implementing refrigerator)
-     * */
-    override fun cost(vararg params: Any): Double {
-        var powerUsed = 0.0
-        var energyUsed = 0.0
-        var waterUseConvection = 0.0
-        var waterUseSteam = 0.0
+    companion object {
+        private const val PRE_RUN_HOURS = 10.0 //@Anthony - Is this going to be a constant ??
+        private const val POST_RUN_HOURS = 5.0
+    }
 
-        var isElectric = false
-        var isGas = false
+    private var isElectric = false
+    private var isGas = false
+
+    private var preDaysInOperation = 0.0
+    private var preIdleEnergyRate1 = 0.0
+    private var preIdleEnergyRate2 = 0.0
+    private var preHeatEnergy = 0.0
+
+    //@Anthony - These values are 0 at the moment. Not sure where to call these from ??
+    private var preFanEnergyRate = 0.0
+    private var postFanEnergyRate = 0.0
+
+    /**
+     * Will be called once before anything to initialize the commonly used parameters
+     * */
+    override fun setupDevice() {
 
         try {
-            val preHeatEnergy = featureData["Preheat Energy"]!! as Double
-            val convectionIdleRate = featureData["Convection Idle Rate"]!! as Double
-            val steamIdleRate = featureData["Steam Idle Rate"]!! as Double
-            val idleEnergy = convectionIdleRate + steamIdleRate
             val fuelType = featureData["Fuel Type"]!! as String
-
             isElectric = (fuelType == "Electric")
             isGas = (fuelType == "Gas")
 
-            // @Anthony (I need the formulas !!)
-            // 1. How do i use the pre_heat and idle_energy rate to calculate the Cost ?? The iOS one doesn't make sense. (Formula both for Electric and Gas)
-            // 2. This Equipment has either Gas or Electric. Need to implement the Gas Calculation over here inside this function.
-            // 3. What will be the Usage Time to multiply with the Energy (PreHeat | Idle) ??
-
-            // ** Total Cost for Pre Heat Energy -- ?? the pre heat energy is only for the first 15mins of each day.
-            // ** Total Cost for Idle Heat Energy -- ?? - the idle structure for all ovens are given as power values already so you just use them as they are
-            
-          // electric cost equation is: 
-                    // preHeatEnergy * .25 * summerenergyprice * 365 * .504 + preHeatEnergy * .25 * winterenergyprice * 365 * .496
-                    // + the equation you have below for computing the electric cost
-          
-          // gas cost equation is fine as you have it. 
-          
-          
-            energyUsed = preHeatEnergy + idleEnergy // see email for correct energy equations for gas and electricity
-            powerUsed = energyUsed / 24 //should be just: powerUsed = ((idlePower1 + idlePower2) / 2) + fanPower
-                      //the preHeatEnergy must stay seperate because it is only once a day as opposed to by hour
-                      // this powerUsed equation I provided is specifically for electric ovens!!!
-
-            waterUseConvection = featureData["Water Use (Convection)"]!! as Double
-            waterUseSteam = featureData["Water Use (Steam)"]!! as Double
+            preDaysInOperation = PRE_RUN_HOURS / 24
+            preIdleEnergyRate1 = featureData["Convection Idle Rate"]!! as Double
+            preIdleEnergyRate2 = featureData["Steam Idle Rate"]!! as Double
+            preHeatEnergy = featureData["Preheat Energy"]!! as Double
 
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        val waterCharge = .015
-        val usage = super.energyUsageSpecific
-        var costElectricity = 0.0
-        var costGas = 0.0
+    }
 
-        /**
-         * Computes the Electric Cost
-         * */
+    /**
+     * Energy Cost Calculation Formula ToDo: Remove this later
+     * */
+    override fun cost(vararg params: Any) = 0.0
+
+    /**
+     * Cost - Pre State
+     * */
+    override fun costPreState(): Double {
+        var costGas = 0.0
+        var costElectricity = 0.0
+
+        val adjustment = if (isGas) 3412 else 1
+        val averageIdleRate = (preIdleEnergyRate1 + preIdleEnergyRate2) / 2
+
+        //@Anthony - The difference between Gas and Electric Energy was just the adjustment factor - please confirm.
+        //@Anthony - Also we are using the Pre Audit Weekly Usage Hours i.e (energyUsageBusiness) to do Energy Calculations in the Pre Sate.
+        val idleEnergy = averageIdleRate * energyUsageBusiness.yearly()
+        val preHeatEnergy = (preHeatEnergy / 4) * preDaysInOperation
+        val fanEnergy = (preFanEnergyRate - postFanEnergyRate) * energyUsageBusiness.yearly() * adjustment
+
+        //@Anthony - This energyUsed component is only being used for Gas - for electricity we are using powerUsed - please confirm ??
+        val energyUsed= idleEnergy + preHeatEnergy + fanEnergy
+
+        //should be just: powerUsed = ((idlePower1 + idlePower2) / 2) + fanPower
+        val powerUsed = averageIdleRate + preFanEnergyRate //@Antony - BTW we have Pre and Post Fan Energy Rate - i have used the pre ??
+
         if (isElectric) {
-            costElectricity = costElectricity(powerUsed, super.energyUsageSpecific, electricityUtilityRate)
+            val rate = energyUsageBusiness.nonTimeOfUse()
+
+            // electric cost equation is:
+            // preHeatEnergy * .25 * summerenergyprice * 365 * .504 + preHeatEnergy * .25 * winterenergyprice * 365 * .496
+            // + the equation you have below for computing the electric cost
+
+            val costToPreHeat = (preHeatEnergy / 4) * 365 * (rate.summerNone() * 0.504 + rate.winterNone() * 0.496)
+            costElectricity = costElectricity(powerUsed, super.energyUsageBusiness, super.electricityUtilityRate)
+            costElectricity += costToPreHeat
         }
 
-        /**
-         * Computes the Gas Cost
-         * */
         if (isGas) {
             val winterRate = super.gasUtilityRate.structure[ERateKey.GasWinter.value]!![0].toDouble()
             val summerRate = super.gasUtilityRate.structure[ERateKey.GasSummer.value]!![0].toDouble()
-            costGas = (energyUsed / 99976.1) * ((winterRate + summerRate) / 2) //use the gasenergyUsed to specify the gas equation I provided (see email)
+            costGas = (energyUsed / 99976.1) * ((winterRate + summerRate) / 2)
         }
 
-        /**
-         * Computes the Water Cost
-         * */
-        val costWater = usage.yearly() * waterUseConvection * waterCharge * (waterUseConvection + waterUseSteam) / 2
+        //@Anthony - Where are we getting the water usage value from ?? The input form parameters does not have these ??
+        val waterUseConvection = 0.0
+        val waterUseSteam = 0.0
+        val waterCharge = 0.015
 
-        /**
-         * Total Cost - Gas + Electric + Water (Gas or Electric will be Zero Based on the Fuel Type)
-         * */
+        val costWater = energyUsageBusiness.yearly() * waterUseConvection * waterCharge *
+                (waterUseConvection + waterUseSteam) / 2
+
         return costElectricity + costGas + costWater
+
     }
 
-    override fun costPreState(): Double = 0.0
+    /**
+     * Cost - Post State
+     * */
+    //@Anthony - What about the Post State Energy Calculation - I guess it's no different than the costPreState ??
+    //@Anthony - Btw based on the Post Sate we will choose the Most Efficient Alternative.
     override fun costPostState(element: JsonElement): Double = 0.0
 
     /**
-     * Power Time Change
+     * PowerTimeChange >> Hourly Energy Use - Pre
      * */
     override fun hourlyEnergyUsagePre(): List<Double> = listOf()
-    override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> = listOf()
-    override fun usageHoursPre(): Double = 0.0
-    override fun usageHoursPost(): Double = 0.0
 
     /**
-     * Energy Efficiency Calculations
+     * PowerTimeChange >> Hourly Energy Use - Post
      * */
+    override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> = listOf()
+
+    /**
+     * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
+     * Pre and Post are the same for Refrigerator - 24 hrs
+     * */
+    override fun usageHoursPre(): Double = energyUsageBusiness.yearly()
+    override fun usageHoursPost(): Double = energyUsageSpecific.yearly()
+
+    /**
+     * PowerTimeChange >> Energy Efficiency Calculations
+     * */
+    //@Anthony - Will be implementing the Power Change Next !!
     override fun energyPowerChange(): Double = 0.0
     override fun energyTimeChange(): Double = 0.0
     override fun energyPowerTimeChange(): Double = 0.0
@@ -141,7 +165,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
     override fun usageHoursSpecific() = true
 
     /**
-     * Define all the fields here - These would be used to Generate the Outgoing Rows.
+     * Define all the fields here - These would be used to Generate the Outgoing Rows or perform the Energy Calculation
      * */
     override fun preAuditFields() = mutableListOf("Number of Vacation days")
     override fun featureDataFields() = mutableListOf("Size (Steam Pans)", "Fuel Type", "Model Number",
@@ -157,5 +181,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
     override fun computedFields() = mutableListOf("__daily_operating_hours", "__weekly_operating_hours",
             "__yearly_operating_hours", "__electric_cost")
 
-
 }
+
+
+
