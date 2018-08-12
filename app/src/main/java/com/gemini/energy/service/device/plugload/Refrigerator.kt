@@ -22,8 +22,10 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
         return super.compute(extra = ({ Timber.d(it) }))
     }
 
+    override fun setupDevice() {}
+
     /**
-     * Energy Cost Calculation Formula
+     * Energy Cost Calculation Formula ToDo: Remove this later
      * */
     override fun cost(vararg params: Any) = 0.0
 
