@@ -57,11 +57,9 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
      * */
     private var preHeatEnergy = 0.0
 
-    //ToDo - Populate these from the Feature Data
     private var preFanEnergyRate = 0.0
     private var postFanEnergyRate = 0.0
 
-    //ToDo - Populate these from the Feature Data
     private var waterUseConvection = 0.0
     private var waterUseSteam = 0.0
 
@@ -93,6 +91,12 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
 
             val rawPreHeatEnergy = featureData["Preheat Energy"]!! as Double
             preHeatEnergy = adjustPreHeat(rawPreHeatEnergy)
+
+            preFanEnergyRate = featureData["Pre Fan Energy Rate"]!! as Double
+            postFanEnergyRate = featureData["Post Fan Energy Rate"]!! as Double
+
+            waterUseConvection = featureData["Convection Water Usage Rate"]!! as Double
+            waterUseSteam = featureData["Steam Water Usage Rate"]!! as Double
 
             steamPanSize = featureData["Size (Steam Pans)"]!! as Double
 
@@ -134,9 +138,9 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
             val rate = if (isTOU()) electricityRate.timeOfUse() else electricityRate.nonTimeOfUse()
 
             //@Anthony - Do you think we need to multiply by 365 as we have already multiplied by yearly daysInOperation
-            val costToPreHeat = yearlyPreHeatEnergy * 365 * rate.weightedAverage()
-
-            costElectricity = costElectricity(powerUsed, usageHoursBusiness, electricityRate)
+            val costToPreHeat = yearlyPreHeatEnergy * rate.weightedAverage()
+            Timber.d("Cost To Pre Heat :: $costToPreHeat")
+            costElectricity = costElectricity(powerUsed, usageHoursSpecific, electricityRate)
             costElectricity += costToPreHeat
         }
 
@@ -149,7 +153,14 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         val averageWaterUsed = (waterUseConvection + waterUseSteam) / 2
         val costWater = usageHoursPre() * WATER_CHARGE * averageWaterUsed
 
-        return (costElectricity + costGas + costWater)
+        Timber.d("Electricity Cost :: $costElectricity")
+        Timber.d("Gas Cost :: $costGas")
+        Timber.d("Water Cost :: $costWater")
+
+        val totalCost = costElectricity + costGas + costWater
+        Timber.d("Total Cost :: $totalCost")
+
+        return totalCost
 
     }
 
@@ -173,7 +184,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
     /**
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
      * */
-    override fun usageHoursPre(): Double = usageHoursBusiness.yearly()
+    override fun usageHoursPre(): Double = usageHoursSpecific.yearly()
     override fun usageHoursPost(): Double = usageHoursSpecific.yearly()
 
     /**
