@@ -36,8 +36,8 @@ abstract class EBase(private val computable: Computable<*>,
     var featureData: Map<String, Any> = mapOf()
     private var electricRateStructure: String = RATE
 
-    val energyUsageBusiness = UsageHours()
-    val energyUsageSpecific = UsageHours()
+    val usageHoursBusiness = UsageHours()
+    val usageHoursSpecific = UsageHours()
 
     private fun initialize() {
         val base = this
@@ -82,8 +82,8 @@ abstract class EBase(private val computable: Computable<*>,
      * 2. FeatureData - Energy Usage Specific (post)
      * */
     private fun setupUsage(base: EBase) {
-        base.energyUsageBusiness.initUsage(mappedBusinessHours()).build()
-        base.energyUsageSpecific.initUsage(mappedSpecificHours()).build()
+        base.usageHoursBusiness.initUsage(mappedBusinessHours()).build()
+        base.usageHoursSpecific.initUsage(mappedSpecificHours()).build()
     }
 
     /**
@@ -196,8 +196,8 @@ abstract class EBase(private val computable: Computable<*>,
 
         val mapper = CostSavings.Mapper()
         mapper.computable = computable
-        mapper.usageHoursSpecific = energyUsageSpecific
-        mapper.usageHoursBusiness = energyUsageBusiness
+        mapper.usageHoursSpecific = usageHoursSpecific
+        mapper.usageHoursBusiness = usageHoursBusiness
         mapper.electricRateStructure = electricRateStructure
         mapper.electricityUtilityRate = electricityUtilityRate
         mapper.gasUtilityRate = gasUtilityRate

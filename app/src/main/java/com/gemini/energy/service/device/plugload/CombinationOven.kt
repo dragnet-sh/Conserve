@@ -11,7 +11,7 @@ import io.reactivex.Observable
 import org.json.JSONObject
 import timber.log.Timber
 
-class CombinationOven(private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
+class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
                       usageHours: UsageHours, outgoingRows: OutgoingRows) :
         EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
 
@@ -23,41 +23,78 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
     }
 
     companion object {
-        private const val PRE_RUN_HOURS = 10.0 //@Anthony - Is this going to be a constant ??
-                                                    //I treated pre_run_hours as use.yearly() which
-                                                   //I thought is the number of hours the client is open for business over a year
-                                                   //each client could have a unique value for pre run hours as they work different hours
+
+        /**
+         * It takes 15 min to Pre Heat the Oven but the Energy Value Provided is for an Hour
+         * Thus need to multiply by 1/4
+         * */
+        private const val ADJUSTMENT_PRE_HEAT = 0.25
+        private const val ADJUSTMENT_GAS = 3412
+
+        /**
+         * The water charge is .015 only for San Francisco area.
+         * Later we will need to make a sheet that will be used to determine the water charge based on city
+         * */
+        private const val WATER_CHARGE = 0.015
+
     }
 
     private var isElectric = false
     private var isGas = false
 
-    //@Anthony - These will be populated from the Feature Data
-    private var preDaysInOperation = 0.0
-    private var preIdleEnergyRate1 = 0.0
-    private var preIdleEnergyRate2 = 0.0
+    /**
+     * This is going to be the Business Hours (Pre Audit Operation Hours)
+     * - the number of hours the client is open for business over a year
+     * - each client could have a unique value for pre run hours as they work different hours
+     * */
+    private var daysInOperation = 0.0
+
+    private var preIdleEnergyRateConvection = 0.0
+    private var preIdleEnergyRateSteam = 0.0
+
+    /**
+     * The Adjustment Factor is taken care within the setup()
+     * */
     private var preHeatEnergy = 0.0
 
-    //@Anthony - These values are 0 at the moment. Not sure where to call these from ?? they will be populated from featured data as well
+    //ToDo - Populate these from the Feature Data
     private var preFanEnergyRate = 0.0
     private var postFanEnergyRate = 0.0
+
+    //ToDo - Populate these from the Feature Data
+    private var waterUseConvection = 0.0
+    private var waterUseSteam = 0.0
+
+    /**
+     * To be used for Efficient Query Filter
+     * */
+    private var steamPanSize = -99.99
+
 
     /**
      * Will be called once before anything to initialize the commonly used parameters
      * */
     override fun setup() {
 
+        fun adjustPreHeat(value: Double) = value * ADJUSTMENT_PRE_HEAT
+
         try {
             val fuelType = featureData["Fuel Type"]!! as String
             isElectric = (fuelType == "Electric")
             isGas = (fuelType == "Gas")
 
-            preDaysInOperation = PRE_RUN_HOURS / 24
-          //@Binay this does not work. See bottom of yesterdays detailed email for clarification.
-                   //Also Days in operation does not change between pre and post so you can just call the variable DaysInOperation...
-            preIdleEnergyRate1 = featureData["Convection Idle Rate"]!! as Double
-            preIdleEnergyRate2 = featureData["Steam Idle Rate"]!! as Double
-            preHeatEnergy = featureData["Preheat Energy"]!! as Double
+            //ToDo: DaysInOperation
+            //This does not work. See bottom of yesterdays detailed email for clarification.
+            //Also Days in operation does not change between pre and post so you can just call the variable DaysInOperation...
+            daysInOperation = usageHoursPre() / 24
+
+            preIdleEnergyRateConvection = featureData["Convection Idle Rate"]!! as Double
+            preIdleEnergyRateSteam = featureData["Steam Idle Rate"]!! as Double
+
+            val rawPreHeatEnergy = featureData["Preheat Energy"]!! as Double
+            preHeatEnergy = adjustPreHeat(rawPreHeatEnergy)
+
+            steamPanSize = featureData["Size (Steam Pans)"]!! as Double
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -77,68 +114,45 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
         var costGas = 0.0
         var costElectricity = 0.0
 
-        val adjustment = if (isGas) 3412 else 1
-        val averageIdleRate = (preIdleEnergyRate1 + preIdleEnergyRate2) / 2
+        val adjustment = if (isGas) ADJUSTMENT_GAS else 1
+        val averageIdleRate = (preIdleEnergyRateConvection + preIdleEnergyRateSteam) / 2
 
-        //@Anthony - I have broken down the equation for code maintainability and readability
-        //@Anthony - The difference between Gas and Electric Energy was just the adjustment factor - please confirm.
-                      //- confirmed
-        //@Anthony - Also we are using the Pre Audit Weekly Usage Hours i.e (energyUsageBusiness) to do Energy Calculations in the Pre Sate.
-                    //yes the weekly hours provided in the pre-audit - I thought that was usage.yearly()??
-        val idleEnergy = averageIdleRate * energyUsageBusiness.yearly()
+        val yearlyIdleEnergy = averageIdleRate * usageHoursPre()
+        val yearlyPreHeatEnergy = preHeatEnergy * daysInOperation // Adjusted preheat energy is per day over here
+        val yearlyFanEnergy = (preFanEnergyRate - postFanEnergyRate) * usageHoursPre() * adjustment
 
-        //@Anthony - Original PreHeatEnergy with just some Adjustment Factor ?? Is It ??
-                 //correct pre heat only takes 15mins but the energy value provided is for an hour thus divide by 4
-        val preHeatEnergy = (preHeatEnergy / 4) * preDaysInOperation
-        val fanEnergy = (preFanEnergyRate - postFanEnergyRate) * energyUsageBusiness.yearly() * adjustment
+        val energyUsed= yearlyIdleEnergy + yearlyPreHeatEnergy + yearlyFanEnergy
+        val powerUsed = averageIdleRate + preFanEnergyRate // Needed to identify PreEnergy Usage thus PreFanEnergy
 
-
-        //@Anthony - This energyUsed component is only being used only for Gas - for electricity we are using powerUsed - please confirm ??
-               //confirmed
-        val energyUsed= idleEnergy + preHeatEnergy + fanEnergy
-
-        //should be just: powerUsed = ((idlePower1 + idlePower2) / 2) + fanPower
-        val powerUsed = averageIdleRate + preFanEnergyRate //@Antony - BTW we have Pre and Post Fan Energy Rate - i have used the pre ??
-                                                              //This is to identify the pre energy usage so yes you should use the pre fan energy rate.
-
+        // >>> 1. Cost Electricity
         if (isElectric) {
             val rate = electricityUtilityRate.nonTimeOfUse()
 
-            // electric cost equation is:
-            // preHeatEnergy * .25 * summerenergyprice * 365 * .504 + preHeatEnergy * .25 * winterenergyprice * 365 * .496
-            // + the equation you have below for computing the electric cost
+            //@Anthony - Do you think we need to multiply by 365 as we have already multiplied by yearly daysInOperation
+            val costToPreHeat = yearlyPreHeatEnergy * 365 * (rate.summerNone() * 0.504 + rate.winterNone() * 0.496)
 
-            val costToPreHeat = (preHeatEnergy / 4) * 365 * (rate.summerNone() * 0.504 + rate.winterNone() * 0.496)
-            costElectricity = costElectricity(powerUsed, energyUsageBusiness, electricityUtilityRate)
+            costElectricity = costElectricity(powerUsed, usageHoursBusiness, electricityUtilityRate)
             costElectricity += costToPreHeat
         }
 
+        // >>> 2. Cost Gas
         if (isGas) {
             costGas = costGas(energyUsed)
         }
 
-        //@Anthony - Where are we getting the water usage value from ?? The input form parameters does not have these ??
-            //That is my mistake the input form parameters should have had it. I just added it now.
-            //Additionally, the watercharge is .015 only for San Francisco area. Later on
-             //we will need to make a sheet that will be used to determine the watercharge based on city
-        val waterUseConvection = 0.0
-        val waterUseSteam = 0.0
-        val waterCharge = 0.015
-
-        val costWater = energyUsageBusiness.yearly() * waterUseConvection * waterCharge *
+        // >>> 3. Cost Water
+        val costWater = usageHoursBusiness.yearly() * waterUseConvection * WATER_CHARGE *
                 (waterUseConvection + waterUseSteam) / 2
 
-        return costElectricity + costGas + costWater
+        return (costElectricity + costGas + costWater)
 
     }
 
     /**
      * Cost - Post State
      * */
-    //@Anthony - What about the Post State Energy Calculation - I guess it's no different than the costPreState ??
-          //the post state cost or energy calculation?? for energy I provided the location for that in the last email. Cost is the same process as the pre
-    //@Anthony - Btw based on the Post Sate we will choose the Most Efficient Alternative.
-          //Yes.
+    // The post state cost or energy calculation?? for energy I provided the location for that in the last email.
+    // Cost is the same process as the pre
     override fun costPostState(element: JsonElement): Double = 0.0
 
     /**
@@ -153,17 +167,14 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
 
     /**
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
-     * Pre and Post are the same for Refrigerator - 24 hrs
-         //@Binay - the above comment is not relevant nor correct for the oven script
      * */
-    override fun usageHoursPre(): Double = energyUsageBusiness.yearly()
-    override fun usageHoursPost(): Double = energyUsageSpecific.yearly()
+    override fun usageHoursPre(): Double = usageHoursBusiness.yearly()
+    override fun usageHoursPost(): Double = usageHoursSpecific.yearly()
 
     /**
      * PowerTimeChange >> Energy Efficiency Calculations
+     * For Ovens there is no Time Change nor Power Time Change
      * */
-    //@Anthony - Will be implementing the Power Change Next !!
-          //Remember for ovens there is no timechange nor powertimechange options...
     override fun energyPowerChange(): Double = 0.0
     override fun energyTimeChange(): Double = 0.0
     override fun energyPowerTimeChange(): Double = 0.0
@@ -173,7 +184,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
      * */
     override fun efficientLookup() = true
     override fun queryEfficientFilter() = JSONObject()
-            .put("data.size", featureData["Size (Steam Pans)"])
+            .put("data.size", steamPanSize)
             .toString()
 
     /**
