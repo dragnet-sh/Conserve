@@ -12,6 +12,8 @@ interface IUsageType {
 
     fun summerNone(): Double
     fun winterNone(): Double
+
+    fun weightedAverage(): Double
 }
 
 /**
@@ -35,6 +37,9 @@ data class TOU(
 
     override fun summerNone() = 0.0
     override fun winterNone() = 0.0
+
+    override fun weightedAverage() = (((summerOn() + summerPart() + summerOff()) / 3) * 0.504) +
+            (((winterPart() + winterOff()) / 2) * 0.496)
 
     override fun toString(): String {
         return ">>> Summer On : $summerOn \n" +
@@ -62,6 +67,8 @@ data class TOUNone(
 
     override fun summerNone() = summerNone
     override fun winterNone() = winterNone
+
+    override fun weightedAverage() = (summerNone() * 0.504 + winterNone() * 0.496)
 
     override fun toString(): String {
         return ">>> Summer None : $summerNone \n" +
