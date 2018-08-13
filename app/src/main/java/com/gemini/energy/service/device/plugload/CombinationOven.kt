@@ -1,6 +1,5 @@
 package com.gemini.energy.service.device.plugload
 
-import android.util.Log
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
