@@ -174,12 +174,12 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
     /**
      * PowerTimeChange >> Hourly Energy Use - Pre
      * */
-    override fun hourlyEnergyUsagePre(): List<Double> = listOf()
+    override fun hourlyEnergyUsagePre(): List<Double> = listOf(0.0)
 
     /**
      * PowerTimeChange >> Hourly Energy Use - Post
      * */
-    override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> = listOf()
+    override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> = listOf(0.0)
 
     /**
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]

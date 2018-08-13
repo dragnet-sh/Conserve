@@ -22,6 +22,8 @@ class CostSavings {
         lateinit var featureData: Map<String, Any>
         lateinit var powerTimeChange: PowerTimeChange
 
+        lateinit var hourlyEnergyUsagePre: () -> Double
+
         override fun apply(unit: Unit): DataHolder {
 
             Timber.d("----::::---- $computable ----::::----")
@@ -242,7 +244,7 @@ class CostSavings {
             /**
              * Single Power Value
              * */
-            val preHourlyEnergyUse = featureData["Daily Energy Used (kWh)"] as Double
+            val preHourlyEnergyUse = hourlyEnergyUsagePre()
             val postHourlyEnergyUse = energyUse()
             val powerValue = (preHourlyEnergyUse - postHourlyEnergyUse) / 24
 

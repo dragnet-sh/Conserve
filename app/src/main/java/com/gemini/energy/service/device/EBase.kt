@@ -144,6 +144,7 @@ abstract class EBase(private val computable: Computable<*>,
      * Gives an Observable with the Data Holder
      * */
     private fun calculateEnergyPreState(extra: (param: String) -> Unit): Observable<DataHolder> {
+        Timber.d(identifier())
         val energyPreState = EnergyPreState()
         energyPreState.featureData = featureData
         energyPreState.featureDataFields = featureDataFields()
@@ -159,6 +160,7 @@ abstract class EBase(private val computable: Computable<*>,
      * Gives an Observable with the Data Holder
      * */
     private fun calculateEnergyPostState(extra: (param: String) -> Unit): Observable<DataHolder> {
+        Timber.d(identifier())
         val mapper = EnergyPostState.Mapper()
         mapper.computable = computable
         mapper.postStateFields = postStateFields()
@@ -182,6 +184,7 @@ abstract class EBase(private val computable: Computable<*>,
      * Via PowerTimeChange (helper class)
      * */
     private fun calculateEnergySavings(extra: (param: String) -> Unit): Observable<DataHolder> {
+        Timber.d(identifier())
         val mapper = EnergySavings.Mapper()
         mapper.computable = computable
         mapper.powerTimeChange = powerTimeChange
@@ -193,7 +196,7 @@ abstract class EBase(private val computable: Computable<*>,
      * Energy Cost Saving
      * */
     private fun calculateCostSavings(extra: (param: String) -> Unit): Observable<DataHolder> {
-
+        Timber.d(identifier())
         val mapper = CostSavings.Mapper()
         mapper.computable = computable
         mapper.usageHoursSpecific = usageHoursSpecific
@@ -203,6 +206,8 @@ abstract class EBase(private val computable: Computable<*>,
         mapper.gasUtilityRate = gasRate
         mapper.featureData = featureData
         mapper.powerTimeChange = powerTimeChange
+
+        mapper.hourlyEnergyUsagePre = { hourlyEnergyUsagePre()[0] }
 
         fun prerequisite() = laborCost(queryLaborCost())
                 .flatMap { response ->
