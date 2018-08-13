@@ -68,6 +68,89 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
      * */
     private var steamPanSize = -99.99
 
+    /**
+     * Computes the Combination Oven Cost
+     * 1. Electric
+     * 2. Gas
+     * 3. Water
+     * */
+    class Cost {
+
+        var preHeatEnergy = 0.0
+        var preFanEnergyRate = 0.0
+        var postFanEnergyRate = 0.0
+
+        var idleEnergyRateConvection = 0.0
+        var idleEnergyRateSteam = 0.0
+
+        var waterUseConvection = 0.0
+        var waterUseSteam = 0.0
+
+        lateinit var electricityRate: UtilityRate
+
+        var isGas = false
+        var isElectric = false
+        var daysInOperation = 0.0
+
+        lateinit var usageHours: UsageHours
+
+        lateinit var isTOU: () -> Boolean
+        lateinit var usageHoursPre: () -> Double
+        lateinit var getElectricCost: (powerUsed: Double, usageHours: UsageHours, utilityRate: UtilityRate) -> Double
+        lateinit var getCostGas: (energyUsed: Double) -> Double
+
+        fun calculate(): Double {
+
+            val adjustment = if (isGas) ADJUSTMENT_GAS else 1
+            val averageIdleRate = (idleEnergyRateConvection + idleEnergyRateSteam) / 2
+
+            val yearlyIdleEnergy = averageIdleRate * usageHoursPre()
+            val yearlyPreHeatEnergy = preHeatEnergy * daysInOperation // Adjusted preheat energy is per day over here
+            val yearlyFanEnergy = (preFanEnergyRate - postFanEnergyRate) * usageHoursPre() * adjustment
+
+            val energyUsed= yearlyIdleEnergy + yearlyPreHeatEnergy + yearlyFanEnergy
+            val powerUsed = averageIdleRate + preFanEnergyRate // Needed to identify PreEnergy Usage thus PreFanEnergy
+
+            var costElectric = 0.0
+            var costGas = 0.0
+            val costWater: Double
+
+            // >>> 1. Cost Electricity
+            if (isElectric) {
+
+                //@Anthony - What happens when the Audit Rate Structure is TOU ??
+                // - Now costElectricity is using A1-TOU
+                // - costToPreHeat should be using A1 | A10 .. ??
+                // - Should we just do an average of whatever the rate structure is TOU or Non TOU ??
+                val rate = if (isTOU()) electricityRate.timeOfUse() else electricityRate.nonTimeOfUse()
+
+                //@Anthony - Do you think we need to multiply by 365 as we have already multiplied by yearly daysInOperation
+                val costToPreHeat = yearlyPreHeatEnergy * rate.weightedAverage()
+                Timber.d("Cost To Pre Heat :: $costToPreHeat")
+                costElectric = getElectricCost(powerUsed, usageHours, electricityRate)
+
+            }
+
+            // >>> 2. Cost Gas
+            if (isGas) {
+                costGas = getCostGas(energyUsed)
+            }
+
+            // >>> 3. Cost Water
+            val averageWaterUsed = (waterUseConvection + waterUseSteam) / 2
+            costWater = usageHoursPre() * WATER_CHARGE * averageWaterUsed
+
+            Timber.d("Electricity Cost :: $costElectric")
+            Timber.d("Gas Cost :: $costGas")
+            Timber.d("Water Cost :: $costWater")
+
+            val totalCost = costElectric + costGas + costWater
+            Timber.d("Total Cost :: $totalCost")
+
+            return totalCost
+        }
+
+    }
 
     /**
      * Will be called once before anything to initialize the commonly used parameters
@@ -113,54 +196,37 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
 
     /**
      * Cost - Pre State
+     * The main Cost class does the computing - This way we can use the same Cost class on the Post State
      * */
     override fun costPreState(): Double {
-        var costGas = 0.0
-        var costElectricity = 0.0
+        val cost = Cost()
 
-        val adjustment = if (isGas) ADJUSTMENT_GAS else 1
-        val averageIdleRate = (preIdleEnergyRateConvection + preIdleEnergyRateSteam) / 2
+        cost.preHeatEnergy = preHeatEnergy
+        cost.preFanEnergyRate = preFanEnergyRate
+        cost.postFanEnergyRate = postFanEnergyRate
 
-        val yearlyIdleEnergy = averageIdleRate * usageHoursPre()
-        val yearlyPreHeatEnergy = preHeatEnergy * daysInOperation // Adjusted preheat energy is per day over here
-        val yearlyFanEnergy = (preFanEnergyRate - postFanEnergyRate) * usageHoursPre() * adjustment
+        cost.idleEnergyRateConvection = preIdleEnergyRateConvection
+        cost.idleEnergyRateSteam = preIdleEnergyRateSteam
 
-        val energyUsed= yearlyIdleEnergy + yearlyPreHeatEnergy + yearlyFanEnergy
-        val powerUsed = averageIdleRate + preFanEnergyRate // Needed to identify PreEnergy Usage thus PreFanEnergy
+        cost.waterUseConvection = waterUseConvection
+        cost.waterUseSteam = waterUseSteam
 
-        // >>> 1. Cost Electricity
-        if (isElectric) {
+        cost.electricityRate = electricityRate
+        cost.isGas = isGas
+        cost.isElectric = isElectric
 
-            //@Anthony - What happens when the Audit Rate Structure is TOU ??
-            // - Now costElectricity is using A1-TOU
-            // - costToPreHeat should be using A1 | A10 .. ??
-            // - Should we just do an average of whatever the rate structure is TOU or Non TOU ??
-            val rate = if (isTOU()) electricityRate.timeOfUse() else electricityRate.nonTimeOfUse()
+        cost.daysInOperation = daysInOperation
+        cost.usageHours = usageHoursSpecific
 
-            //@Anthony - Do you think we need to multiply by 365 as we have already multiplied by yearly daysInOperation
-            val costToPreHeat = yearlyPreHeatEnergy * rate.weightedAverage()
-            Timber.d("Cost To Pre Heat :: $costToPreHeat")
-            costElectricity = costElectricity(powerUsed, usageHoursSpecific, electricityRate)
-            costElectricity += costToPreHeat
+        cost.isTOU = { isTOU(electricRateStructure) }
+        cost.usageHoursPre = { usageHoursPre() }
+
+        cost.getCostGas = { costGas(it) }
+        cost.getElectricCost = { powerUsed, usageHours, utilityRate ->
+            costElectricity(powerUsed, usageHours, utilityRate)
         }
 
-        // >>> 2. Cost Gas
-        if (isGas) {
-            costGas = costGas(energyUsed)
-        }
-
-        // >>> 3. Cost Water
-        val averageWaterUsed = (waterUseConvection + waterUseSteam) / 2
-        val costWater = usageHoursPre() * WATER_CHARGE * averageWaterUsed
-
-        Timber.d("Electricity Cost :: $costElectricity")
-        Timber.d("Gas Cost :: $costGas")
-        Timber.d("Water Cost :: $costWater")
-
-        val totalCost = costElectricity + costGas + costWater
-        Timber.d("Total Cost :: $totalCost")
-
-        return totalCost
+        return cost.calculate()
 
     }
 
