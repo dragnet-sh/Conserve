@@ -1,7 +1,6 @@
 package com.gemini.energy.service.device.plugload
 
 import com.gemini.energy.domain.entity.Computable
-import com.gemini.energy.presentation.util.ERateKey
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
@@ -43,7 +42,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
     /**
      * Will be called once before anything to initialize the commonly used parameters
      * */
-    override fun setupDevice() {
+    override fun setup() {
 
         try {
             val fuelType = featureData["Fuel Type"]!! as String
@@ -82,6 +81,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
         val idleEnergy = averageIdleRate * energyUsageBusiness.yearly()
 
         //@Anthony - Original PreHeatEnergy with just some Adjustment Factor ?? Is It ??
+        //Pre Heat energy is only for the first 15 min of each day
         val preHeatEnergy = (preHeatEnergy / 4) * preDaysInOperation
         val fanEnergy = (preFanEnergyRate - postFanEnergyRate) * energyUsageBusiness.yearly() * adjustment
 
@@ -92,21 +92,20 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
         val powerUsed = averageIdleRate + preFanEnergyRate //@Antony - BTW we have Pre and Post Fan Energy Rate - i have used the pre ??
 
         if (isElectric) {
-            val rate = energyUsageBusiness.nonTimeOfUse()
+            val rate = electricityUtilityRate.nonTimeOfUse()
 
             // electric cost equation is:
             // preHeatEnergy * .25 * summerenergyprice * 365 * .504 + preHeatEnergy * .25 * winterenergyprice * 365 * .496
             // + the equation you have below for computing the electric cost
 
             val costToPreHeat = (preHeatEnergy / 4) * 365 * (rate.summerNone() * 0.504 + rate.winterNone() * 0.496)
-            costElectricity = costElectricity(powerUsed, super.energyUsageBusiness, super.electricityUtilityRate)
+            costElectricity = costElectricity(powerUsed, energyUsageBusiness, electricityUtilityRate)
             costElectricity += costToPreHeat
         }
 
         if (isGas) {
-            val winterRate = super.gasUtilityRate.structure[ERateKey.GasWinter.value]!![0].toDouble()
-            val summerRate = super.gasUtilityRate.structure[ERateKey.GasSummer.value]!![0].toDouble()
-            costGas = (energyUsed / 99976.1) * ((winterRate + summerRate) / 2)
+            val rate = gasUtilityRate.nonTimeOfUse()
+            costGas = (energyUsed / 99976.1) * ((rate.summerNone() + rate.winterNone()) / 2)
         }
 
         //@Anthony - Where are we getting the water usage value from ?? The input form parameters does not have these ??

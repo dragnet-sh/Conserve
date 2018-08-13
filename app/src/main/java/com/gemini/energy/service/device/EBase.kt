@@ -54,7 +54,7 @@ abstract class EBase(private val computable: Computable<*>,
         setupOutgoingRows(base)
         setupPowerTimeChange(base)
 
-        setupDevice()
+        setup()
     }
 
     /**
@@ -259,7 +259,7 @@ abstract class EBase(private val computable: Computable<*>,
     /**
      * Setup the Device
      * */
-    abstract fun setupDevice()
+    abstract fun setup()
 
     /**
      * Energy Cost Queries
