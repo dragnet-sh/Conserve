@@ -24,7 +24,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
     }
 
     companion object {
-        private const val PRE_RUN_HOURS = 10.0 //@Anthony - Is this going to be a constant ??
+        private const val PRE_RUN_HOURS = 10.0 //@Anthony - Is this going to be a constant ?? pre_run_hours is use.yearly()
     }
 
     private var isElectric = false
@@ -36,7 +36,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
     private var preIdleEnergyRate2 = 0.0
     private var preHeatEnergy = 0.0
 
-    //@Anthony - These values are 0 at the moment. Not sure where to call these from ??
+    //@Anthony - These values are 0 at the moment. Not sure where to call these from ?? they will be populated from featured data as well
     private var preFanEnergyRate = 0.0
     private var postFanEnergyRate = 0.0
 
@@ -77,15 +77,21 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
         val averageIdleRate = (preIdleEnergyRate1 + preIdleEnergyRate2) / 2
 
         //@Anthony - I have broken down the equation for code maintainability and readability
-        //@Anthony - The difference between Gas and Electric Energy was just the adjustment factor - please confirm.
-        //@Anthony - Also we are using the Pre Audit Weekly Usage Hours i.e (energyUsageBusiness) to do Energy Calculations in the Pre Sate.
+        //@Anthony - The difference between Gas and Electric Energy was just the adjustment factor - please confirm. 
+                      //- confirmed
+        //@Anthony - Also we are using the Pre Audit Weekly Usage Hours i.e (energyUsageBusiness) to do Energy Calculations in the Pre Sate. 
+                    //yes the weekly hours provided in the pre-audit - I thought that was usage.yearly()??
         val idleEnergy = averageIdleRate * energyUsageBusiness.yearly()
 
-        //@Anthony - Original PreHeatEnergy with just some Adjustment Factor ?? Is It ??
+        //@Anthony - Original PreHeatEnergy with just some Adjustment Factor ?? Is It ?? 
+                 //correct
+      //what is the adjustment value?? should be 3412 for gas and 1 for electricity
         val preHeatEnergy = (preHeatEnergy / 4) * preDaysInOperation
         val fanEnergy = (preFanEnergyRate - postFanEnergyRate) * energyUsageBusiness.yearly() * adjustment
+      
 
         //@Anthony - This energyUsed component is only being used only for Gas - for electricity we are using powerUsed - please confirm ??
+               //confirmed
         val energyUsed= idleEnergy + preHeatEnergy + fanEnergy
 
         //should be just: powerUsed = ((idlePower1 + idlePower2) / 2) + fanPower
