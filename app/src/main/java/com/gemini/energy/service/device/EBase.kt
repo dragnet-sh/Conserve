@@ -27,14 +27,14 @@ abstract class EBase(private val computable: Computable<*>,
                      val outgoingRows: OutgoingRows) {
 
     lateinit var schedulers: Schedulers
-    lateinit var gasUtilityRate: UtilityRate
-    lateinit var electricityUtilityRate: UtilityRate
+    lateinit var gasRate: UtilityRate
+    lateinit var electricityRate: UtilityRate
 
     private lateinit var powerTimeChange: PowerTimeChange
 
     var preAudit: Map<String, Any> = mapOf()
     var featureData: Map<String, Any> = mapOf()
-    private var electricRateStructure: String = RATE
+    var electricRateStructure: String = RATE
 
     val usageHoursBusiness = UsageHours()
     val usageHoursSpecific = UsageHours()
@@ -61,18 +61,18 @@ abstract class EBase(private val computable: Computable<*>,
      * Electricity | Gas Utility Rate Setup
      * */
     private fun setupUtility(base: EBase) {
-        base.gasUtilityRate = utilityRateGas.initUtility(Gas()).build()
+        base.gasRate = utilityRateGas.initUtility(Gas()).build()
         base.electricRateStructure = preAudit["Electric Rate Structure"] as String
 
         Timber.d("####### RATE STRUCTURE CHECKER #######")
         Timber.d(electricRateStructure)
 
-        base.electricityUtilityRate = utilityRateElectricity.initUtility(
+        base.electricityRate = utilityRateElectricity.initUtility(
                 Electricity(electricRateStructure)).build()
 
         Timber.d("####### OBJECT CHECKER #######")
-        Timber.d(gasUtilityRate.toString())
-        Timber.d(electricityUtilityRate.toString())
+        Timber.d(gasRate.toString())
+        Timber.d(electricityRate.toString())
 
     }
 
@@ -199,8 +199,8 @@ abstract class EBase(private val computable: Computable<*>,
         mapper.usageHoursSpecific = usageHoursSpecific
         mapper.usageHoursBusiness = usageHoursBusiness
         mapper.electricRateStructure = electricRateStructure
-        mapper.electricityUtilityRate = electricityUtilityRate
-        mapper.gasUtilityRate = gasUtilityRate
+        mapper.electricityUtilityRate = electricityRate
+        mapper.gasUtilityRate = gasRate
         mapper.featureData = featureData
         mapper.powerTimeChange = powerTimeChange
 
@@ -219,7 +219,10 @@ abstract class EBase(private val computable: Computable<*>,
 
     companion object {
         private const val RATE = "A-1 TOU"
+        private val regex = "^.*TOU$".toRegex()
     }
+
+    fun isTOU(rate: String = electricRateStructure) = rate.matches(regex)
 
     abstract fun queryEfficientFilter(): String
     abstract fun efficientLookup(): Boolean
@@ -355,7 +358,7 @@ abstract class EBase(private val computable: Computable<*>,
      * Computes the Gas Cost
      * */
     fun costGas(energyUsed: Double): Double {
-        val rate = gasUtilityRate.nonTimeOfUse()
+        val rate = gasRate.nonTimeOfUse()
         return (energyUsed / 99976.1) * ((rate.summerNone() + rate.winterNone()) / 2)
     }
 

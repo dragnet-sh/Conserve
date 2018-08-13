@@ -35,7 +35,7 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
     override fun costPreState(): Double {
         val powerUsed = hourlyEnergyUsagePre()[0]
         val costElectricity: Double
-        costElectricity = costElectricity(powerUsed, super.usageHoursBusiness, super.electricityUtilityRate)
+        costElectricity = costElectricity(powerUsed, super.usageHoursBusiness, super.electricityRate)
         return costElectricity
     }
 
@@ -45,7 +45,7 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
     override fun costPostState(element: JsonElement): Double {
         val powerUsed = hourlyEnergyUsagePost(element)[0]
         val costElectricity: Double
-        costElectricity = costElectricity(powerUsed, super.usageHoursBusiness, super.electricityUtilityRate)
+        costElectricity = costElectricity(powerUsed, super.usageHoursBusiness, super.electricityRate)
         return costElectricity
     }
 
