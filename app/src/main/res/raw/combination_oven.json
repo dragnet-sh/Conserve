@@ -83,6 +83,38 @@
           "param": "Steam Idle Rate",
           "validation": "",
           "id": "110"
+        },
+        {
+          "index": 111,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Convection Water Usage Rate",
+          "validation": "",
+          "id": "111"
+        },
+        {
+          "index": 112,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Steam Water Usage Rate",
+          "validation": "",
+          "id": "112"
+        },
+        {
+          "index": 113,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Pre Fan Energy Rate",
+          "validation": "",
+          "id": "113"
+        },
+        {
+          "index": 114,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Post Fan Energy Rate",
+          "validation": "",
+          "id": "114"
         }
       ],
       "id": "1"
