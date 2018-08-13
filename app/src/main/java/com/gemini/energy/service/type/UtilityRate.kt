@@ -16,6 +16,7 @@ open class UtilityRate(private val context: Context) {
      * To be set by the Child Class later on
      * */
     private fun getResourcePath() = utility.getResourcePath()
+
     private fun getSeparator() = utility.getSeparator()
     private fun getRowIdentifier() = utility.getRowIdentifier()
 
@@ -25,7 +26,7 @@ open class UtilityRate(private val context: Context) {
     }
 
     fun build(): UtilityRate {
-        val inputStream= context.resources.assets.open(getResourcePath())
+        val inputStream = context.resources.assets.open(getResourcePath())
         val text = inputStream.bufferedReader().use { it.readText() }
         val collection = text.lines()
         val outgoing: HashMap<String, List<String>> = hashMapOf()
@@ -51,29 +52,17 @@ open class UtilityRate(private val context: Context) {
     /**
      * Mapped Peak UtilityRate Rate Structure - Return Time Of Use Data Model
      * */
-    fun timeOfUse(): TOU {
-        return TOU(
-                structure[ERateKey.SummerOn.value]!![0].toDouble(),
-                structure[ERateKey.SummerPart.value]!![0].toDouble(),
-                structure[ERateKey.SummerOff.value]!![0].toDouble(),
-                structure[ERateKey.WinterPart.value]!![0].toDouble(),
-                structure[ERateKey.WinterOff.value]!![0].toDouble()
-        )
-    }
+    fun timeOfUse() = utility.getTOU(structure)
 
     /**
      * Mapped Peak UtilityRate Rate Structure - Return Non Time Of Use Data Model
+     * This could either return Gas or Electricity - how do i achieve this dynamically ??
      * */
-    fun nonTimeOfUse(): TOUNone {
-        return TOUNone(
-                structure[ERateKey.SummerNone.value]!![0].toDouble(),
-                structure[ERateKey.WinterNone.value]!![0].toDouble()
-        )
-    }
+    fun nonTimeOfUse() = utility.getNoneTOU(structure)
 
     companion object {
 
-        private fun parseLine(line: String, separator: Char) : List<String> {
+        private fun parseLine(line: String, separator: Char): List<String> {
             val result = mutableListOf<String>()
             val builder = StringBuilder()
             var quotes = 0
@@ -84,7 +73,8 @@ open class UtilityRate(private val context: Context) {
                         quotes++
                         builder.append(ch)
                     }
-                    (ch == '\n') || (ch == '\r') -> { }
+                    (ch == '\n') || (ch == '\r') -> {
+                    }
                     (ch == separator) && (quotes % 2 == 0) -> {
                         val tmp = quotes % 2
                         result.add(builder.toString().trim())
@@ -101,7 +91,6 @@ open class UtilityRate(private val context: Context) {
 
 }
 
-
 interface IUtility {
     fun getKey(columns: List<String>): List<String>
     fun getValue(columns: List<String>, header: String): List<List<String>>
@@ -110,12 +99,15 @@ interface IUtility {
     fun getSeparator(): Char
     fun getRowIdentifier(): Regex
     fun getRate(): String
+
+    fun getTOU(structure: HashMap<String, List<String>>): TOU
+    fun getNoneTOU(structure: HashMap<String, List<String>>): TOUNone
 }
 
 class Electricity(private val rateStructure: String) : IUtility {
 
     enum class EKey(val index: Int) { Season(1), Peak(4) }
-    enum class EValue(val index: Int) { EnergyCharge(5), Average(6), Demand(3)}
+    enum class EValue(val index: Int) { EnergyCharge(5), Average(6), Demand(3) }
 
     override fun getKey(columns: List<String>) = listOf(columns[EKey.Season.index] + "-" + columns[EKey.Peak.index])
     override fun getValue(columns: List<String>, header: String) = listOf(listOf(columns[EValue.EnergyCharge.index],
@@ -126,6 +118,16 @@ class Electricity(private val rateStructure: String) : IUtility {
     override fun getRate() = rateStructure
     override fun getRowIdentifier() = "^${getRate()}${getSeparator()}.*".toRegex()
 
+    override fun getTOU(structure: HashMap<String, List<String>>) = TOU(
+            structure[ERateKey.SummerOn.value]!![0].toDouble(),
+            structure[ERateKey.SummerPart.value]!![0].toDouble(),
+            structure[ERateKey.SummerOff.value]!![0].toDouble(),
+            structure[ERateKey.WinterPart.value]!![0].toDouble(),
+            structure[ERateKey.WinterOff.value]!![0].toDouble())
+
+    override fun getNoneTOU(structure: HashMap<String, List<String>>) = TOUNone(
+            structure[ERateKey.SummerNone.value]!![0].toDouble(),
+            structure[ERateKey.WinterNone.value]!![0].toDouble())
 }
 
 class Gas(private val rateStructure: String = "") : IUtility {
@@ -143,8 +145,17 @@ class Gas(private val rateStructure: String = "") : IUtility {
 
     override fun getResourcePath() = "utility/pge_gas.csv"
     override fun getSeparator() = ','
-    override fun getRowIdentifier(): Regex { return ".*".toRegex() }
+    override fun getRowIdentifier(): Regex {
+        return ".*".toRegex()
+    }
+
     override fun getRate() = rateStructure
+
+    override fun getTOU(structure: HashMap<String, List<String>>) = TOU()
+
+    override fun getNoneTOU(structure: HashMap<String, List<String>>) = TOUNone(
+            structure[ERateKey.GasSummer.value]!![0].toDouble(),
+            structure[ERateKey.GasWinter.value]!![0].toDouble())
 
     companion object {
         private val keys = listOf(

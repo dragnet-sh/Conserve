@@ -25,11 +25,14 @@ data class TOU(
         private var winterOff: Double
 ) : IUsageType {
 
+    constructor(): this(0.0, 0.0, 0.0, 0.0, 0.0)
+
     override fun summerOn() = summerOn
     override fun summerPart() = summerPart
     override fun summerOff() = summerOff
     override fun winterPart() = winterPart
     override fun winterOff() = winterOff
+
     override fun summerNone() = 0.0
     override fun winterNone() = 0.0
 
@@ -56,6 +59,7 @@ data class TOUNone(
     override fun summerOff() = 0.0
     override fun winterPart() = 0.0
     override fun winterOff() = 0.0
+
     override fun summerNone() = summerNone
     override fun winterNone() = winterNone
 
