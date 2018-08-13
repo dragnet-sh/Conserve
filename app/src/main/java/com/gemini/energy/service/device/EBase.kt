@@ -254,7 +254,7 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     abstract fun energyPowerChange(): Double
     abstract fun energyTimeChange(): Double
-    abstract fun energyPowerTimeChange():Double
+    abstract fun energyPowerTimeChange(): Double
 
     /**
      * Setup the Device
@@ -262,13 +262,17 @@ abstract class EBase(private val computable: Computable<*>,
     abstract fun setup()
 
     /**
-     * Energy Cost Queries
+     * Energy Star Queries
+     * To figure out if the Equipment is already in the Energy Efficient List
      * */
     private fun queryEnergyStar() = JSONObject()
             .put("data.company", featureData["Company"])
             .put("data.model_number", featureData["Model Number"])
             .toString()
 
+    /**
+     * Labor Cost Query
+     * */
     private fun queryLaborCost() = JSONObject()
             .put("data.zipcode", featureData["ZipCode"] ?: 0)
             .put("data.profession", featureData["Profession"] ?: "none")
@@ -345,6 +349,14 @@ abstract class EBase(private val computable: Computable<*>,
         costElectric.power = powerUsed
 
         return costElectric.cost()
+    }
+
+    /**
+     * Computes the Gas Cost
+     * */
+    fun costGas(energyUsed: Double): Double {
+        val rate = gasUtilityRate.nonTimeOfUse()
+        return (energyUsed / 99976.1) * ((rate.summerNone() + rate.winterNone()) / 2)
     }
 
     /**

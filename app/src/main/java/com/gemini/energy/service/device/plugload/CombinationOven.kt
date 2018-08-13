@@ -104,8 +104,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
         }
 
         if (isGas) {
-            val rate = gasUtilityRate.nonTimeOfUse()
-            costGas = (energyUsed / 99976.1) * ((rate.summerNone() + rate.winterNone()) / 2)
+            costGas = costGas(energyUsed)
         }
 
         //@Anthony - Where are we getting the water usage value from ?? The input form parameters does not have these ??
