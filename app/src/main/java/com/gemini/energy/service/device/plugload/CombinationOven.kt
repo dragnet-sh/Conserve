@@ -1,5 +1,6 @@
 package com.gemini.energy.service.device.plugload
 
+import android.util.Log
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
@@ -146,8 +147,8 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         }
 
         // >>> 3. Cost Water
-        val costWater = usageHoursBusiness.yearly() * waterUseConvection * WATER_CHARGE *
-                (waterUseConvection + waterUseSteam) / 2
+        val averageWaterUsed = (waterUseConvection + waterUseSteam) / 2
+        val costWater = usageHoursPre() * WATER_CHARGE * averageWaterUsed
 
         return (costElectricity + costGas + costWater)
 
