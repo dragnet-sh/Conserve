@@ -126,10 +126,15 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
 
         // >>> 1. Cost Electricity
         if (isElectric) {
+
+            //@Anthony - What happens when the Audit Rate Structure is TOU ??
+            // - Now costElectricity is using A1-TOU
+            // - costToPreHeat should be using A1 | A10 .. ??
+            // - Should we just do an average of whatever the rate structure is TOU or Non TOU ??
             val rate = electricityUtilityRate.nonTimeOfUse()
 
             //@Anthony - Do you think we need to multiply by 365 as we have already multiplied by yearly daysInOperation
-            val costToPreHeat = yearlyPreHeatEnergy * 365 * (rate.summerNone() * 0.504 + rate.winterNone() * 0.496)
+            val costToPreHeat = yearlyPreHeatEnergy * 365 * rate.weightedAverage()
 
             costElectricity = costElectricity(powerUsed, usageHoursBusiness, electricityUtilityRate)
             costElectricity += costToPreHeat
