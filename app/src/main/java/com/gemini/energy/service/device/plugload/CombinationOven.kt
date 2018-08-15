@@ -80,8 +80,8 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         var preFanEnergyRate = 0.0
         var postFanEnergyRate = 0.0
 
-        var idleEnergyRateConvection = 0.0
-        var idleEnergyRateSteam = 0.0
+        var idlePowerRateConvection = 0.0
+        var idlePowerRateSteam = 0.0
 
         var waterUseConvection = 0.0
         var waterUseSteam = 0.0
@@ -96,13 +96,13 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
 
         lateinit var isTOU: () -> Boolean
         lateinit var usageHoursPre: () -> Double
-        lateinit var getElectricCost: (powerUsed: Double, usageHours: UsageHours, utilityRate: UtilityRate) -> Double
+        lateinit var getCostElectric: (powerUsed: Double, usageHours: UsageHours, utilityRate: UtilityRate) -> Double
         lateinit var getCostGas: (energyUsed: Double) -> Double
 
         fun calculate(): Double {
 
             val adjustment = if (isGas) ADJUSTMENT_GAS else 1
-            val averageIdleRate = (idleEnergyRateConvection + idleEnergyRateSteam) / 2
+            val averageIdleRate = (idlePowerRateConvection + idlePowerRateSteam) / 2
 
             val yearlyIdleEnergy = averageIdleRate * usageHoursPre()
             val yearlyPreHeatEnergy = preHeatEnergy * daysInOperation // Adjusted preheat energy is per day over here
@@ -127,7 +127,8 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
                 //@Anthony - Do you think we need to multiply by 365 as we have already multiplied by yearly daysInOperation
                 val costToPreHeat = yearlyPreHeatEnergy * rate.weightedAverage()
                 Timber.d("Cost To Pre Heat :: $costToPreHeat")
-                costElectric = getElectricCost(powerUsed, usageHours, electricityRate)
+                costElectric = getCostElectric(powerUsed, usageHours, electricityRate)
+                costElectric += costToPreHeat
 
             }
 
@@ -205,8 +206,8 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         cost.preFanEnergyRate = preFanEnergyRate
         cost.postFanEnergyRate = postFanEnergyRate
 
-        cost.idleEnergyRateConvection = preIdleEnergyRateConvection
-        cost.idleEnergyRateSteam = preIdleEnergyRateSteam
+        cost.idlePowerRateConvection = preIdleEnergyRateConvection
+        cost.idlePowerRateSteam = preIdleEnergyRateSteam
 
         cost.waterUseConvection = waterUseConvection
         cost.waterUseSteam = waterUseSteam
@@ -222,7 +223,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
         cost.usageHoursPre = { usageHoursPre() }
 
         cost.getCostGas = { costGas(it) }
-        cost.getElectricCost = { powerUsed, usageHours, utilityRate ->
+        cost.getCostElectric = { powerUsed, usageHours, utilityRate ->
             costElectricity(powerUsed, usageHours, utilityRate)
         }
 
