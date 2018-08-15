@@ -361,6 +361,7 @@ abstract class EBase(private val computable: Computable<*>,
 
     /**
      * Computes the Gas Cost
+     * ToDo: The Gas Rate should be an Average calculated from all the Rates for that Year.
      * */
     fun costGas(energyUsed: Double): Double {
         val rate = gasRate.nonTimeOfUse()
