@@ -4,6 +4,7 @@ import com.gemini.energy.domain.Schedulers
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.presentation.util.EDay
+import com.gemini.energy.presentation.util.ELightingType
 import com.gemini.energy.service.CostElectric
 import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.OutgoingRows
@@ -164,8 +165,8 @@ abstract class EBase(private val computable: Computable<*>,
         val mapper = EnergyPostState.Mapper()
         mapper.computable = computable
         mapper.postStateFields = postStateFields()
-        mapper.cost = {
-            costPostState(it)
+        mapper.cost = { element, dataHolder ->
+            costPostState(element, dataHolder)
         }
 
         return starValidator(queryEnergyStar())
@@ -246,7 +247,7 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     abstract fun cost(vararg params: Any): Double
     abstract fun costPreState(): Double
-    abstract fun costPostState(element: JsonElement): Double
+    abstract fun costPostState(element: JsonElement, dataHolder: DataHolder): Double
 
     /**
      * Power Time Change
@@ -372,5 +373,21 @@ abstract class EBase(private val computable: Computable<*>,
      * Parse API Service Call
      * */
     private val parseAPIService by lazy { ParseAPI.create() }
+
+    /**
+     * Lighting Config - The enum provides the index to the Map
+     * */
+    enum class ELightingIndex(value: Int) {
+        LifeHours(0),
+        PercentHoursReduced(1),
+        Cooling(2)
+    }
+
+    fun lightingConfig() = hashMapOf(
+            ELightingType.CFL to listOf(15000, 0.25, 0.8),
+            ELightingType.Halogen to listOf(5000, 0.75, 0.95),
+            ELightingType.Incandescent to listOf(2500, 0.9, 0, 9),
+            ELightingType.LinearFluorescent to listOf(10000, 0.85, 0.85)
+    )
 
 }
