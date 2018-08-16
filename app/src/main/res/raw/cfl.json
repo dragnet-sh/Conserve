@@ -108,7 +108,7 @@
       "elements": [
         {
           "index": 31,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Nominal Watts",
           "validation": "",
@@ -116,9 +116,9 @@
         },
         {
           "index": 32,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
-          "param": "Actual watts",
+          "param": "Actual Watts",
           "validation": "",
           "id": "32"
         }

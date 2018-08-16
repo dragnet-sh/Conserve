@@ -1,1 +1,270 @@
-{"geminiForm": [{"index": 1, "section": "Lighting", "elements": [{"index": 11, "dataType": "introw", "defaultValues": "", "param": "Measured Lux", "validation": "", "id": "11"}, {"index": 12, "dataType": "introw", "defaultValues": "", "param": "Area", "validation": "", "id": "12"}, {"index": 13, "dataType": "pickerinputrow", "defaultValues": "1:LED,2:flourescent,3:halogen,4:high pressure sodium,5:incandescent,6:pulse start metal halide,7:metal halide,8:mercury vapor,9:compact fluorescent,10:halogen incandescent,11:EXIT (Compact Flourescent),12:EXIT (Incandescent),13:EXIT (LED)", "param": "Lamp type", "validation": "", "id": "13"}, {"index": 14, "dataType": "introw", "defaultValues": "", "param": "Ballasts Per Fixture", "validation": "", "id": "14"}, {"index": 15, "dataType": "introw", "defaultValues": "", "param": "Lamps Per Fixture", "validation": "", "id": "15"}, {"index": 16, "dataType": "introw", "defaultValues": "", "param": "Number of Fixtures", "validation": "", "id": "16"}, {"index": 17, "dataType": "textrow", "defaultValues": "", "param": "Make", "validation": "", "id": "17"}, {"index": 18, "dataType": "textrow", "defaultValues": "", "param": "Model Number", "validation": "", "id": "18"}], "id": "1"}, {"index": 2, "section": "Controls", "elements": [{"index": 21, "dataType": "pickerinputrow", "defaultValues": "1:Yes,2:No", "param": "Controls", "validation": "", "id": "21"}, {"index": 22, "dataType": "pickerinputrow", "defaultValues": "1:Occupancy Sensor,2:Motion Sensor,3:Daylight Sensor,4:Timer,5:Dimmer", "param": "Type of Control", "validation": "", "id": "22"}, {"index": 23, "dataType": "introw", "defaultValues": "", "param": "Number of Lamps Controlled", "validation": "", "id": "23"}], "id": "2"}, {"index": 3, "section": "Power | Usage", "elements": [{"index": 31, "dataType": "introw", "defaultValues": "", "param": "Nominal Watts", "validation": "", "id": "31"}, {"index": 32, "dataType": "introw", "defaultValues": "", "param": "Actual watts", "validation": "", "id": "32"}], "id": "3"}, {"index": 4, "section": "Ballast", "elements": [{"index": 41, "dataType": "pickerinputrow", "defaultValues": "1:rapid,2:instant,3:programmed", "param": "Strike Time", "validation": "", "id": "41"}, {"index": 42, "dataType": "pickerinputrow", "defaultValues": "1:very high,2:high,3:normal,4:reduced", "param": "Ballast Factor", "validation": "", "id": "42"}, {"index": 43, "dataType": "pickerinputrow", "defaultValues": "1:electronic,2:magnetic", "param": "Ballast Type", "validation": "", "id": "43"}], "id": "4"}, {"index": 5, "section": "TOU", "elements": [{"index": 51, "dataType": "introw", "defaultValues": "", "param": "Peak Hours", "validation": "", "id": "51"}, {"index": 52, "dataType": "introw", "defaultValues": "", "param": "Part Peak Hours", "validation": "", "id": "52"}, {"index": 53, "dataType": "introw", "defaultValues": "", "param": "Off Peak Hours", "validation": "", "id": "53"}, {"index": 54, "dataType": "pickerinputrow", "defaultValues": "1:Yes,2:No", "param": "Security Use", "validation": "", "id": "54"}, {"index": 55, "dataType": "pickerinputrow", "defaultValues": "1:Yes,2:No", "param": "Used During Peak", "validation": "", "id": "55"}], "id": "5"}, {"index": 6, "section": "Operating Hours", "elements": [{"index": 61, "dataType": "textrow", "defaultValues": "", "param": "Monday Operating Hours", "validation": "", "id": "61"}, {"index": 62, "dataType": "textrow", "defaultValues": "", "param": "Tuesday Operating Hours", "validation": "", "id": "62"}, {"index": 63, "dataType": "textrow", "defaultValues": "", "param": "Wednesday Operating Hours", "validation": "", "id": "63"}, {"index": 64, "dataType": "textrow", "defaultValues": "", "param": "Thursday Operating Hours", "validation": "", "id": "64"}, {"index": 65, "dataType": "textrow", "defaultValues": "", "param": "Friday Operating Hours", "validation": "", "id": "65"}, {"index": 66, "dataType": "textrow", "defaultValues": "", "param": "Saturday Operating Hours", "validation": "", "id": "66"}, {"index": 67, "dataType": "textrow", "defaultValues": "", "param": "Sunday Operating Hours", "validation": "", "id": "67"}], "id": "6"}]}
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "Lighting",
+      "elements": [
+        {
+          "index": 11,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Measured Lux",
+          "validation": "",
+          "id": "11"
+        },
+        {
+          "index": 12,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Area",
+          "validation": "",
+          "id": "12"
+        },
+        {
+          "index": 13,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:LED,2:flourescent,3:halogen,4:high pressure sodium,5:incandescent,6:pulse start metal halide,7:metal halide,8:mercury vapor,9:compact fluorescent,10:halogen incandescent,11:EXIT (Compact Flourescent),12:EXIT (Incandescent),13:EXIT (LED)",
+          "param": "Lamp type",
+          "validation": "",
+          "id": "13"
+        },
+        {
+          "index": 14,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Ballasts Per Fixture",
+          "validation": "",
+          "id": "14"
+        },
+        {
+          "index": 15,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Lamps Per Fixture",
+          "validation": "",
+          "id": "15"
+        },
+        {
+          "index": 16,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Number of Fixtures",
+          "validation": "",
+          "id": "16"
+        },
+        {
+          "index": 17,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Make",
+          "validation": "",
+          "id": "17"
+        },
+        {
+          "index": 18,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Model Number",
+          "validation": "",
+          "id": "18"
+        }
+      ],
+      "id": "1"
+    },
+    {
+      "index": 2,
+      "section": "Controls",
+      "elements": [
+        {
+          "index": 21,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Yes,2:No",
+          "param": "Controls",
+          "validation": "",
+          "id": "21"
+        },
+        {
+          "index": 22,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Occupancy Sensor,2:Motion Sensor,3:Daylight Sensor,4:Timer,5:Dimmer",
+          "param": "Type of Control",
+          "validation": "",
+          "id": "22"
+        },
+        {
+          "index": 23,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Number of Lamps Controlled",
+          "validation": "",
+          "id": "23"
+        }
+      ],
+      "id": "2"
+    },
+    {
+      "index": 3,
+      "section": "Power | Usage",
+      "elements": [
+        {
+          "index": 31,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Nominal Watts",
+          "validation": "",
+          "id": "31"
+        },
+        {
+          "index": 32,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Actual Watts",
+          "validation": "",
+          "id": "32"
+        }
+      ],
+      "id": "3"
+    },
+    {
+      "index": 4,
+      "section": "Ballast",
+      "elements": [
+        {
+          "index": 41,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:rapid,2:instant,3:programmed",
+          "param": "Strike Time",
+          "validation": "",
+          "id": "41"
+        },
+        {
+          "index": 42,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:very high,2:high,3:normal,4:reduced",
+          "param": "Ballast Factor",
+          "validation": "",
+          "id": "42"
+        },
+        {
+          "index": 43,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:electronic,2:magnetic",
+          "param": "Ballast Type",
+          "validation": "",
+          "id": "43"
+        }
+      ],
+      "id": "4"
+    },
+    {
+      "index": 5,
+      "section": "TOU",
+      "elements": [
+        {
+          "index": 51,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Peak Hours",
+          "validation": "",
+          "id": "51"
+        },
+        {
+          "index": 52,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Part Peak Hours",
+          "validation": "",
+          "id": "52"
+        },
+        {
+          "index": 53,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Off Peak Hours",
+          "validation": "",
+          "id": "53"
+        },
+        {
+          "index": 54,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Yes,2:No",
+          "param": "Security Use",
+          "validation": "",
+          "id": "54"
+        },
+        {
+          "index": 55,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Yes,2:No",
+          "param": "Used During Peak",
+          "validation": "",
+          "id": "55"
+        }
+      ],
+      "id": "5"
+    },
+    {
+      "index": 6,
+      "section": "Operating Hours",
+      "elements": [
+        {
+          "index": 61,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Monday Operating Hours",
+          "validation": "",
+          "id": "61"
+        },
+        {
+          "index": 62,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Tuesday Operating Hours",
+          "validation": "",
+          "id": "62"
+        },
+        {
+          "index": 63,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Wednesday Operating Hours",
+          "validation": "",
+          "id": "63"
+        },
+        {
+          "index": 64,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Thursday Operating Hours",
+          "validation": "",
+          "id": "64"
+        },
+        {
+          "index": 65,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Friday Operating Hours",
+          "validation": "",
+          "id": "65"
+        },
+        {
+          "index": 66,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Saturday Operating Hours",
+          "validation": "",
+          "id": "66"
+        },
+        {
+          "index": 67,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Sunday Operating Hours",
+          "validation": "",
+          "id": "67"
+        }
+      ],
+      "id": "6"
+    }
+  ]
+}
