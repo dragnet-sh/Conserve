@@ -16,6 +16,7 @@ import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonPrimitive
 import io.reactivex.Observable
 import io.reactivex.functions.Function
 import org.json.JSONObject
@@ -174,7 +175,10 @@ abstract class EBase(private val computable: Computable<*>,
                     if (it && efficientLookup()) {
                         efficientAlternative(queryEfficientFilter()).map(mapper)
                     } else {
-                        Observable.just(DataHolder())
+                        Observable.just(DataHolder()).map { dataHolder ->
+                            costPostState(JsonPrimitive(-99.99), dataHolder)
+                            dataHolder
+                        }
                     }
                 }
     }
@@ -377,17 +381,15 @@ abstract class EBase(private val computable: Computable<*>,
     /**
      * Lighting Config - The enum provides the index to the Map
      * */
-    enum class ELightingIndex(value: Int) {
+    enum class ELightingIndex(val value: Int) {
         LifeHours(0),
         PercentHoursReduced(1),
         Cooling(2)
     }
 
-    fun lightingConfig() = hashMapOf(
-            ELightingType.CFL to listOf(15000, 0.25, 0.8),
-            ELightingType.Halogen to listOf(5000, 0.75, 0.95),
-            ELightingType.Incandescent to listOf(2500, 0.9, 0, 9),
-            ELightingType.LinearFluorescent to listOf(10000, 0.85, 0.85)
-    )
-
+    fun lightingConfig(type: ELightingType) = when (type) {
+                ELightingType.CFL -> listOf(15000.0, 0.25, 0.8)
+                ELightingType.Halogen -> listOf(5000.0, 0.75, 0.95)
+                ELightingType.Incandescent -> listOf(2500.0, 0.9, 0, 9)
+                ELightingType.LinearFluorescent -> listOf(10000.0, 0.85, 0.85) }
 }

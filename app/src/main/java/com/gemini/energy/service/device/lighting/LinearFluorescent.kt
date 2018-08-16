@@ -4,6 +4,8 @@ import android.content.Context
 import com.gemini.energy.R
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.presentation.form.FormMapper
+import com.gemini.energy.presentation.util.ELightingType
+import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
@@ -12,8 +14,9 @@ import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonElement
 import io.reactivex.Observable
 import timber.log.Timber
+import java.util.*
 
-class LinearFluorescent(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
+class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
                usageHours: UsageHours, outgoingRows: OutgoingRows, private val context: Context) :
         EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
 
@@ -27,6 +30,12 @@ class LinearFluorescent(computable: Computable<*>, utilityRateGas: UtilityRate, 
     private var actualWatts = 0.0
     private var ballastsPerFixtures = 0
     private var numberOfFixtures = 0
+
+    private var energyAtPreState = 0.0
+
+    private var seer = 10
+    private var percentHoursReduced = 1.0
+    private var cooling = 1.0
 
     override fun setup() {
         try {
@@ -48,6 +57,8 @@ class LinearFluorescent(computable: Computable<*>, utilityRateGas: UtilityRate, 
      * */
     override fun costPreState(): Double {
         val powerUsed = actualWatts * ballastsPerFixtures * numberOfFixtures / 1000
+        energyAtPreState = powerUsed * usageHoursSpecific.yearly()
+
         // Usage Hours Specific - Yearly Value is used to Calculate the Cost
         return costElectricity(powerUsed, usageHoursSpecific, electricityRate)
     }
@@ -55,7 +66,29 @@ class LinearFluorescent(computable: Computable<*>, utilityRateGas: UtilityRate, 
     /**
      * Cost - Post State
      * */
-    override fun costPostState(element: JsonElement): Double = 0.0
+    override fun costPostState(element: JsonElement, dataHolder: DataHolder): Double {
+        Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+        Timber.d("!!! COST POST STATE - LINEAR FLUORESCENT !!!")
+        Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+
+        val lifeHours = lightingConfig(ELightingType.LinearFluorescent)[ELightingIndex.LifeHours.value] as Double
+        val maintenanceSavings = ballastsPerFixtures * numberOfFixtures * 3.0 * usageHoursSpecific.yearly() / lifeHours
+        val coolingSavings = energyAtPreState * cooling * seer
+        val energySavings = energyAtPreState * percentHoursReduced
+
+        val postRow = mutableMapOf<String, String>()
+        postRow["__life_hours"] = lifeHours.toString()
+        postRow["__maintenance_savings"] = maintenanceSavings.toString()
+        postRow["__cooling_savings"] = coolingSavings.toString()
+        postRow["__energy_savings"] = energySavings.toString()
+
+        dataHolder.header = postStateFields()
+        dataHolder.computable = computable
+        dataHolder.fileName = "${Date().time}_post_state.csv"
+        dataHolder.rows?.add(postRow)
+
+        return -99.99
+    }
 
     /**
      * PowerTimeChange >> Hourly Energy Use - Pre
@@ -100,10 +133,10 @@ class LinearFluorescent(computable: Computable<*>, utilityRateGas: UtilityRate, 
     override fun featureDataFields() = getGFormElements().map { it.value.param!! }.toMutableList()
 
     override fun preStateFields() = mutableListOf("")
-    override fun postStateFields() = mutableListOf("")
+    override fun postStateFields() = mutableListOf("__life_hours", "__maintenance_savings",
+            "__cooling_savings", "__energy_savings")
 
-    override fun computedFields() = mutableListOf("__daily_operating_hours", "__weekly_operating_hours",
-            "__yearly_operating_hours", "__electric_cost")
+    override fun computedFields() = mutableListOf("")
 
     private fun getFormMapper() = FormMapper(context, R.raw.linear_fluorescent)
     private fun getModel() = getFormMapper().decodeJSON()
