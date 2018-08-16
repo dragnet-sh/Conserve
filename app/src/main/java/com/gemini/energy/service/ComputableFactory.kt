@@ -1,5 +1,6 @@
 package com.gemini.energy.service
 
+import android.content.Context
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.presentation.util.EApplianceType
 import com.gemini.energy.presentation.util.ELightingType
@@ -23,7 +24,8 @@ abstract class ComputableFactory {
         lateinit var computable: Computable<*>
         inline fun createFactory(computable: Computable<*>, utilityRateGas: UtilityRate,
                                  utilityRateElectricity: UtilityRate,
-                                 usageHours: UsageHours, outgoingRows: OutgoingRows): ComputableFactory {
+                                 usageHours: UsageHours, outgoingRows: OutgoingRows,
+                                 context: Context): ComputableFactory {
             this.computable = computable
             return when (computable.auditScopeType as EZoneType) {
 
@@ -31,7 +33,8 @@ abstract class ComputableFactory {
                         utilityRateElectricity, usageHours, outgoingRows)
 
                 EZoneType.HVAC                      -> HvacFactory()
-                EZoneType.Lighting                  -> LightingFactory()
+                EZoneType.Lighting                  -> LightingFactory(utilityRateGas,
+                        utilityRateElectricity, usageHours, outgoingRows, context)
                 EZoneType.Motors                    -> MotorFactory()
                 EZoneType.Others                    -> GeneralFactory()
             }
@@ -63,10 +66,17 @@ class PlugloadFactory(private val utilityRateGas: UtilityRate,
 
 }
 
-class LightingFactory : ComputableFactory() {
+class LightingFactory(private val utilityRateGas: UtilityRate,
+                      private val utilityRateElectricity: UtilityRate,
+                      private val usageHours: UsageHours,
+                      private val outgoingRows: OutgoingRows,
+                      private val context: Context) : ComputableFactory() {
     override fun build(): IComputable {
         return when(computable.auditScopeSubType as ELightingType) {
-            ELightingType.CFL                       -> Cfl()
+
+            ELightingType.CFL                       -> Cfl(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
             ELightingType.Halogen                   -> Halogen()
             ELightingType.Incandescent              -> Incandescent()
             ELightingType.LinearFluorescent         -> LinearFluorescent()
