@@ -12,6 +12,7 @@ import com.gemini.energy.presentation.form.model.GElements
 import com.gemini.energy.presentation.type.SharedViewModel
 import com.gemini.energy.presentation.type.list.model.TypeModel
 import com.gemini.energy.presentation.util.EApplianceType
+import com.gemini.energy.presentation.util.ELightingType
 import com.gemini.energy.presentation.util.EZoneType
 import com.thejuki.kformmaster.model.BaseFormElement
 import java.util.*
@@ -60,7 +61,12 @@ class FeatureDataFragment : BaseFormFragment() {
             }
             else if (model.type == EZoneType.HVAC.value) {rawId = R.raw.hvac}
             else if (model.type == EZoneType.Motors.value) {rawId = R.raw.motors}
-            else if (model.type == EZoneType.Lighting.value) {rawId = R.raw.lighting}
+            else if (model.type == EZoneType.Lighting.value) {
+                if (model.subType == ELightingType.CFL.value) {rawId = R.raw.cfl}
+                if (model.subType == ELightingType.Halogen.value) {rawId = R.raw.halogen}
+                if (model.subType == ELightingType.Incandescent.value) {rawId = R.raw.incandescent}
+                if (model.subType == ELightingType.LinearFluorescent.value) {rawId = R.raw.linear_fluorescent}
+            }
         }
 
         return rawId
