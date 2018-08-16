@@ -24,7 +24,19 @@ class Cfl (computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
         return super.compute(extra = ({ Timber.d(it) }))
     }
 
-    override fun setup() {}
+    private var actualWatts = 0.0
+    private var lampsPerFixtures = 0
+    private var numberOfFixtures = 0
+
+    override fun setup() {
+        try {
+            actualWatts = featureData["Actual Watts"]!! as Double
+            lampsPerFixtures = featureData["Lamps Per Fixture"]!! as Int
+            numberOfFixtures = featureData["Number of Fixtures"]!! as Int
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
     /**
      * Energy Cost Calculation Formula ToDo: Remove this later
@@ -34,7 +46,11 @@ class Cfl (computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(): Double = 0.0
+    override fun costPreState(): Double {
+        val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
+        // Usage Hours Specific - Yearly Value is used to Calculate the Cost
+        return costElectricity(powerUsed, usageHoursSpecific, electricityRate)
+    }
 
     /**
      * Cost - Post State
@@ -55,7 +71,7 @@ class Cfl (computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
      * Pre and Post are the same for Refrigerator - 24 hrs
      * */
-    override fun usageHoursPre(): Double = usageHoursBusiness.yearly()
+    override fun usageHoursPre(): Double = usageHoursSpecific.yearly()
     override fun usageHoursPost(): Double = usageHoursBusiness.yearly()
 
     /**
