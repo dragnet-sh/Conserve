@@ -135,7 +135,7 @@ class EnergyService(
 
             return ComputableFactory.createFactory(computable, energyUtilityGas,
                     utilityRateElectricity, usageHours,
-                    outgoingRows).build().compute()
+                    outgoingRows, context).build().compute()
         }
 
         return Observable.zip(
