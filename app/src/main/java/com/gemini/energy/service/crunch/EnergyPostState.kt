@@ -13,7 +13,7 @@ class EnergyPostState {
     class Mapper : Function<JsonArray, DataHolder> {
         lateinit var postStateFields: MutableList<String>
         lateinit var computable: Computable<*>
-        lateinit var cost: (JsonElement) -> Double
+        lateinit var cost: (JsonElement, DataHolder) -> Double
 
         override fun apply(response: JsonArray): DataHolder {
 
@@ -35,7 +35,7 @@ class EnergyPostState {
                     postRow[key] = value
                 }
 
-                val cost = cost(element)
+                val cost = cost(element, dataHolderPostState)
                 postRow["__electric_cost"] = cost.toString()
 
                 costCollector.add(cost)
