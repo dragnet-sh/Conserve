@@ -1,6 +1,7 @@
 package com.gemini.energy.service.device.plugload
 
 import com.gemini.energy.domain.entity.Computable
+import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
@@ -236,7 +237,7 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
      * */
     // The post state cost or energy calculation?? for energy I provided the location for that in the last email.
     // Cost is the same process as the pre
-    override fun costPostState(element: JsonElement): Double = 0.0
+    override fun costPostState(element: JsonElement, dataHolder: DataHolder): Double = 0.0
 
     /**
      * PowerTimeChange >> Hourly Energy Use - Pre

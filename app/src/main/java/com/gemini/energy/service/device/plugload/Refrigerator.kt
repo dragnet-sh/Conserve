@@ -1,6 +1,7 @@
 package com.gemini.energy.service.device.plugload
 
 import com.gemini.energy.domain.entity.Computable
+import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
@@ -42,7 +43,7 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
     /**
      * Cost - Post State
      * */
-    override fun costPostState(element: JsonElement): Double {
+    override fun costPostState(element: JsonElement, dataHolder: DataHolder): Double {
         val powerUsed = hourlyEnergyUsagePost(element)[0]
         val costElectricity: Double
         costElectricity = costElectricity(powerUsed, super.usageHoursBusiness, super.electricityRate)
