@@ -21,11 +21,6 @@ class Cfl (computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
      * Entry Point
      * */
     override fun compute(): Observable<Computable<*>> {
-
-        Timber.d("--------------------------------------------------------------------")
-        Timber.d(getGFormElements().map { it.value.param!! }.toMutableList().toString())
-        Timber.d("--------------------------------------------------------------------")
-
         return super.compute(extra = ({ Timber.d(it) }))
     }
 
@@ -86,7 +81,7 @@ class Cfl (computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
      * Define all the fields here - These would be used to Generate the Outgoing Rows or perform the Energy Calculation
      * */
     override fun preAuditFields() = mutableListOf("")
-    override fun featureDataFields() = mutableListOf("")
+    override fun featureDataFields() = getGFormElements().map { it.value.param!! }.toMutableList()
 
     override fun preStateFields() = mutableListOf("")
     override fun postStateFields() = mutableListOf("")
