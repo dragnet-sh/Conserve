@@ -5,6 +5,7 @@ import com.gemini.energy.presentation.util.BaseRowType
 import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.service.OutgoingRows
 import com.google.gson.JsonElement
+import timber.log.Timber
 
 data class Computable<SubType>(
 
@@ -68,7 +69,15 @@ data class Computable<SubType>(
             featureList
                     .forEach { feature ->
                         val key = feature.key!!
-                        val value = typeMapper(feature.valueString, feature.dataType)
+                        var value: Any = EMPTY
+
+                        try {
+                            value = typeMapper(feature.valueString, feature.dataType)
+                        } catch (e: Exception) {
+                            Timber.e("Type Mapper - Failed :: $key")
+                            e.printStackTrace()
+                        }
+
                         outgoing[key] = value
                     }
         }
@@ -84,10 +93,31 @@ data class Computable<SubType>(
         private const val NONE = -1
         private fun cleanup(value: String?, type: String?) =
                 when (type) {
-                    BaseRowType.IntRow.value            -> if (!value.isNullOrEmpty()) value.toString().toInt() else 0
-                    BaseRowType.DecimalRow.value        -> if (!value.isNullOrEmpty()) value.toString().toDouble() else 0.0
-                    else                                -> if (!value.isNullOrEmpty()) value.toString() else EMPTY
+                    BaseRowType.IntRow.value            -> cleanInt(value)
+                    BaseRowType.DecimalRow.value        -> cleanDecimal(value)
+                    else                                -> cleanString(value)
                 }
+
+        private fun cleanInt(value: String?): Int {
+            val default = 0
+            if (!value.isNullOrEmpty())
+                return value.toString().toInt()
+            return default
+        }
+
+        private fun cleanDecimal(value: String?): Double {
+            val default = 0.0
+            if (!value.isNullOrEmpty())
+                return value.toString().toDouble()
+            return default
+        }
+
+        private fun cleanString(value: String?): String {
+            val default = EMPTY
+            if (!value.isNullOrEmpty())
+                return value.toString()
+            return default
+        }
     }
 
     override fun toString(): String {
