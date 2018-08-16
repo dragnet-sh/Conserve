@@ -77,9 +77,15 @@ class LightingFactory(private val utilityRateGas: UtilityRate,
             ELightingType.CFL                       -> Cfl(computable,
                     utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
 
-            ELightingType.Halogen                   -> Halogen()
-            ELightingType.Incandescent              -> Incandescent()
-            ELightingType.LinearFluorescent         -> LinearFluorescent()
+            ELightingType.Halogen                   -> Halogen(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
+            ELightingType.Incandescent              -> Incandescent(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
+            ELightingType.LinearFluorescent         -> LinearFluorescent(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
         }
     }
 }
