@@ -31,6 +31,10 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     private var lampsPerFixtures = 0
     private var numberOfFixtures = 0
     private var energyAtPreState = 0.0
+    private var peakHours = 0.0
+    private var partpeakHours = 0.0
+    private var nonpeakHours = 0.0
+    private var energyAtPostState = 0.0
 
     private var seer = 10
     private var percentHoursReduced = 1.0
@@ -41,6 +45,9 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
             actualWatts = featureData["Actual Watts"]!! as Double
             lampsPerFixtures = featureData["Lamps Per Fixture"]!! as Int
             numberOfFixtures = featureData["Number of Fixtures"]!! as Int
+            peakHours = featureData["Peak Hours"]!! as Int
+            partpeakHours = featureData["Part Peak Hours"]!! as Int
+            nonpeakHours = featureData["Off Peak Hours"]!! as Int
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -56,11 +63,12 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
      * */
     override fun costPreState(): Double {
         val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
-        energyAtPreState = powerUsed * usageHoursSpecific.yearly()
+        energyAtPreState = powerUsed * (peakHours + partpeakHours + nopeakHours)
 
         // Usage Hours Specific - Yearly Value is used to Calculate the Cost
         return costElectricity(powerUsed, usageHoursSpecific, electricityRate)
     }
+                   //peakHours*.504*peakPrice*powerUsed= cost at Peak rate...
 
     /**
      * Cost - Post State
@@ -73,9 +81,9 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
         val lifeHours = lightingConfig(ELightingType.CFL)[ELightingIndex.LifeHours.value] as Double
         val maintenanceSavings = lampsPerFixtures * numberOfFixtures * 3.0 * usageHoursSpecific.yearly() / lifeHours
-        val coolingSavings = energyAtPreState * cooling * seer //Should be energySavings * cooling * seer
+        val coolingSavings = energySavings * cooling * seer 
         val energySavings = energyAtPreState * percentHoursReduced 
-
+        val energyAtPostState = energyatPreState - energySavings
         val postRow = mutableMapOf<String, String>()
         postRow["__life_hours"] = lifeHours.toString()
         postRow["__maintenance_savings"] = maintenanceSavings.toString()
@@ -103,7 +111,6 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
     /**
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
-     * Pre and Post are the same for Refrigerator - 24 hrs
      * */
     override fun usageHoursPre(): Double = 0.0
     override fun usageHoursPost(): Double = 0.0
