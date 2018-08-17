@@ -89,6 +89,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         postRow["__maintenance_savings"] = maintenanceSavings.toString()
         postRow["__cooling_savings"] = coolingSavings.toString()
         postRow["__energy_savings"] = energySavings.toString()
+        postRow["__energy_at_post_state"] = energyAtPostState.toString()
 
         dataHolder.header = postStateFields()
         dataHolder.computable = computable
@@ -142,7 +143,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
     override fun preStateFields() = mutableListOf("")
     override fun postStateFields() = mutableListOf("__life_hours", "__maintenance_savings",
-            "__cooling_savings", "__energy_savings")
+            "__cooling_savings", "__energy_savings", "__energy_at_post_state")
 
     override fun computedFields() = mutableListOf("")
 
