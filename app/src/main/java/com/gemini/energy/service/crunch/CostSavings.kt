@@ -34,7 +34,7 @@ class CostSavings {
             val preUsageByPeak = usageHoursSpecific.mappedPeakHourYearly()
             val preHoursOnPeakPricing = preUsageByPeak[ERateKey.SummerOn]!! * .504
             val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 +
-                    preUsageByPeak[ERateKey.WinterPart]!! * .496 + preUsageByPeak[ERateKey.SummerOn]!! * .496
+                    preUsageByPeak[ERateKey.WinterPart]!! * .496 
             val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 +
                     preUsageByPeak[ERateKey.WinterOff]!! * .496
 
@@ -49,7 +49,7 @@ class CostSavings {
             val postUsageByPeak = usageHoursBusiness.mappedPeakHourYearly()
             val postHoursOnPeakPricing = postUsageByPeak[ERateKey.SummerOn]!! * .504
             val postHoursOnPartPeakPricing = postUsageByPeak[ERateKey.SummerPart]!! * .504 +
-                    postUsageByPeak[ERateKey.WinterPart]!! * .496 + postUsageByPeak[ERateKey.SummerOn]!! * .496
+                    postUsageByPeak[ERateKey.WinterPart]!! * .496 
             val postHoursOnOffPeakPricing = postUsageByPeak[ERateKey.SummerOff]!! * .504 +
                     postUsageByPeak[ERateKey.WinterOff]!! * .496
 
