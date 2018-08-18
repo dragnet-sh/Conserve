@@ -7,7 +7,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-class UsageHours {
+open class UsageHours {
 
     /**
      * UsageHours Hours - Could either be from the PreAudit i.e. PRE
@@ -21,7 +21,7 @@ class UsageHours {
      * */
     fun daily() = mapper.dailyHours()
     fun weekly() = mapper.weeklyHours()
-    fun yearly() = mapper.yearlyHours()
+    open fun yearly() = mapper.yearlyHours()
 
     /**
      * Mapped Peak Hour by UtilityRate Rate Structure
@@ -33,7 +33,7 @@ class UsageHours {
     /**
      * Mapped Peak Hour Yearly - Return Time Of Use Data Model
      * */
-    fun timeOfUse(): TOU {
+    open fun timeOfUse(): TOU {
         val usageByPeak = mapper.mappedHoursYearly()
         return TOU(
                 usageByPeak[ERateKey.SummerOn]!! * WEIGHT_SUMMER,
@@ -47,7 +47,7 @@ class UsageHours {
     /**
      * Mapped Peak Hour Yearly - Return Non Time Of Use Data Model
      * */
-    fun nonTimeOfUse(): TOUNone {
+    open fun nonTimeOfUse(): TOUNone {
         return TOUNone(
                 yearly() * WEIGHT_SUMMER,
                 yearly() * WEIGHT_WINTER
