@@ -10,6 +10,7 @@ import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
 import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UsageLighting
 import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonElement
 import io.reactivex.Observable
@@ -30,6 +31,9 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     private var actualWatts = 0.0
     private var lampsPerFixtures = 0
     private var numberOfFixtures = 0
+    private var peakHours = 0.0
+    private var partPeakHours = 0.0
+    private var offPeakHours = 0.0
     private var energyAtPreState = 0.0
 
     private var seer = 10
@@ -41,6 +45,9 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
             actualWatts = featureData["Actual Watts"]!! as Double
             lampsPerFixtures = featureData["Lamps Per Fixture"]!! as Int
             numberOfFixtures = featureData["Number of Fixtures"]!! as Int
+            peakHours = featureData["Peak Hours"]!! as Double
+            partPeakHours = featureData["Part Peak Hours"]!! as Double
+            offPeakHours = featureData["Off Peak Hours"]!! as Double
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -56,10 +63,15 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
      * */
     override fun costPreState(): Double {
         val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
-        energyAtPreState = powerUsed * usageHoursSpecific.yearly()
 
-        // Usage Hours Specific - Yearly Value is used to Calculate the Cost
-        return costElectricity(powerUsed, usageHoursSpecific, electricityRate)
+        val usageHours = UsageLighting()
+        usageHours.peakHours = peakHours
+        usageHours.partPeakHours = partPeakHours
+        usageHours.offPeakHours = offPeakHours
+
+        energyAtPreState = powerUsed * usageHours.yearly()
+
+        return costElectricity(powerUsed, usageHours, electricityRate)
     }
 
     /**
