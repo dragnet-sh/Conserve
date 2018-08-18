@@ -22,7 +22,7 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
 
         initialize()
         logIUsageType()
-        return costSummer() + costWinter()
+        return costSummer() + costWinter() + costBlendedSeason()
     }
 
     /**
@@ -85,6 +85,22 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
 
         return winterTOU + winterTOUNone
 
+    }
+
+    /**
+     * Cost where there is no seasonal segregation
+     * */
+    private fun costBlendedSeason(): Double {
+        val costPeak = hours.peak() * power * rate.weightedAverage()
+        val costPartPeak = hours.partPeak() * power * rate.weightedAverage()
+        val costNoPeak = hours.noPeak() * power * rate.weightedAverage()
+
+        Timber.d("## Blended Cost - No Season ##")
+        Timber.d(">>> Cost Peak : $costPeak")
+        Timber.d(">>> Cost Part Peak : $costPartPeak")
+        Timber.d(">>> Cost No Peak : $costNoPeak")
+
+        return costPeak + costPartPeak + costNoPeak
     }
 
     private fun logIUsageType() {
