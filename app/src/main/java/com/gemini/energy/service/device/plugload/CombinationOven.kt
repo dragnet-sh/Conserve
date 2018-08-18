@@ -237,7 +237,57 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
      * */
     // The post state cost or energy calculation?? for energy I provided the location for that in the last email.
     // Cost is the same process as the pre
-    override fun costPostState(element: JsonElement, dataHolder: DataHolder): Double = 0.0
+    override fun costPostState(element: JsonElement, dataHolder: DataHolder): Double {
+        var preHeatEnergyPS = 0.0
+        var preFanEnergyRatePS = 0.0
+        var postFanEnergyRatePS = 0.0
+
+        var idlePowerRateConvectionPS = 0.0
+        var idlePowerRateSteamPS = 0.0
+
+        var waterUseConvectionPS = 0.0
+        var waterUseSteamPS = 0.0
+
+        try {
+            preHeatEnergyPS = element.asJsonObject.get("preheat_energy").asDouble
+            idlePowerRateConvectionPS = element.asJsonObject.get("convection_idle_rate").asDouble
+            idlePowerRateSteamPS = element.asJsonObject.get("steam_idle_rate").asDouble
+            waterUseConvectionPS = element.asJsonObject.get("convection_cooking_water_use").asDouble
+            waterUseSteamPS = element.asJsonObject.get("steam_cooking_water_use").asDouble
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val cost = Cost()
+
+        cost.preHeatEnergy = preHeatEnergyPS
+        cost.preFanEnergyRate = preFanEnergyRatePS
+        cost.postFanEnergyRate = postFanEnergyRatePS
+
+        cost.idlePowerRateConvection = idlePowerRateConvectionPS
+        cost.idlePowerRateSteam = idlePowerRateSteamPS
+
+        cost.waterUseConvection = waterUseConvectionPS
+        cost.waterUseSteam = waterUseSteamPS
+
+        cost.electricityRate = electricityRate
+        cost.isGas = isGas
+        cost.isElectric = isElectric
+
+        cost.daysInOperation = daysInOperation
+        cost.usageHours = usageHoursSpecific
+
+        cost.isTOU = { isTOU(electricRateStructure) }
+        cost.usageHoursPre = { usageHoursPre() }
+
+        cost.getCostGas = { costGas(it) }
+        cost.getCostElectric = { powerUsed, usageHours, utilityRate ->
+            costElectricity(powerUsed, usageHours, utilityRate)
+        }
+
+        return cost.calculate()
+
+    }
 
     /**
      * PowerTimeChange >> Hourly Energy Use - Pre
