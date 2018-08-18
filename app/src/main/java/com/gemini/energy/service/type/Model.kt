@@ -13,6 +13,10 @@ interface IUsageType {
     fun summerNone(): Double
     fun winterNone(): Double
 
+    fun peak(): Double
+    fun partPeak(): Double
+    fun noPeak(): Double
+
     fun weightedAverage(): Double
 }
 
@@ -24,10 +28,21 @@ data class TOU(
         private var summerPart: Double,
         private var summerOff: Double,
         private var winterPart: Double,
-        private var winterOff: Double
+        private var winterOff: Double,
+
+        private var peak: Double,
+        private var partPeak: Double,
+        private var noPeak: Double
+
 ) : IUsageType {
 
-    constructor(): this(0.0, 0.0, 0.0, 0.0, 0.0)
+    constructor(): this(0.0, 0.0, 0.0)
+
+    constructor(summerOn: Double, summerPart: Double, summerOff: Double, winterPart: Double, winterOff: Double):
+            this(summerOn, summerPart, summerOff, winterPart, winterOff, 0.0, 0.0, 0.0)
+
+    constructor(peak: Double, partPeak: Double, noPeak: Double): this(0.0, 0.0,
+            0.0, 0.0, 0.0, peak, partPeak, noPeak)
 
     override fun summerOn() = summerOn
     override fun summerPart() = summerPart
@@ -38,6 +53,10 @@ data class TOU(
     override fun summerNone() = 0.0
     override fun winterNone() = 0.0
 
+    override fun peak() = peak
+    override fun partPeak() = partPeak
+    override fun noPeak() = noPeak
+
     override fun weightedAverage() = (((summerOn() + summerPart() + summerOff()) / 3) * 0.504) +
             (((winterPart() + winterOff()) / 2) * 0.496)
 
@@ -46,7 +65,11 @@ data class TOU(
                 ">>> Summer Part : $summerPart \n" +
                 ">>> Summer Off : $summerOff \n" +
                 ">>> Winter Part : $winterPart \n" +
-                ">>> Winter Off : $winterOff"
+                ">>> Winter Off : $winterOff" +
+
+                ">>> Peak : $peak" +
+                ">>> Part Peak : $partPeak" +
+                ">>> No Peak : $noPeak"
     }
 
 }
@@ -56,8 +79,13 @@ data class TOU(
  * */
 data class TOUNone(
         private var summerNone: Double,
-        private var winterNone: Double
+        private var winterNone: Double,
+        private var noPeak: Double
+
 ) : IUsageType {
+
+    constructor(summerNone: Double, winterNone: Double): this(summerNone, winterNone, 0.0)
+    constructor(noPeak: Double): this(0.0, 0.0, noPeak)
 
     override fun summerOn() = 0.0
     override fun summerPart() = 0.0
@@ -68,11 +96,16 @@ data class TOUNone(
     override fun summerNone() = summerNone
     override fun winterNone() = winterNone
 
+    override fun peak() = 0.0
+    override fun partPeak() = 0.0
+    override fun noPeak() = noPeak
+
     override fun weightedAverage() = (summerNone() * 0.504 + winterNone() * 0.496)
 
     override fun toString(): String {
         return ">>> Summer None : $summerNone \n" +
-                ">>> Winter None : $winterNone \n"
+                ">>> Winter None : $winterNone \n" +
+                ">>> No Peak : $noPeak"
     }
 
 }
