@@ -73,8 +73,8 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
         val lifeHours = lightingConfig(ELightingType.CFL)[ELightingIndex.LifeHours.value] as Double
         val maintenanceSavings = lampsPerFixtures * numberOfFixtures * 3.0 * usageHoursSpecific.yearly() / lifeHours
-        val coolingSavings = energyAtPreState * cooling * seer
         val energySavings = energyAtPreState * percentHoursReduced
+        val coolingSavings = energySavings * cooling * seer
 
         val postRow = mutableMapOf<String, String>()
         postRow["__life_hours"] = lifeHours.toString()
