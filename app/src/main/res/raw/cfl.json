@@ -162,7 +162,7 @@
       "elements": [
         {
           "index": 51,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Peak Hours",
           "validation": "",
@@ -170,7 +170,7 @@
         },
         {
           "index": 52,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Part Peak Hours",
           "validation": "",
@@ -178,7 +178,7 @@
         },
         {
           "index": 53,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Off Peak Hours",
           "validation": "",
