@@ -14,6 +14,7 @@ class UsageLighting : UsageHours() {
         return TOUNone(offPeakHours)
     }
 
+    //@Anthony - Verify if the Yearly hours is the sum as belows - regardless of TOU on No TOU
     override fun yearly() = peakHours + partPeakHours + offPeakHours
 
 }
