@@ -12,7 +12,7 @@ import io.reactivex.Observable
 import org.json.JSONObject
 import timber.log.Timber
 
-class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
+class CombinationOven(private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
                       usageHours: UsageHours, outgoingRows: OutgoingRows) :
         EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
 
@@ -26,10 +26,8 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
     companion object {
 
         /**
-         * It takes 15 min to Pre Heat the Oven but the Energy Value Provided is for an Hour
-         * Thus need to multiply by 1/4
+         * @Anthony - Describe the Gas Adjustment Factor
          * */
-        private const val ADJUSTMENT_PRE_HEAT = 0.25
         private const val ADJUSTMENT_GAS = 3412
 
         /**
@@ -37,6 +35,13 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
          * Later we will need to make a sheet that will be used to determine the water charge based on city
          * */
         private const val WATER_CHARGE = 0.015
+
+        /**
+         * It takes 15 min to Pre Heat the Oven but the Energy Value Provided is for an Hour
+         * Thus need to multiply by 1/4
+         * */
+        private const val ADJUSTMENT_PRE_HEAT = 0.25
+        fun adjustPreHeat(value: Double) = value * ADJUSTMENT_PRE_HEAT
 
     }
 
@@ -159,8 +164,6 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
      * */
     override fun setup() {
 
-        fun adjustPreHeat(value: Double) = value * ADJUSTMENT_PRE_HEAT
-
         try {
             val fuelType = featureData["Fuel Type"]!! as String
             isElectric = (fuelType == "Electric")
@@ -239,8 +242,8 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
     // Cost is the same process as the pre
     override fun costPostState(element: JsonElement, dataHolder: DataHolder): Double {
         var preHeatEnergyPS = 0.0
-        var preFanEnergyRatePS = 0.0
-        var postFanEnergyRatePS = 0.0
+        val preFanEnergyRatePS = 0.0
+        val postFanEnergyRatePS = 0.0
 
         var idlePowerRateConvectionPS = 0.0
         var idlePowerRateSteamPS = 0.0
@@ -309,7 +312,48 @@ class CombinationOven(computable: Computable<*>, utilityRateGas: UtilityRate, ut
      * PowerTimeChange >> Energy Efficiency Calculations
      * For Ovens there is no Time Change nor Power Time Change
      * */
-    override fun energyPowerChange(): Double = 0.0
+    override fun energyPowerChange(): Double {
+        var rawPreHeatEnergyPS = 0.0
+        val preFanEnergyRatePS = 0.0
+        val postFanEnergyRatePS = 0.0
+
+        var idlePowerRateConvectionPS = 0.0
+        var idlePowerRateSteamPS = 0.0
+
+        val element = computable.efficientAlternative
+        element?.let {
+            try {
+                rawPreHeatEnergyPS = it.asJsonObject.get("preheat_energy").asDouble
+                idlePowerRateConvectionPS = it.asJsonObject.get("convection_idle_rate").asDouble
+                idlePowerRateSteamPS = it.asJsonObject.get("steam_idle_rate").asDouble
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        val adjustment = if (isGas) ADJUSTMENT_GAS else 1
+
+        val deltaPreHeatEnergy = preHeatEnergy - adjustPreHeat(rawPreHeatEnergyPS)
+        val deltaFanEnergyRate = preFanEnergyRatePS - postFanEnergyRatePS
+
+        val preIdlePowerRate = (preIdleEnergyRateConvection + preIdleEnergyRateSteam) / 2
+        val postIdlePowerRate = (idlePowerRateConvectionPS + idlePowerRateSteamPS) / 2
+        val deltaIdlePowerRate = preIdlePowerRate - postIdlePowerRate
+
+        val deltaYearlyPreHeatEnergy = deltaPreHeatEnergy * daysInOperation
+        val deltaYearlyIdleEnergy = deltaIdlePowerRate * usageHoursPre()
+        val deltaYearlyFanEnergy = deltaFanEnergyRate * usageHoursPre() * adjustment
+
+        val delta = deltaYearlyPreHeatEnergy + deltaYearlyIdleEnergy + deltaYearlyFanEnergy
+
+        Timber.d("Delta Yearly Pre Heat Energy :: $deltaYearlyPreHeatEnergy")
+        Timber.d("Delta Yearly Idle Energy :: $deltaYearlyIdleEnergy")
+        Timber.d("Delta Yearly Fan Energy :: $deltaYearlyFanEnergy")
+        Timber.d("Delta :: $delta")
+
+        return delta
+    }
+
     override fun energyTimeChange(): Double = 0.0
     override fun energyPowerTimeChange(): Double = 0.0
 
