@@ -62,6 +62,10 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
      * Cost - Pre State
      * */
     override fun costPreState(): Double {
+
+        // @Anthony - Verify the Platform Implementation
+        // peakHours*.504*peakPrice*powerUsed= cost at Peak rate...
+
         val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
 
         val usageHours = UsageLighting()
@@ -88,11 +92,14 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         val energySavings = energyAtPreState * percentHoursReduced
         val coolingSavings = energySavings * cooling * seer
 
+        val energyAtPostState = energyAtPreState - energySavings
+
         val postRow = mutableMapOf<String, String>()
         postRow["__life_hours"] = lifeHours.toString()
         postRow["__maintenance_savings"] = maintenanceSavings.toString()
         postRow["__cooling_savings"] = coolingSavings.toString()
         postRow["__energy_savings"] = energySavings.toString()
+        postRow["__energy_at_post_state"] = energyAtPostState.toString()
 
         dataHolder.header = postStateFields()
         dataHolder.computable = computable
@@ -115,7 +122,6 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
     /**
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
-     * Pre and Post are the same for Refrigerator - 24 hrs
      * */
     override fun usageHoursPre(): Double = 0.0
     override fun usageHoursPost(): Double = 0.0
@@ -147,7 +153,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
     override fun preStateFields() = mutableListOf("")
     override fun postStateFields() = mutableListOf("__life_hours", "__maintenance_savings",
-            "__cooling_savings", "__energy_savings")
+            "__cooling_savings", "__energy_savings", "__energy_at_post_state")
 
     override fun computedFields() = mutableListOf("")
 
