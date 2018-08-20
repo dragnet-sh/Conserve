@@ -65,11 +65,9 @@ data class TOU(
                 ">>> Summer Part : $summerPart \n" +
                 ">>> Summer Off : $summerOff \n" +
                 ">>> Winter Part : $winterPart \n" +
-                ">>> Winter Off : $winterOff" +
+                ">>> Winter Off : $winterOff \n" +
 
-                ">>> Peak : $peak" +
-                ">>> Part Peak : $partPeak" +
-                ">>> No Peak : $noPeak"
+                ">>> Peak : $peak >>> Part Peak : $partPeak >>> No Peak : $noPeak"
     }
 
 }
