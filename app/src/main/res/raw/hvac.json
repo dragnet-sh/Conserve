@@ -1,1 +1,51 @@
-{"geminiForm": [{"index": 1, "section": "HVAC", "elements": [{"index": 11, "dataType": "pickerinputrow", "defaultValues": "1:programmable,2:analog", "param": "Thermostat Type", "validation": "", "id": "11"}, {"index": 12, "dataType": "introw", "defaultValues": "", "param": "Temperature Set Point", "validation": "", "id": "12"}, {"index": 13, "dataType": "pickerinputrow", "defaultValues": "1:yes,2:no", "param": "Thermostat Easily Accessible?", "validation": "", "id": "13"}, {"index": 14, "dataType": "decimalrow", "defaultValues": "", "param": "Temperature in room", "validation": "", "id": "14"}, {"index": 15, "dataType": "textrow", "defaultValues": "", "param": "Company/Brand", "validation": "", "id": "15"}], "id": "1"}]}
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "HVAC",
+      "elements": [
+        {
+          "index": 11,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:programmable,2:analog",
+          "param": "Thermostat Type",
+          "validation": "",
+          "id": "11"
+        },
+        {
+          "index": 12,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Temperature Set Point",
+          "validation": "",
+          "id": "12"
+        },
+        {
+          "index": 13,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:yes,2:no",
+          "param": "Thermostat Easily Accessible?",
+          "validation": "",
+          "id": "13"
+        },
+        {
+          "index": 14,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Temperature in room",
+          "validation": "",
+          "id": "14"
+        },
+        {
+          "index": 15,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Company/Brand",
+          "validation": "",
+          "id": "15"
+        }
+      ],
+      "id": "1"
+    }
+  ]
+}
