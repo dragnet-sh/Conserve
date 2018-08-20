@@ -2,6 +2,7 @@ package com.gemini.energy.service.crunch
 
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.service.DataHolder
+import com.google.gson.JsonArray
 import io.reactivex.Observable
 import timber.log.Timber
 import java.util.*
@@ -22,25 +23,41 @@ class EnergyPreState {
         return dataHolderPreState
     }
 
-    fun getObservable(cost: () -> Double): Observable<DataHolder> {
-        Timber.d("##### Pre-State Energy Calculation - (${thread()}) #####")
-        val dataHolderPreState = initDataHolder()
-        val preRow = mutableMapOf<String, String>()
-        featureDataFields.forEach { field ->
-            preRow[field] = if (featureData.containsKey(field)) featureData[field].toString() else ""
-        }
+    fun getObservable(remoteExtract: List<Observable<JsonArray>>, cost: () -> Double): Observable<DataHolder> {
+        return Observable.zip(remoteExtract, { responses ->
+            Timber.d("##### Pre-State Energy Calculation - (${thread()}) #####")
+            responses.forEach { response ->
+                if (response is JsonArray) {
+                    //ToDo: Create a HashMap of each [RemoteExtract <-> Collection of JsonElement]
+                    try {
+                        val jsonElements = response.map { it.asJsonObject.get("data") }
+                        Timber.d(jsonElements.toString())
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
 
-        val costValue = cost()
-        dataHolderPreState.header?.add("__electric_cost")
-        preRow["__electric_cost"] = costValue.toString()
+            val dataHolderPreState = initDataHolder()
+            val preRow = mutableMapOf<String, String>()
+            featureDataFields.forEach { field ->
+                preRow[field] = if (featureData.containsKey(field)) featureData[field].toString() else ""
+            }
 
-        dataHolderPreState.rows?.add(preRow)
-        computable.energyPreState = preRow
+            //ToDo: Pass the JsonElement HasMap to the Cost - Now the Specific Child Class can consume this
+            val costValue = cost()
+            dataHolderPreState.header?.add("__electric_cost")
+            preRow["__electric_cost"] = costValue.toString()
 
-        Timber.d("## Data Holder - PRE STATE - (${thread()}) ##")
-        Timber.d(dataHolderPreState.toString())
+            dataHolderPreState.rows?.add(preRow)
+            computable.energyPreState = preRow
 
-        return Observable.just(dataHolderPreState)
+            Timber.d("## Data Holder - PRE STATE - (${thread()}) ##")
+            Timber.d(dataHolderPreState.toString())
+
+            dataHolderPreState
+        })
+
     }
 
     private fun thread() = Thread.currentThread().name
