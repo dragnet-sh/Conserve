@@ -26,7 +26,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
     companion object {
 
         /**
-         * @Anthony - Describe the Gas Adjustment Factor
+         * This changes Kilowatts to BTU
          * */
         private const val ADJUSTMENT_GAS = 3412
 
