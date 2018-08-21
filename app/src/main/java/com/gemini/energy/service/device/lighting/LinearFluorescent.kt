@@ -55,7 +55,7 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(element: JsonElement?): Double {
+    override fun costPreState(element: List<JsonElement?>): Double {
         val powerUsed = actualWatts * ballastsPerFixtures * numberOfFixtures / 1000
         energyAtPreState = powerUsed * usageHoursSpecific.yearly()
 

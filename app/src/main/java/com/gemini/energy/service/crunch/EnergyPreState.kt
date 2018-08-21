@@ -24,10 +24,10 @@ class EnergyPreState {
         return dataHolderPreState
     }
 
-    fun getObservable(remoteExtract: List<Observable<JsonArray>>, cost: (JsonElement?) -> Double): Observable<DataHolder> {
+    fun getObservable(remoteExtract: List<Observable<JsonArray>>, cost: (List<JsonElement?>) -> Double): Observable<DataHolder> {
         return Observable.zip(remoteExtract, { responses ->
             Timber.d("##### Pre-State Energy Calculation - (${thread()}) #####")
-            var jsonElement: JsonElement? = null
+            val jsonElement: MutableList<JsonElement?> = mutableListOf()
             responses.forEach { response ->
                 if (response is JsonArray) {
                     // ** 1. Create a HashMap of each [RemoteExtract <-> Collection of JsonElement]
@@ -37,7 +37,7 @@ class EnergyPreState {
                         val jsonElements = response.map { it.asJsonObject.get("data") }
                         Timber.d(jsonElements.toString())
                         if (jsonElements.count() > 0) {
-                            jsonElement = jsonElements[0]
+                            jsonElement.add(jsonElements[0])
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()

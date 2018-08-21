@@ -247,6 +247,7 @@ abstract class EBase(private val computable: Computable<*>,
 
     fun isTOU(rate: String = electricRateStructure) = rate.matches(regex)
 
+    //ToDo: Remove this as now there is specific lookup for each Zone Type
     abstract fun queryEfficientFilter(): String
     abstract fun efficientLookup(): Boolean
     abstract fun usageHoursSpecific(): Boolean
@@ -263,7 +264,7 @@ abstract class EBase(private val computable: Computable<*>,
      * The Equipment Classes define how the calculations are supposed to be done
      * */
     abstract fun cost(vararg params: Any): Double
-    abstract fun costPreState(element: JsonElement?): Double
+    abstract fun costPreState(elements: List<JsonElement?>): Double
     abstract fun costPostState(element: JsonElement, dataHolder: DataHolder): Double
 
     /**

@@ -55,7 +55,7 @@ class Halogen (private val computable: Computable<*>, utilityRateGas: UtilityRat
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(element: JsonElement?): Double {
+    override fun costPreState(element: List<JsonElement?>): Double {
         val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
         energyAtPreState = powerUsed * usageHoursSpecific.yearly()
 

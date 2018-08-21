@@ -61,7 +61,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(element: JsonElement?): Double {
+    override fun costPreState(element: List<JsonElement?>): Double {
 
         // @Anthony - Verify the Platform Implementation
         // peakHours*.504*peakPrice*powerUsed= cost at Peak rate...

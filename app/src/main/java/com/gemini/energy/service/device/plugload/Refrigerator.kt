@@ -33,7 +33,7 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(element: JsonElement?): Double {
+    override fun costPreState(elements: List<JsonElement?>): Double {
         val powerUsed = hourlyEnergyUsagePre()[0]
         val costElectricity: Double
         costElectricity = costElectricity(powerUsed, super.usageHoursBusiness, super.electricityRate)
