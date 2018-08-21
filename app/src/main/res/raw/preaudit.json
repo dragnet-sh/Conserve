@@ -366,6 +366,110 @@
         }
       ],
       "id": "9"
+    },
+    {
+      "index": 10,
+      "section": "HVAC",
+      "elements": [
+        {
+          "index": 101,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Type",
+          "validation": "",
+          "id": "101"
+        },
+        {
+          "index": 102,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Make",
+          "validation": "",
+          "id": "102"
+        },
+        {
+          "index": 103,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Model #",
+          "validation": "",
+          "id": "103"
+        },
+        {
+          "index": 104,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "EER",
+          "validation": "",
+          "id": "104"
+        },
+        {
+          "index": 105,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "SEER",
+          "validation": "",
+          "id": "105"
+        },
+        {
+          "index": 106,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "HSPF",
+          "validation": "",
+          "id": "106"
+        },
+        {
+          "index": 107,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Cooling Capacity (Btu/hr)",
+          "validation": "",
+          "id": "107"
+        },
+        {
+          "index": 108,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Heating Capacity (Btu/hr)",
+          "validation": "",
+          "id": "108"
+        },
+        {
+          "index": 109,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Heating Type",
+          "validation": "",
+          "id": "109"
+        },
+        {
+          "index": 1010,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Heating Power",
+          "validation": "",
+          "id": "1010"
+        },
+        {
+          "index": 1011,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Age",
+          "validation": "",
+          "id": "1011"
+        },
+        {
+          "index": 1012,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Water_Evaporatively,2:Air_Cooled",
+          "param": "Cooling Type",
+          "validation": "",
+          "id": "1012"
+        }
+      ],
+      "id": "10"
     }
+
   ]
 }
