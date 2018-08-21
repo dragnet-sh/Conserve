@@ -166,7 +166,7 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         return energyPreState.getObservable(remoteExtract) {
-            costPreState()
+            costPreState(it)
         }
     }
 
@@ -263,7 +263,7 @@ abstract class EBase(private val computable: Computable<*>,
      * The Equipment Classes define how the calculations are supposed to be done
      * */
     abstract fun cost(vararg params: Any): Double
-    abstract fun costPreState(): Double
+    abstract fun costPreState(element: JsonElement?): Double
     abstract fun costPostState(element: JsonElement, dataHolder: DataHolder): Double
 
     /**

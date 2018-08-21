@@ -55,7 +55,7 @@ class Incandescent (private val computable: Computable<*>, utilityRateGas: Utili
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(): Double {
+    override fun costPreState(element: JsonElement?): Double {
         val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
         energyAtPreState = powerUsed * usageHoursSpecific.yearly()
 

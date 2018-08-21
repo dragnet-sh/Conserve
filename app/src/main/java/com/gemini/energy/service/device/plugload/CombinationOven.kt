@@ -203,7 +203,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
      * Cost - Pre State
      * The main Cost class does the computing - This way we can use the same Cost class on the Post State
      * */
-    override fun costPreState(): Double {
+    override fun costPreState(element: JsonElement?): Double {
         val cost = Cost()
 
         cost.preHeatEnergy = preHeatEnergy

@@ -42,7 +42,7 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(): Double {
+    override fun costPreState(element: JsonElement?): Double {
 
         val powerUsed = 0.0
         val usageHours = UsageHours()
