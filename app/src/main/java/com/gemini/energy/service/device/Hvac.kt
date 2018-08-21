@@ -137,7 +137,9 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
 
         val powerUsed = power(btu, eer)
 
-        //@Anthony - Confirm the Correct Usage Hours vs Extracted Hours
+        //@Anthony
+        // - Confirm the Correct Usage Hours vs Extracted Hours
+        // - There is also [Unit Cost | Labor Cost] Where are we including these
         val usageHours = usageHoursBusiness
 
         return costElectricity(powerUsed, usageHours, electricityRate)

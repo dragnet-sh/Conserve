@@ -30,7 +30,7 @@ class EnergyPreState {
             val jsonElement: MutableList<JsonElement?> = mutableListOf()
             responses.forEach { response ->
                 if (response is JsonArray) {
-                    // ** 1. Create a HashMap of each [RemoteExtract <-> Collection of JsonElement]
+                    // ** 1. Create a list of each response as JSON Element
                     // ** 2. If there are multiple rows returned - send one of the rows - Need to improve on this
                     // ** 3. The Equipment Class knows what to expect and extracts the required data as applicable
                     try {
@@ -51,7 +51,6 @@ class EnergyPreState {
                 preRow[field] = if (featureData.containsKey(field)) featureData[field].toString() else ""
             }
 
-            //ToDo: Pass the JsonElement HasMap to the Cost - Now the Specific Child Class can consume this
             val costValue = cost(jsonElement)
             dataHolderPreState.header?.add("__electric_cost")
             preRow["__electric_cost"] = costValue.toString()

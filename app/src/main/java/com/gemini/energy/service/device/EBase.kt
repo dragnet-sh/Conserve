@@ -349,7 +349,7 @@ abstract class EBase(private val computable: Computable<*>,
         // ** Load the Efficient Query for each of the Zone Type **
         val query = when (computable.auditScopeType) {
             EZoneType.HVAC          -> queryHVACAlternative()
-            EZoneType.Plugload      -> queryEfficientFilter()
+            EZoneType.Plugload      -> queryEfficientFilter() //ToDo: Need to have a specific PlugLoad Filter
             else -> ""
         }
 
