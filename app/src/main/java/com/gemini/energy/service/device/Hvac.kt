@@ -11,12 +11,14 @@ import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonElement
 import io.reactivex.Observable
+import org.json.JSONObject
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
            usageHours: UsageHours, outgoingRows: OutgoingRows, private val context: Context) :
         EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
-
 
     /**
      * Entry Point
@@ -25,10 +27,95 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
         return super.compute(extra = ({ Timber.d(it) }))
     }
 
+    companion object {
+
+        /**
+         * Conversion Factor from Watts to Kilo Watts
+         * */
+        private const val KW_CONVERSION = 0.001
+
+        private const val HVAC_EER = "hvac_eer"
+        private const val HVAC_COOLING_HOURS = "cooling_hours"
+        private const val HVAC_EFFICIENCY = "hvac_efficiency"
+
+        /**
+         * Fetches the EER based on the specific Match Criteria via the Parse API
+         * */
+        fun extractEER(elements: List<JsonElement?>): Double {
+            elements.forEach {
+                it?.let {
+                    if (it.asJsonObject.has("eer")) {
+                        return it.asJsonObject.get("eer").asDouble
+                    }
+                }
+            }
+            return 0.0
+        }
+
+        /**
+         * Fetches the Hours based on the City
+         * @Anthony - Verify where we are using the Extracted Hours ??
+         * */
+        fun extractHours(elements: List<JsonElement?>): Int {
+            elements.forEach {
+                it?.let {
+                    if (it.asJsonObject.has("hours")) {
+                        return it.asJsonObject.get("hours").asInt
+                    }
+                }
+            }
+            return 0
+        }
+
+        /**
+         * HVAC - Power Consumed
+         * */
+        fun power(btu: Int, eer: Double) = (btu / eer) * KW_CONVERSION
+
+        /**
+         * Year At - Current minus the Age
+         * */
+        private val dateFormatter = SimpleDateFormat("yyyy", Locale.ENGLISH)
+        fun getYear(age: Int): Int {
+            val calendar = Calendar.getInstance()
+            calendar.add(Calendar.YEAR, "-$age".toInt()) //** Subtracting the Age **
+            return dateFormatter.format(calendar.time).toInt()
+        }
+    }
+
+    /**
+     * HVAC - Energy Efficiency Ratio
+     * If not available - Build a match criteria at queryHVACEer()
+     * 1. Primary Match - [year equals (Current Year minus 20)]
+     * 2. Secondary Match - [size_btu_per_hr_min > BTU < size_btu_per_hr_max]
+     * */
+    private var eer = 0.0
+
+    /**
+     * HVAC - Age
+     * */
+    private var age = 0
+
+    /**
+     * HVAC - British Thermal Unit
+     * */
+    private var btu = 0
+
+    /**
+     * City | State
+     * */
+    private var city: String = ""
+    private var state: String = ""
 
     override fun setup() {
         try {
-            val tmp = featureData[""]!! as Double
+            eer = preAudit["EER"]!! as Double
+            age = preAudit["Age"]!! as Int
+            btu = preAudit["Cooling Capacity (Btu/hr)"]!! as Int
+
+            city = preAudit["City"]!! as String
+            state = preAudit["State"]!! as String
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -42,10 +129,16 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(element: JsonElement?): Double {
+    override fun costPreState(elements: List<JsonElement?>): Double {
 
-        val powerUsed = 0.0
-        val usageHours = UsageHours()
+        if (eer == 0.0) {
+            eer = extractEER(elements)
+        }
+
+        val powerUsed = power(btu, eer)
+
+        //@Anthony - Confirm the Correct Usage Hours vs Extracted Hours
+        val usageHours = usageHoursBusiness
 
         return costElectricity(powerUsed, usageHours, electricityRate)
     }
@@ -59,8 +152,20 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
         Timber.d("!!! COST POST STATE - HVAC !!!")
         Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
-        return -99.99
+        var postSize = 0
+        var postEER = 0.0
 
+        try {
+            postSize = element.asJsonObject.get("size_btu_per_hour").asInt
+            postEER = element.asJsonObject.get("eer").asDouble
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val postPowerUsed = power(postSize, postEER)
+        val postUsageHours = usageHoursBusiness
+
+        return costElectricity(postPowerUsed, postUsageHours, electricityRate)
     }
 
     /**
@@ -89,8 +194,26 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
     /**
      * Energy Efficiency Lookup Query Definition
      * */
-    override fun efficientLookup() = false
+    override fun efficientLookup() = true
     override fun queryEfficientFilter() = ""
+
+    override fun queryHVACAlternative() = JSONObject()
+            .put("data.type", HVAC_EFFICIENCY)
+            .put("data.size_btu_hr", btu)
+            .toString()
+
+    override fun queryHVACEer() = JSONObject()
+            .put("data.type", HVAC_EER)
+            .put("data.year", getYear(age))
+            .put("data.size_btu_per_hr_min", JSONObject().put("\$gte", btu))
+            .put("data.size_btu_per_hr_max", JSONObject().put("\$lte", btu))
+            .toString()
+
+    override fun queryHVACCoolingHours() = JSONObject()
+            .put("data.type", HVAC_COOLING_HOURS)
+            .put("data.city", "Cheyenne")
+            .put("data.state", "WY")
+            .toString()
 
     /**
      * State if the Equipment has a Post UsageHours Hours (Specific) ie. A separate set of
