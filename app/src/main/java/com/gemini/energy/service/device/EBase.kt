@@ -5,6 +5,7 @@ import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.internal.AppSchedulers
 import com.gemini.energy.presentation.util.EDay
 import com.gemini.energy.presentation.util.ELightingType
+import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.service.CostElectric
 import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.OutgoingRows
@@ -152,7 +153,19 @@ abstract class EBase(private val computable: Computable<*>,
         energyPreState.featureDataFields = featureDataFields()
         energyPreState.computable = computable
 
-        return energyPreState.getObservable {
+        // ** Prepare a list of Observable - Extractor that is required by each of the Zone Type **
+        val extractorHVAC = listOf(dataExtractHVAC(queryHVACCoolingHours()),
+                dataExtractHVAC(queryHVACEer()))
+
+        val extractorNone = listOf(Observable.just(JsonArray()))
+
+        // ** Extractor List gets called depending on the Zone Type **
+        val remoteExtract = when (computable.auditScopeType) {
+            EZoneType.HVAC      -> extractorHVAC
+            else                -> extractorNone
+        }
+
+        return energyPreState.getObservable(remoteExtract) {
             costPreState()
         }
     }
@@ -173,7 +186,7 @@ abstract class EBase(private val computable: Computable<*>,
         return starValidator(queryEnergyStar())
                 .flatMap {
                     if (it && efficientLookup()) {
-                        efficientAlternative(queryEfficientFilter()).map(mapper)
+                        efficientAlternative().map(mapper)
                     } else {
                         Observable.just(DataHolder()).map { dataHolder ->
                             costPostState(JsonPrimitive(-99.99), dataHolder)
@@ -292,6 +305,33 @@ abstract class EBase(private val computable: Computable<*>,
             .toString()
 
     /**
+     * HVAC Efficiency Query
+     * */
+    open fun queryHVACAlternative() = JSONObject()
+            .put("data.type", "hvac_efficiency")
+            .put("data.size_btu_hr", 9000)
+            .toString()
+
+    /**
+     * HVAC Cooling Hours Query
+     * */
+    open fun queryHVACCoolingHours() = JSONObject()
+            .put("data.type", "cooling_hours")
+            .put("data.city", "Cheyenne")
+            .put("data.state", "WY")
+            .toString()
+
+    /**
+     * HVAC EER Query
+     * */
+    open fun queryHVACEer() = JSONObject()
+            .put("data.type", "hvac_eer")
+            .put("data.year", 1996)
+            .put("data.size_btu_per_hr_min", JSONObject().put("\$gte", 70000))
+            .put("data.size_btu_per_hr_max", JSONObject().put("\$lte", 70000))
+            .toString()
+
+    /**
      * Get the Specific Query Result from the Parse API
      * */
     private fun starValidator(query: String): Observable<Boolean> {
@@ -300,7 +340,18 @@ abstract class EBase(private val computable: Computable<*>,
                 .toObservable()
     }
 
-    private fun efficientAlternative(query: String): Observable<JsonArray> {
+    /**
+     * Generic Query to retrieve the Energy Efficient
+     * */
+    private fun efficientAlternative(): Observable<JsonArray> {
+
+        // ** Load the Efficient Query for each of the Zone Type **
+        val query = when (computable.auditScopeType) {
+            EZoneType.HVAC          -> queryHVACAlternative()
+            EZoneType.Plugload      -> queryEfficientFilter()
+            else -> ""
+        }
+
         return parseAPIService.fetchPlugload(query)
                 .map { it.getAsJsonArray("results") }
                 .toObservable()
@@ -308,6 +359,12 @@ abstract class EBase(private val computable: Computable<*>,
 
     private fun laborCost(query: String): Observable<JsonArray> {
         return parseAPIService.fetchLaborCost(query)
+                .map { it.getAsJsonArray("results") }
+                .toObservable()
+    }
+
+    private fun dataExtractHVAC(query: String): Observable<JsonArray> {
+        return parseAPIService.fetchHVAC(query)
                 .map { it.getAsJsonArray("results") }
                 .toObservable()
     }
