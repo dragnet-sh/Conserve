@@ -32,9 +32,12 @@ abstract class ComputableFactory {
                 EZoneType.Plugload                  -> PlugloadFactory(utilityRateGas,
                         utilityRateElectricity, usageHours, outgoingRows)
 
-                EZoneType.HVAC                      -> HvacFactory()
+                EZoneType.HVAC                      -> HvacFactory(utilityRateGas,
+                        utilityRateElectricity, usageHours, outgoingRows, context)
+
                 EZoneType.Lighting                  -> LightingFactory(utilityRateGas,
                         utilityRateElectricity, usageHours, outgoingRows, context)
+
                 EZoneType.Motors                    -> MotorFactory()
                 EZoneType.Others                    -> GeneralFactory()
             }
@@ -49,8 +52,10 @@ class PlugloadFactory(private val utilityRateGas: UtilityRate,
 
     override fun build(): IComputable {
         return when(computable.auditScopeSubType as EApplianceType) {
+
             EApplianceType.CombinationOven          -> CombinationOven(computable,
                     utilityRateGas, utilityRateElectricity, usageHours, outgoingRows)
+
             EApplianceType.ConvectionOven           -> ConvectionOven()
             EApplianceType.ConveyorOven             -> ConveyorOven()
             EApplianceType.Fryer                    -> Fryer()
@@ -90,8 +95,15 @@ class LightingFactory(private val utilityRateGas: UtilityRate,
     }
 }
 
-class HvacFactory : ComputableFactory() {
-    override fun build() = Hvac()
+class HvacFactory(private val utilityRateGas: UtilityRate,
+                  private val utilityRateElectricity: UtilityRate,
+                  private val usageHours: UsageHours,
+                  private val outgoingRows: OutgoingRows,
+                  private val context: Context) : ComputableFactory() {
+
+    override fun build(): IComputable = Hvac(computable,
+            utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
 }
 
 class MotorFactory : ComputableFactory() {
