@@ -17,6 +17,9 @@ class ParseAPI {
 
         @GET("classes/LaborCost")
         fun fetchLaborCost(@Query("where") where: String): Single<JsonObject>
+
+        @GET("classes/HVAC")
+        fun fetchHVAC(@Query("where") where: String): Single<JsonObject>
     }
 
     companion object {
