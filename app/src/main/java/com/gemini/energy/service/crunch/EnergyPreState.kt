@@ -3,6 +3,7 @@ package com.gemini.energy.service.crunch
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.service.DataHolder
 import com.google.gson.JsonArray
+import com.google.gson.JsonElement
 import io.reactivex.Observable
 import timber.log.Timber
 import java.util.*
@@ -23,15 +24,21 @@ class EnergyPreState {
         return dataHolderPreState
     }
 
-    fun getObservable(remoteExtract: List<Observable<JsonArray>>, cost: () -> Double): Observable<DataHolder> {
+    fun getObservable(remoteExtract: List<Observable<JsonArray>>, cost: (JsonElement?) -> Double): Observable<DataHolder> {
         return Observable.zip(remoteExtract, { responses ->
             Timber.d("##### Pre-State Energy Calculation - (${thread()}) #####")
+            var jsonElement: JsonElement? = null
             responses.forEach { response ->
                 if (response is JsonArray) {
-                    //ToDo: Create a HashMap of each [RemoteExtract <-> Collection of JsonElement]
+                    // ** 1. Create a HashMap of each [RemoteExtract <-> Collection of JsonElement]
+                    // ** 2. If there are multiple rows returned - send one of the rows - Need to improve on this
+                    // ** 3. The Equipment Class knows what to expect and extracts the required data as applicable
                     try {
                         val jsonElements = response.map { it.asJsonObject.get("data") }
                         Timber.d(jsonElements.toString())
+                        if (jsonElements.count() > 0) {
+                            jsonElement = jsonElements[0]
+                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -45,7 +52,7 @@ class EnergyPreState {
             }
 
             //ToDo: Pass the JsonElement HasMap to the Cost - Now the Specific Child Class can consume this
-            val costValue = cost()
+            val costValue = cost(jsonElement)
             dataHolderPreState.header?.add("__electric_cost")
             preRow["__electric_cost"] = costValue.toString()
 
