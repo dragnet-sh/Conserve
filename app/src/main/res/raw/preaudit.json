@@ -397,7 +397,7 @@
         },
         {
           "index": 104,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "EER",
           "validation": "",
@@ -466,10 +466,21 @@
           "param": "Cooling Type",
           "validation": "",
           "id": "1012"
+        },
+        {
+          "index": 1013,
+          "dataType": "textrow",
+          "param": "City",
+          "id": "1013"
+        },
+        {
+          "index": 1014,
+          "dataType": "textrow",
+          "param": "State",
+          "id": "1014"
         }
       ],
       "id": "10"
     }
-
   ]
 }
