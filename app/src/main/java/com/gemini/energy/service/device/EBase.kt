@@ -306,31 +306,11 @@ abstract class EBase(private val computable: Computable<*>,
             .toString()
 
     /**
-     * HVAC Efficiency Query
+     * HVAC Query - Should be overridden by the HVAC Equipment Implementor
      * */
-    open fun queryHVACAlternative() = JSONObject()
-            .put("type", "hvac_efficiency")
-            .put("data.size_btu_hr", 9000)
-            .toString()
-
-    /**
-     * HVAC Cooling Hours Query
-     * */
-    open fun queryHVACCoolingHours() = JSONObject()
-            .put("type", "cooling_hours")
-            .put("data.city", "Cheyenne")
-            .put("data.state", "WY")
-            .toString()
-
-    /**
-     * HVAC EER Query
-     * */
-    open fun queryHVACEer() = JSONObject()
-            .put("type", "hvac_eer")
-            .put("data.year", 1996)
-            .put("data.size_btu_per_hr_min", JSONObject().put("\$gte", 70000))
-            .put("data.size_btu_per_hr_max", JSONObject().put("\$lte", 70000))
-            .toString()
+    open fun queryHVACAlternative() = ""
+    open fun queryHVACCoolingHours() = ""
+    open fun queryHVACEer() = ""
 
     /**
      * Get the Specific Query Result from the Parse API
