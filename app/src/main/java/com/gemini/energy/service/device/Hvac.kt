@@ -7,6 +7,7 @@ import com.gemini.energy.presentation.form.FormMapper
 import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
+import com.gemini.energy.service.type.UsageHVAC
 import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonElement
@@ -145,13 +146,11 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
         Timber.d("::: DATA EXTRACTOR - HVAC :::")
         Timber.d(elements.toString())
 
+        val hoursExtract = extractHours(elements)
+        val usageHours = UsageHVAC(usageHoursBusiness, isTOU(), hoursExtract)
+        Timber.d(usageHours.toString())
+
         val powerUsed = power(btu, eer)
-
-        //@Anthony
-        // - Confirm the Correct Usage Hours vs Extracted Hours
-        // - There is also [Unit Cost | Labor Cost] Where are we including these
-        val usageHours = usageHoursBusiness
-
         return costElectricity(powerUsed, usageHours, electricityRate)
     }
 
