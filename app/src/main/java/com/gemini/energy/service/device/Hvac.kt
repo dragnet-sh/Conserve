@@ -136,6 +136,15 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
             eer = extractEER(elements)
         }
 
+        Timber.d("::: PARAM - HVAC :::")
+        Timber.d("EER -- $eer")
+        Timber.d("AGE -- $age")
+        Timber.d("BTU -- $btu")
+        Timber.d("YEAR -- ${getYear(age)}")
+
+        Timber.d("::: DATA EXTRACTOR - HVAC :::")
+        Timber.d(elements.toString())
+
         val powerUsed = power(btu, eer)
 
         //@Anthony
