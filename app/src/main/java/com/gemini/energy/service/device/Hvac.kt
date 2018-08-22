@@ -55,6 +55,7 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
         /**
          * Fetches the Hours based on the City
          * @Anthony - Verify where we are using the Extracted Hours ??
+         * This is used to calculate the Energy
          * */
         fun extractHours(elements: List<JsonElement?>): Int {
             elements.forEach {
@@ -165,7 +166,8 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
         }
 
         val postPowerUsed = power(postSize, postEER)
-        val postUsageHours = usageHoursBusiness
+        val postUsageHours = usageHoursBusiness // ** The Cooling Hours ** //
+        //The usage hours is gonna be the same like we have for the Pre State
 
         return costElectricity(postPowerUsed, postUsageHours, electricityRate)
     }
@@ -200,21 +202,21 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
     override fun queryEfficientFilter() = ""
 
     override fun queryHVACAlternative() = JSONObject()
-            .put("data.type", HVAC_EFFICIENCY)
+            .put("type", HVAC_EFFICIENCY)
             .put("data.size_btu_hr", btu)
             .toString()
 
     override fun queryHVACEer() = JSONObject()
-            .put("data.type", HVAC_EER)
+            .put("type", HVAC_EER)
             .put("data.year", getYear(age))
-            .put("data.size_btu_per_hr_min", JSONObject().put("\$gte", btu))
-            .put("data.size_btu_per_hr_max", JSONObject().put("\$lte", btu))
+            .put("data.size_btu_per_hr_min", JSONObject().put("\$lte", btu))
+            .put("data.size_btu_per_hr_max", JSONObject().put("\$gte", btu))
             .toString()
 
     override fun queryHVACCoolingHours() = JSONObject()
-            .put("data.type", HVAC_COOLING_HOURS)
-            .put("data.city", "Cheyenne")
-            .put("data.state", "WY")
+            .put("type", HVAC_COOLING_HOURS)
+            .put("data.city", city)
+            .put("data.state", state)
             .toString()
 
     /**

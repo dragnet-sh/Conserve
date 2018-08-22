@@ -185,7 +185,7 @@ abstract class EBase(private val computable: Computable<*>,
 
         return starValidator(queryEnergyStar())
                 .flatMap {
-                    if (it && efficientLookup()) {
+                    if (efficientLookup()) {
                         efficientAlternative().map(mapper)
                     } else {
                         Observable.just(DataHolder()).map { dataHolder ->
@@ -309,7 +309,7 @@ abstract class EBase(private val computable: Computable<*>,
      * HVAC Efficiency Query
      * */
     open fun queryHVACAlternative() = JSONObject()
-            .put("data.type", "hvac_efficiency")
+            .put("type", "hvac_efficiency")
             .put("data.size_btu_hr", 9000)
             .toString()
 
@@ -317,7 +317,7 @@ abstract class EBase(private val computable: Computable<*>,
      * HVAC Cooling Hours Query
      * */
     open fun queryHVACCoolingHours() = JSONObject()
-            .put("data.type", "cooling_hours")
+            .put("type", "cooling_hours")
             .put("data.city", "Cheyenne")
             .put("data.state", "WY")
             .toString()
@@ -326,7 +326,7 @@ abstract class EBase(private val computable: Computable<*>,
      * HVAC EER Query
      * */
     open fun queryHVACEer() = JSONObject()
-            .put("data.type", "hvac_eer")
+            .put("type", "hvac_eer")
             .put("data.year", 1996)
             .put("data.size_btu_per_hr_min", JSONObject().put("\$gte", 70000))
             .put("data.size_btu_per_hr_max", JSONObject().put("\$lte", 70000))
