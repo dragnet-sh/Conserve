@@ -38,7 +38,9 @@ abstract class ComputableFactory {
                 EZoneType.Lighting                  -> LightingFactory(utilityRateGas,
                         utilityRateElectricity, usageHours, outgoingRows, context)
 
-                EZoneType.Motors                    -> MotorFactory()
+                EZoneType.Motors                    -> MotorFactory(utilityRateGas,
+                        utilityRateElectricity, usageHours, outgoingRows, context)
+
                 EZoneType.Others                    -> GeneralFactory()
             }
        }
@@ -106,8 +108,15 @@ class HvacFactory(private val utilityRateGas: UtilityRate,
 
 }
 
-class MotorFactory : ComputableFactory() {
-    override fun build() = Motors()
+class MotorFactory(private val utilityRateGas: UtilityRate,
+                   private val utilityRateElectricity: UtilityRate,
+                   private val usageHours: UsageHours,
+                   private val outgoingRows: OutgoingRows,
+                   private val context: Context) : ComputableFactory() {
+
+    override fun build() = Motors(computable,
+            utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
 }
 
 class GeneralFactory : ComputableFactory() {
