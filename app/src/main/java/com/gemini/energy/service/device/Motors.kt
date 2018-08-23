@@ -8,6 +8,7 @@ import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UsageMotors
 import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonElement
 import io.reactivex.Observable
@@ -24,9 +25,30 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
         return super.compute(extra = ({ Timber.d(it) }))
     }
 
+    // @Anthony - Verify the Data Type for each of the Parameters
+    private var srs = 0
+    private var mrs = 0
+    private var nrs = 0
+    private var hp = 0
+    private var efficiency = 0.0
+    private var hourPercentage = 0.0
+
+    private var peakHours = 0.0
+    private var partPeakHours = 0.0
+    private var offPeakHours = 0.0
+
     override fun setup() {
         try {
+            srs = featureData["Synchronous Rotational Speed (SRS)"]!! as Int
+            mrs = featureData["Measured Rotational Speed (MRS)"]!! as Int
+            nrs = featureData["Nameplate Rotational Speed (NRS)"]!! as Int
+            hp = featureData["Horsepower (HP)"]!! as Int
+            efficiency = featureData["Efficiency"]!! as Double
+            hourPercentage = featureData["Hours (%)"]!! as Double
 
+            peakHours = featureData["Peak Hours"]!! as Double
+            partPeakHours = featureData["Part Peak Hours"]!! as Double
+            offPeakHours = featureData["Off Peak Hours"]!! as Double
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -40,10 +62,14 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
     /**
      * Cost - Pre State
      * */
-    override fun costPreState(element: List<JsonElement?>): Double {
+    override fun costPreState(elements: List<JsonElement?>): Double {
 
-        val powerUsed = 0.0
-        val usageHours = UsageHours()
+        val percentageLoad = (srs - mrs) / (srs - nrs)
+        val powerUsed = hp * 0.746 * percentageLoad / efficiency
+        val usageHours = UsageMotors()
+        usageHours.peakHours = peakHours
+        usageHours.partPeakHours = partPeakHours
+        usageHours.offPeakHours = offPeakHours
 
         return costElectricity(powerUsed, usageHours, electricityRate)
     }
@@ -53,6 +79,7 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
      * */
     override fun costPostState(element: JsonElement, dataHolder: DataHolder): Double {
 
+        // @Anthony - Post State Implementation ??
         Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         Timber.d("!!! COST POST STATE - Motors !!!")
         Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
