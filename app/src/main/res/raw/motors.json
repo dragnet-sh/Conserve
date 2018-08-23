@@ -1,1 +1,115 @@
-{"geminiForm": [{"index": 1, "section": "Motors", "elements": [{"index": 11, "dataType": "textrow", "defaultValues": "", "param": "Make", "validation": "", "id": "11"}, {"index": 12, "dataType": "textrow", "defaultValues": "", "param": "Model", "validation": "", "id": "12"}, {"index": 13, "dataType": "introw", "defaultValues": "", "param": "Horsepower (HP)", "validation": "", "id": "13"}, {"index": 14, "dataType": "introw", "defaultValues": "", "param": "Nameplate Rotational Speed (NRS)", "validation": "", "id": "14"}, {"index": 15, "dataType": "introw", "defaultValues": "", "param": "Measured Rotational Speed (MRS)", "validation": "", "id": "15"}, {"index": 16, "dataType": "introw", "defaultValues": "", "param": "Synchronous Rotational Speed (SRS)", "validation": "", "id": "16"}, {"index": 17, "dataType": "introw", "defaultValues": "", "param": "Efficiency", "validation": "", "id": "17"}, {"index": 18, "dataType": "introw", "defaultValues": "", "param": "Hours (%)", "validation": "", "id": "18"}, {"index": 19, "dataType": "pickerinputrow", "defaultValues": "1:total enclosed,2:open drip", "param": "Enclosure Type", "validation": "", "id": "19"}, {"index": 110, "dataType": "introw", "defaultValues": "", "param": "Peak Hours", "validation": "", "id": "110"}, {"index": 111, "dataType": "introw", "defaultValues": "", "param": "Part Peak Hours", "validation": "", "id": "111"}, {"index": 112, "dataType": "introw", "defaultValues": "", "param": "Off Peak Hours", "validation": "", "id": "112"}, {"index": 113, "dataType": "pickerinputrow", "defaultValues": "1:Yes,2:No", "param": "Used During Peak", "validation": "", "id": "113"}], "id": "1"}]}
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "Motors",
+      "elements": [
+        {
+          "index": 11,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Make",
+          "validation": "",
+          "id": "11"
+        },
+        {
+          "index": 12,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Model",
+          "validation": "",
+          "id": "12"
+        },
+        {
+          "index": 13,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Horsepower (HP)",
+          "validation": "",
+          "id": "13"
+        },
+        {
+          "index": 14,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Nameplate Rotational Speed (NRS)",
+          "validation": "",
+          "id": "14"
+        },
+        {
+          "index": 15,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Measured Rotational Speed (MRS)",
+          "validation": "",
+          "id": "15"
+        },
+        {
+          "index": 16,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Synchronous Rotational Speed (SRS)",
+          "validation": "",
+          "id": "16"
+        },
+        {
+          "index": 17,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Efficiency",
+          "validation": "",
+          "id": "17"
+        },
+        {
+          "index": 18,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Hours (%)",
+          "validation": "",
+          "id": "18"
+        },
+        {
+          "index": 19,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:total enclosed,2:open drip",
+          "param": "Enclosure Type",
+          "validation": "",
+          "id": "19"
+        },
+        {
+          "index": 110,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Peak Hours",
+          "validation": "",
+          "id": "110"
+        },
+        {
+          "index": 111,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Part Peak Hours",
+          "validation": "",
+          "id": "111"
+        },
+        {
+          "index": 112,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Off Peak Hours",
+          "validation": "",
+          "id": "112"
+        },
+        {
+          "index": 113,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Yes,2:No",
+          "param": "Used During Peak",
+          "validation": "",
+          "id": "113"
+        }
+      ],
+      "id": "1"
+    }
+  ]
+}
