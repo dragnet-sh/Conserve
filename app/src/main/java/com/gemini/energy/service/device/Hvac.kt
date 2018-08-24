@@ -71,6 +71,8 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
         /**
          * HVAC - Power Consumed
+         * There could be a case where the User will input the value in KW - If that happens we need to convert the KW
+         * int BTU / hr :: 1KW equals 3412.142
          * */
         fun power(btu: Int, eer: Double) = (btu / eer) * KW_CONVERSION
 
