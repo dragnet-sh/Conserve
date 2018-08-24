@@ -22,7 +22,7 @@
         },
         {
           "index": 13,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Horsepower (HP)",
           "validation": "",
@@ -54,7 +54,7 @@
         },
         {
           "index": 17,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Efficiency",
           "validation": "",
@@ -62,7 +62,7 @@
         },
         {
           "index": 18,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Hours (%)",
           "validation": "",
@@ -78,7 +78,7 @@
         },
         {
           "index": 110,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Peak Hours",
           "validation": "",
@@ -86,7 +86,7 @@
         },
         {
           "index": 111,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Part Peak Hours",
           "validation": "",
@@ -94,7 +94,7 @@
         },
         {
           "index": 112,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Off Peak Hours",
           "validation": "",

@@ -25,11 +25,19 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
         return super.compute(extra = ({ Timber.d(it) }))
     }
 
-    // @Anthony - Verify the Data Type for each of the Parameters
+    companion object {
+
+        /**
+         * Conversion Factor from Horse Power to Kilo Watts
+         * */
+        private const val KW_CONVERSION = 0.746
+
+    }
+
     private var srs = 0
     private var mrs = 0
     private var nrs = 0
-    private var hp = 0
+    private var hp = 0.0
     private var efficiency = 0.0
     private var hourPercentage = 0.0
 
@@ -42,7 +50,7 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
             srs = featureData["Synchronous Rotational Speed (SRS)"]!! as Int
             mrs = featureData["Measured Rotational Speed (MRS)"]!! as Int
             nrs = featureData["Nameplate Rotational Speed (NRS)"]!! as Int
-            hp = featureData["Horsepower (HP)"]!! as Int
+            hp = featureData["Horsepower (HP)"]!! as Double
             efficiency = featureData["Efficiency"]!! as Double
             hourPercentage = featureData["Hours (%)"]!! as Double
 
@@ -65,7 +73,8 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
     override fun costPreState(elements: List<JsonElement?>): Double {
 
         val percentageLoad = (srs - mrs) / (srs - nrs)
-        val powerUsed = hp * 0.746 * percentageLoad / efficiency
+        val powerUsed = hp * KW_CONVERSION * percentageLoad / efficiency
+
         val usageHours = UsageMotors()
         usageHours.peakHours = peakHours
         usageHours.partPeakHours = partPeakHours
@@ -79,7 +88,7 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
      * */
     override fun costPostState(element: JsonElement, dataHolder: DataHolder): Double {
 
-        // @Anthony - Post State Implementation ??
+        // @Anthony - Post State Implementation ?? Yet to determine.
         Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
         Timber.d("!!! COST POST STATE - Motors !!!")
         Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
