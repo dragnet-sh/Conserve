@@ -29,7 +29,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     }
 
     private var actualWatts = 0.0
-    private var lampsPerFixtures = 0
+    private var ballastsPerFixtures = 0
     private var numberOfFixtures = 0
     private var peakHours = 0.0
     private var partPeakHours = 0.0
@@ -43,7 +43,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     override fun setup() {
         try {
             actualWatts = featureData["Actual Watts"]!! as Double
-            lampsPerFixtures = featureData["Lamps Per Fixture"]!! as Int
+            ballastsPerFixtures = featureData["Ballasts Per Fixture"]!! as Int
             numberOfFixtures = featureData["Number of Fixtures"]!! as Int
             peakHours = featureData["Peak Hours"]!! as Double
             partPeakHours = featureData["Part Peak Hours"]!! as Double
@@ -66,7 +66,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         // @Anthony - Verify the Platform Implementation
         // peakHours*.504*peakPrice*powerUsed= cost at Peak rate...
 
-        val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
+        val powerUsed = actualWatts * ballastsPerFixtures * numberOfFixtures / 1000
 
         val usageHours = UsageLighting()
         usageHours.peakHours = peakHours
@@ -88,7 +88,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
         val lifeHours = lightingConfig(ELightingType.CFL)[ELightingIndex.LifeHours.value] as Double
-        val maintenanceSavings = lampsPerFixtures * numberOfFixtures * 3.0 * usageHoursSpecific.yearly() / lifeHours
+        val maintenanceSavings = ballastsPerFixtures * numberOfFixtures * 3.0 * usageHoursSpecific.yearly() / lifeHours
 
         // Delta is going to be Power Used * Percentage Hour Reduced
         // Percentage Hour Reduced - we get it from the Base - ELighting
@@ -134,10 +134,10 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
      * PowerTimeChange >> Energy Efficiency Calculations
      * */
     override fun energyPowerChange(): Double {
-        val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
+        val powerUsed = actualWatts * ballastsPerFixtures * numberOfFixtures / 1000
         val config = lightingConfig(ELightingType.CFL)
-        val percentageHoursReduced = config[ELightingIndex.PercentHoursReduced.value] as Double
-        return powerUsed * percentageHoursReduced
+        val percentPowerReduced = config[ELightingIndex.PercentPowerReduced.value] as Double
+        return powerUsed * percentPowerReduced
     }
 
     override fun energyTimeChange(): Double = 0.0
