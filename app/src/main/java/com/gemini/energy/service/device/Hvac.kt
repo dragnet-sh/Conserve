@@ -17,7 +17,7 @@ import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 
-class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
+class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
            usageHours: UsageHours, outgoingRows: OutgoingRows, private val context: Context) :
         EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
 
@@ -199,7 +199,27 @@ class Hvac(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateEl
     /**
      * PowerTimeChange >> Energy Efficiency Calculations
      * */
-    override fun energyPowerChange(): Double = 0.0
+    override fun energyPowerChange(): Double {
+        var eerPS = 0.0
+
+        val element = computable.efficientAlternative
+        element?.let {
+            try {
+                eerPS = it.asJsonObject.get("eer").asDouble
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        val deltaEER = eerPS - eer
+        val delta = power(btu, deltaEER) * usageHoursBusiness.yearly()
+
+        Timber.d("Delta EER :: $deltaEER")
+        Timber.d("Delta :: $delta")
+
+        return delta
+    }
+
     override fun energyTimeChange(): Double = 0.0
     override fun energyPowerTimeChange(): Double = 0.0
 
