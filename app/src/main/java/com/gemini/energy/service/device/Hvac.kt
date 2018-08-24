@@ -148,6 +148,7 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
         val hoursExtract = extractHours(elements)
         val usageHours = UsageHVAC(usageHoursBusiness, isTOU(), hoursExtract)
+        computable.udf1 = usageHours
         Timber.d(usageHours.toString())
 
         val powerUsed = power(btu, eer)
@@ -174,8 +175,7 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         }
 
         val postPowerUsed = power(postSize, postEER)
-        val postUsageHours = usageHoursBusiness // ** The Cooling Hours ** //
-        //The usage hours is gonna be the same like we have for the Pre State
+        val postUsageHours = computable.udf1 as UsageHVAC
 
         return costElectricity(postPowerUsed, postUsageHours, electricityRate)
     }
