@@ -424,10 +424,11 @@ abstract class EBase(private val computable: Computable<*>,
 
     /**
      * Lighting Config - The enum provides the index to the Map
+     * ## Instead of PercentHourReduced this is PercentPowerReduced @ Johnny ##
      * */
     enum class ELightingIndex(val value: Int) {
         LifeHours(0),
-        PercentHoursReduced(1),
+        PercentPowerReduced(1),
         Cooling(2)
     }
 
