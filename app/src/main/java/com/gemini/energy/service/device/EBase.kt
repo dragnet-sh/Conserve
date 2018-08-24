@@ -307,6 +307,12 @@ abstract class EBase(private val computable: Computable<*>,
 
     /**
      * HVAC Query - Should be overridden by the HVAC Equipment Implementor
+     *
+     * Note: These queries are currently being used by the Extractor - Pre State.
+     * Both the Post and Pre State Share this data via UDF defined within the Computable.
+     * This is only possible as the values being used to query are independent of the States.
+     * Need a better alternative that covers the Use-Case where the query parameters can be specific to the
+     * States.
      * */
     open fun queryHVACAlternative() = ""
     open fun queryHVACCoolingHours() = ""
