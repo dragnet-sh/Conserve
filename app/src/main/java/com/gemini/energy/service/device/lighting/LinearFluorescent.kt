@@ -110,7 +110,13 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
     /**
      * PowerTimeChange >> Energy Efficiency Calculations
      * */
-    override fun energyPowerChange(): Double = 0.0
+    override fun energyPowerChange(): Double {
+        val powerUsed = actualWatts * ballastsPerFixtures * numberOfFixtures / 1000
+        val config = lightingConfig(ELightingType.LinearFluorescent)
+        val percentageHoursReduced = config[ELightingIndex.PercentHoursReduced.value] as Double
+        return powerUsed * percentageHoursReduced
+    }
+
     override fun energyTimeChange(): Double = 0.0
     override fun energyPowerTimeChange(): Double = 0.0
 

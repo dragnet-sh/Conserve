@@ -89,6 +89,10 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
         val lifeHours = lightingConfig(ELightingType.CFL)[ELightingIndex.LifeHours.value] as Double
         val maintenanceSavings = lampsPerFixtures * numberOfFixtures * 3.0 * usageHoursSpecific.yearly() / lifeHours
+
+        // Delta is going to be Power Used * Percentage Hour Reduced
+        // Percentage Hour Reduced - we get it from the Base - ELighting
+
         val energySavings = energyAtPreState * percentHoursReduced
         val coolingSavings = energySavings * cooling * seer
 
@@ -129,7 +133,13 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     /**
      * PowerTimeChange >> Energy Efficiency Calculations
      * */
-    override fun energyPowerChange(): Double = 0.0
+    override fun energyPowerChange(): Double {
+        val powerUsed = actualWatts * lampsPerFixtures * numberOfFixtures / 1000
+        val config = lightingConfig(ELightingType.CFL)
+        val percentageHoursReduced = config[ELightingIndex.PercentHoursReduced.value] as Double
+        return powerUsed * percentageHoursReduced
+    }
+
     override fun energyTimeChange(): Double = 0.0
     override fun energyPowerTimeChange(): Double = 0.0
 
