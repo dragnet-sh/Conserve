@@ -46,6 +46,10 @@ data class Computable<SubType>(
         var laborCost: Double,
 
         /**
+         * Holds the Data Extracted from Parse during the Pre State*/
+        var udf1: Any?,
+
+        /**
          * These are the Outgoing Rows to be written to a file
          * */
         var outgoingRows: OutgoingRows?) {
@@ -53,12 +57,13 @@ data class Computable<SubType>(
     constructor(): this(
             NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
             null, null, null, false,
-            null, mutableListOf(), mutableListOf(), null, 0.0, null)
+            null, mutableListOf(), mutableListOf(), null,
+            0.0, null, null)
 
     constructor(auditScopeSubType: SubType) : this(NONE, EMPTY, NONE, EMPTY, NONE, EMPTY,
             null, auditScopeSubType, null, null,
-            false, null, mutableListOf(), mutableListOf(), null, 0.0, null)
-
+            false, null, mutableListOf(), mutableListOf(),
+            null, 0.0, null, null)
 
     fun mappedFeatureAuditScope(): HashMap<String, Any> = featureMapper(featureAuditScope)
     fun mappedFeaturePreAudit(): HashMap<String, Any> = featureMapper(featurePreAudit)
