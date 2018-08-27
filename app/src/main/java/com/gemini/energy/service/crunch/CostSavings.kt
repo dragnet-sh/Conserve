@@ -193,6 +193,7 @@ class CostSavings {
 
             /**
              * Energy UsageHours - Efficient Alternative (Post State)
+             * ToDo - Write the Energy Use for Lighting into the Mapped List
              * */
             fun energyUse(): Double {
                 if ((computable.energyPostStateLeastCost.count() > 0) &&
