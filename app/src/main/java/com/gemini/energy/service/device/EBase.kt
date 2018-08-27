@@ -225,8 +225,10 @@ abstract class EBase(private val computable: Computable<*>,
         mapper.featureData = featureData
         mapper.powerTimeChange = powerTimeChange
 
+        //ToDo: Misleading name - Is this Yearly | Weekly | Monthly | Daily ??
         mapper.hourlyEnergyUsagePre = { hourlyEnergyUsagePre()[0] }
 
+        //@Johnny - This is where the Material Cost is going to be fetched
         fun prerequisite() = laborCost(queryLaborCost())
                 .flatMap { response ->
                     val jsonElements = response.map { it.asJsonObject.get("data") }
