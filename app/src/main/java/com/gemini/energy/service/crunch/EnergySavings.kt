@@ -22,9 +22,11 @@ class EnergySavings {
 
             /**
              * Final Energy Saving
+             * @Johnny - The savings here can be in terms of Power Change - Time Change - PowerTime Change
+             * Also the method name energySaving is misleading
              * */
             val energySaving = ptc.energySaving()
-            Timber.d("Energy Saving : ($energySaving)")
+            Timber.d("PowerTimeChange -- Saving : ($energySaving)")
             Timber.d(ptc.toString())
 
             val energySavingHeader = listOf("__check_power_change", "__check_time_change",
