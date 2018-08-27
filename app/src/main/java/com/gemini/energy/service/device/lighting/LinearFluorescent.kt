@@ -35,7 +35,6 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
 
     private var seer = 10
     private var percentHoursReduced = 1.0
-    private var cooling = 1.0
 
     override fun setup() {
         try {
@@ -58,6 +57,8 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
     override fun costPreState(element: List<JsonElement?>): Double {
         val powerUsed = actualWatts * ballastsPerFixtures * numberOfFixtures / 1000
         energyAtPreState = powerUsed * usageHoursSpecific.yearly()
+        Timber.d("******* Power Used :: ($powerUsed) *******")
+        Timber.d("******* Energy At Pre State :: ($energyAtPreState) *******")
 
         // Usage Hours Specific - Yearly Value is used to Calculate the Cost
         return costElectricity(powerUsed, usageHoursSpecific, electricityRate)
@@ -71,10 +72,15 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
         Timber.d("!!! COST POST STATE - LINEAR FLUORESCENT !!!")
         Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
-        val lifeHours = lightingConfig(ELightingType.LinearFluorescent)[ELightingIndex.LifeHours.value] as Double
+        val config = lightingConfig(ELightingType.LinearFluorescent)
+
+        val lifeHours = config[ELightingIndex.LifeHours.value] as Double
+        val cooling = config[ELightingIndex.Cooling.value] as Double
+        val percentPowerReduced = config[ELightingIndex.PercentPowerReduced.value] as Double
+
         val maintenanceSavings = ballastsPerFixtures * numberOfFixtures * 3.0 * usageHoursSpecific.yearly() / lifeHours
         val coolingSavings = energyAtPreState * cooling * seer
-        val energySavings = energyAtPreState * percentHoursReduced
+        val energySavings = energyAtPreState * percentPowerReduced
 
         val postRow = mutableMapOf<String, String>()
         postRow["__life_hours"] = lifeHours.toString()
