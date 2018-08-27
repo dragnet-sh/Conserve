@@ -18,6 +18,7 @@ class PowerTimeChange {
     var checkTimeChange = false
     var checkPowerTimeChange = false
 
+    //ToDo: Misleading method naming - Remove the energy
     lateinit var energyPowerChange: () -> Double
     lateinit var energyTimeChange: () -> Double
     lateinit var energyPowerTimeChange: () -> Double
@@ -36,6 +37,7 @@ class PowerTimeChange {
 
     /**
      * Returns which ever is true first
+     * @Johnny - What about during cases when all three cases are true ??
      * */
     fun energySaving() = when {
         checkPowerChange            -> energyPowerChange()
