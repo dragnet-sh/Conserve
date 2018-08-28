@@ -247,14 +247,19 @@ class CostSavings {
              * Case 2 : Single Power | Time -- @powerValue
              * ToDo - Need to Populate these from the Post State - [Kinslow] Will do it when implementing any device with two energy e.g., idle and preheat
              * */
-            val powerValues = listOf(0.0, 0.0)
+            val powerValues = listOf<Double>()
 
             /**
              * Single Power Value
              * */
             val preHourlyEnergyUse = hourlyEnergyUsagePre()
             val postHourlyEnergyUse = energyUse()
-            val powerValue = (preHourlyEnergyUse - postHourlyEnergyUse) / 24
+            var powerValue = (preHourlyEnergyUse - postHourlyEnergyUse) / 24
+
+            // *** This has been done for Lightening Specific - May be applicable to other Equipments as well ***
+            if (preHourlyEnergyUse == 0.0) {
+                powerValue = ptc.energySaving() / usageHoursSpecific.yearly()
+            }
 
             Timber.d("----::::---- Power Value ($powerValue) ----::::----")
             Timber.d("----::::---- Power Values ($powerValues) ----::::----")
