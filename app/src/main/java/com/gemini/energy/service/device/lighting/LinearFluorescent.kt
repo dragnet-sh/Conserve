@@ -139,8 +139,8 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
      * Pre and Post are the same for Refrigerator - 24 hrs
      * */
-    override fun usageHoursPre(): Double = usageHoursBusiness.yearly()
-    override fun usageHoursPost(): Double = usageHoursBusiness.yearly()
+    override fun usageHoursPre(): Double = usageHoursSpecific.yearly()
+    override fun usageHoursPost(): Double = usageHoursSpecific.yearly()
 
     /**
      * PowerTimeChange >> Energy Efficiency Calculations
@@ -153,7 +153,7 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
         val powerUsedPost = alternateActualWatts * totalUnitsPost * KW_CONVERSION
         val delta = powerUsedPre - powerUsedPost
 
-        return delta
+        return delta * usageHoursPre()
     }
 
     override fun energyTimeChange(): Double = 0.0
