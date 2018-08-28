@@ -282,7 +282,7 @@
           "index": 72,
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Alternate Lamps Per Fixture",
+          "param": "Alternate Lamps Per Fixtures",
           "validation": "",
           "id": "72"
         },
