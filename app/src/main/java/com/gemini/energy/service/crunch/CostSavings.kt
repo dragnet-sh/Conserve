@@ -382,7 +382,23 @@ class CostSavings {
              * */
             fun demandCostSaving(): Double {
 
-                fun demandCostSavingsYearCalc(power: Double) = blendedDemandRate * power * 12
+                fun demandCostSavingsYearCalc(power: Double): Double {
+
+                    val structure = electricityUtilityRate.structure
+                    val rateSummer: Double
+                    val rateWinter: Double
+
+                    if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
+                        rateSummer = structure[ERateKey.SummerNone.value]!![2].toDouble()
+                        rateWinter = structure[ERateKey.WinterNone.value]!![2].toDouble()
+                    } else {
+                        rateSummer = structure[ERateKey.SummerOff.value]!![2].toDouble()
+                        rateWinter = structure[ERateKey.WinterOff.value]!![2].toDouble()
+                    }
+
+                    return ((powerValue / 2) * 6 * (rateWinter + rateSummer))
+
+                }
 
                 var demandCostSavings = 0.0
                 demandCostSavings = when {
