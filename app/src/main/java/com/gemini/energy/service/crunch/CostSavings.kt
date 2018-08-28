@@ -118,6 +118,7 @@ class CostSavings {
 
             /**
              * ToDo - Where do we get these values from ??
+             * Note: Looks like this is going to be Equipment Specific
              * */
             val maintenanceCostSavings = 0.0
             val otherEquipmentSavings = 0.0
@@ -192,29 +193,6 @@ class CostSavings {
             Timber.d("----::::---- Check For Gas ($checkForGas) ----::::----")
 
             /**
-             * Energy UsageHours - Efficient Alternative (Post State)
-             * ToDo - Write the Energy Use for Lighting into the Mapped List
-             * */
-            fun energyUse(): Double {
-                if ((computable.energyPostStateLeastCost.count() > 0) &&
-                        computable.energyPostStateLeastCost[0].containsKey("daily_energy_use")) {
-
-                    try {
-                        return computable.energyPostStateLeastCost[0].getValue("daily_energy_use").toDouble()
-                    } catch (exception: Exception) {
-                        Timber.e("Exception @ Energy Use (Post State) - toDouble")
-                    }
-                }
-
-                return 0.0
-
-            }
-
-            val energyUse = energyUse()
-
-            Timber.d("----::::---- Energy Use ($energyUse) ----::::----")
-
-            /**
              * Power, Time Change or Both
              * */
             val ptc = powerTimeChange.delta(computable)
@@ -233,6 +211,35 @@ class CostSavings {
             Timber.d("----::::---- Multiple Power Check ($multiplePowerCheck) ----::::----")
             Timber.d("----::::---- Multiple Time Check ($multipleTimeCheck) ----::::----")
             Timber.d("----::::---- Multiple Power Time Check ($multiplePowerTimeCheck) ----::::----")
+
+            /**
+             * Energy UsageHours - Efficient Alternative (Post State)
+             * ToDo - Write the Energy Use for Lighting into the Mapped List
+             * */
+            fun energyUse(): Double {
+                if ((computable.energyPostStateLeastCost.count() > 0) &&
+                        computable.energyPostStateLeastCost[0].containsKey("daily_energy_use")) {
+
+                    try {
+                        return computable.energyPostStateLeastCost[0].getValue("daily_energy_use").toDouble()
+                    } catch (exception: Exception) {
+                        Timber.e("Exception @ Energy Use (Post State) - toDouble")
+                    }
+                } else {
+
+                    // This returns the individualEnergy Delta Computed in the Equipment Class
+                    return ptc.energySaving()
+
+                }
+
+                return 0.0
+
+            }
+
+            val energyUse = energyUse()
+
+            Timber.d("----::::---- Energy Use ($energyUse) ----::::----")
+
 
             /**
              * Power Value
@@ -366,6 +373,7 @@ class CostSavings {
 
             /**
              * <<< Demand Cost Saving >>>
+             * ToDo - Do not use Blended Demand Rate - Instead calculate within each Season - This is gonna be applicable all throughout
              * */
             fun demandCostSaving(): Double {
 
