@@ -265,6 +265,69 @@
         }
       ],
       "id": "6"
+    },
+    {
+      "index": 7,
+      "section": "Suggested Alternative",
+      "elements": [
+        {
+          "index": 71,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Lamp Type",
+          "validation": "",
+          "id": "71"
+        },
+        {
+          "index": 72,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Alternate Lamps Per Fixture",
+          "validation": "",
+          "id": "72"
+        },
+        {
+          "index": 73,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Alternate Number of Fixtures",
+          "validation": "",
+          "id": "73"
+        },
+        {
+          "index": 74,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Make",
+          "validation": "",
+          "id": "74"
+        },
+        {
+          "index": 75,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Model",
+          "validation": "",
+          "id": "75"
+        },
+        {
+          "index": 76,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Actual Watts",
+          "validation": "",
+          "id": "76"
+        },
+        {
+          "index": 77,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Alternate Life Hours",
+          "validation": "",
+          "id": "77"
+        }
+      ],
+      "id": "7"
     }
   ]
 }
