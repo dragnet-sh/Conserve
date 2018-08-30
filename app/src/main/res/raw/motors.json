@@ -110,6 +110,69 @@
         }
       ],
       "id": "1"
+    },
+    {
+      "index": 2,
+      "section": "Suggested Alternative",
+      "elements": [
+        {
+          "index": 21,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Make",
+          "validation": "",
+          "id": "21"
+        },
+        {
+          "index": 22,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Model",
+          "validation": "",
+          "id": "22"
+        },
+        {
+          "index": 23,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Horsepower (HP)",
+          "validation": "",
+          "id": "23"
+        },
+        {
+          "index": 24,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Rated Voltage",
+          "validation": "",
+          "id": "24"
+        },
+        {
+          "index": 25,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Full Loaded Amps",
+          "validation": "",
+          "id": "25"
+        },
+        {
+          "index": 26,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Phase",
+          "validation": "",
+          "id": "26"
+        },
+        {
+          "index": 27,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Efficiency",
+          "validation": "",
+          "id": "27"
+        }
+      ],
+      "id": "2"
     }
   ]
 }
