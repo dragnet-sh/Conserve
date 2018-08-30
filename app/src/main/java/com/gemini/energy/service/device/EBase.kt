@@ -157,11 +157,13 @@ abstract class EBase(private val computable: Computable<*>,
         val extractorHVAC = listOf(dataExtractHVAC(queryHVACCoolingHours()),
                 dataExtractHVAC(queryHVACEer()))
 
+        val extractorMotor = listOf(dataExtractMotors(queryMotorEfficiency()))
         val extractorNone = listOf(Observable.just(JsonArray()))
 
         // ** Extractor List gets called depending on the Zone Type **
         val remoteExtract = when (computable.auditScopeType) {
             EZoneType.HVAC      -> extractorHVAC
+            EZoneType.Motors    -> extractorMotor
             else                -> extractorNone
         }
 
@@ -321,6 +323,11 @@ abstract class EBase(private val computable: Computable<*>,
     open fun queryHVACEer() = ""
 
     /**
+     * Motors Query - Fetch Efficiency
+     * */
+    open fun queryMotorEfficiency() = ""
+
+    /**
      * Get the Specific Query Result from the Parse API
      * */
     private fun starValidator(query: String): Observable<Boolean> {
@@ -354,6 +361,12 @@ abstract class EBase(private val computable: Computable<*>,
 
     private fun dataExtractHVAC(query: String): Observable<JsonArray> {
         return parseAPIService.fetchHVAC(query)
+                .map { it.getAsJsonArray("results") }
+                .toObservable()
+    }
+
+    private fun dataExtractMotors(query: String): Observable<JsonArray> {
+        return parseAPIService.fetchMotors(query)
                 .map { it.getAsJsonArray("results") }
                 .toObservable()
     }

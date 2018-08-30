@@ -12,6 +12,7 @@ import com.gemini.energy.service.type.UsageMotors
 import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonElement
 import io.reactivex.Observable
+import org.json.JSONObject
 import timber.log.Timber
 
 class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
@@ -31,6 +32,22 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
          * Conversion Factor from Horse Power to Kilo Watts
          * */
         private const val KW_CONVERSION = 0.746
+        private const val MOTOR_EFFICIENCY = "motor_efficiency"
+
+        /**
+         * Fetches the Motor Efficiency (NEMA-Premium) based on the specific Match Criteria
+         * via the Parse API
+         * */
+        fun extractNemaPremium(elements: List<JsonElement?>): Double {
+            elements.forEach {
+                it?.let {
+                    if (it.asJsonObject.has("cee_specification_nema_premium")) {
+                        return it.asJsonObject.get("cee_specification_nema_premium").asDouble
+                    }
+                }
+            }
+            return 0.0
+        }
 
     }
 
@@ -74,6 +91,7 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
 
         val percentageLoad = (srs - mrs) / (srs - nrs)
         val powerUsed = hp * KW_CONVERSION * percentageLoad / efficiency
+        val nemaPremium = extractNemaPremium(elements)
 
         val usageHours = UsageMotors()
         usageHours.peakHours = peakHours
@@ -125,6 +143,13 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
      * */
     override fun efficientLookup() = false
     override fun queryEfficientFilter() = ""
+
+    override fun queryMotorEfficiency() = JSONObject()
+            .put("type", MOTOR_EFFICIENCY)
+            .put("data.hp", hp)
+            .put("data.rpm_start_range", JSONObject().put("\$lte", nrs))
+            .put("data.rpm_end_range", JSONObject().put("\$gte", nrs))
+            .toString()
 
     /**
      * State if the Equipment has a Post UsageHours Hours (Specific) ie. A separate set of
