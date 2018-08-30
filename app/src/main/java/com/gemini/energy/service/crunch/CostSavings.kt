@@ -14,6 +14,7 @@ class CostSavings {
     companion object {
         private val regex = "^.*TOU$".toRegex()
         fun isTOU(rate: String) = rate.matches(regex)
+        fun isNoTOU(rate: String) = !isTOU(rate)
     }
 
     class Mapper : Function<Unit, DataHolder> {
@@ -83,11 +84,11 @@ class CostSavings {
              * UtilityRate Rate - Gas
              * */
             val gasRate = gasUtilityRate.nonTimeOfUse()
-            val winterRate = gasRate.winterNone()
-            val summerRate = gasRate.summerNone()
+            val winterRateGas = gasRate.winterNone()
+            val summerRateGas = gasRate.summerNone()
 
-            Timber.d("----::::---- Gas Winter Rate ($winterRate) ----::::----")
-            Timber.d("----::::---- Gas Summer Rate ($summerRate) ----::::----")
+            Timber.d("----::::---- Gas Winter Rate ($winterRateGas) ----::::----")
+            Timber.d("----::::---- Gas Summer Rate ($summerRateGas) ----::::----")
 
             /**
              * Parse API Energy Efficient Database - materialCost
@@ -157,15 +158,16 @@ class CostSavings {
 
             var nonTOUEnergyRateSummer = 0.0
             var nonTOUEnergyRateWinter = 0.0
-            if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
-                nonTOUEnergyRateSummer = electricityUtilityRate.structure[ERateKey.SummerNone.value]!![0].toDouble()
-                nonTOUEnergyRateWinter = electricityUtilityRate.structure[ERateKey.WinterNone.value]!![0].toDouble()
+            if (isNoTOU(electricRateStructure)) {
+                val electricityRate = electricityUtilityRate.nonTimeOfUse()
+                nonTOUEnergyRateSummer = electricityRate.summerNone()
+                nonTOUEnergyRateWinter = electricityRate.winterNone()
             }
 
             Timber.d("----::::---- Non TOU Energy Rate Summer ($nonTOUEnergyRateSummer) ----::::----")
             Timber.d("----::::---- Non TOU Energy Rate Winter ($nonTOUEnergyRateWinter) ----::::----")
 
-            val blendedDemandRate = if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
+            val blendedDemandRate = if (isNoTOU(electricRateStructure)) {
                 (electricityUtilityRate.structure[ERateKey.SummerNone.value]!![2].toDouble() +
                         electricityUtilityRate.structure[ERateKey.WinterNone.value]!![2].toDouble()) / 2
             } else {
@@ -223,6 +225,7 @@ class CostSavings {
                     } catch (exception: Exception) {
                         Timber.e("Exception @ Energy Use (Post State) - toDouble")
                     }
+
                 } else {
 
                     // This returns the individualEnergy Delta Computed in the Equipment Class
@@ -347,7 +350,7 @@ class CostSavings {
                  * Energy Cost Savings - Case 3 : Gas Based
                  * */
                 fun gasCostSavings() =
-                        (energyUse / 99976.1) * ((winterRate + summerRate)) / 2
+                        (energyUse / 99976.1) * ((winterRateGas + summerRateGas)) / 2
 
                 fun findGasCostSavings() = hashMapOf(
                         "CostSavingGas" to gasCostSavings()
@@ -386,7 +389,7 @@ class CostSavings {
                     val rateSummer: Double
                     val rateWinter: Double
 
-                    if (!electricRateStructure.matches("^.*TOU$".toRegex())) {
+                    if (isNoTOU(electricRateStructure)) {
                         rateSummer = structure[ERateKey.SummerNone.value]!![2].toDouble()
                         rateWinter = structure[ERateKey.WinterNone.value]!![2].toDouble()
                     } else {
