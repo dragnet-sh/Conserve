@@ -167,16 +167,6 @@ class CostSavings {
             Timber.d("----::::---- Non TOU Energy Rate Summer ($nonTOUEnergyRateSummer) ----::::----")
             Timber.d("----::::---- Non TOU Energy Rate Winter ($nonTOUEnergyRateWinter) ----::::----")
 
-            val blendedDemandRate = if (isNoTOU(electricRateStructure)) {
-                (electricityUtilityRate.structure[ERateKey.SummerNone.value]!![2].toDouble() +
-                        electricityUtilityRate.structure[ERateKey.WinterNone.value]!![2].toDouble()) / 2
-            } else {
-                (electricityUtilityRate.structure[ERateKey.SummerOff.value]!![2].toDouble() +
-                        electricityUtilityRate.structure[ERateKey.WinterOff.value]!![2].toDouble()) / 2
-            }
-
-            Timber.d("----::::---- Blended Demand Rate ($blendedDemandRate) ----::::----")
-
             /**
              * UtilityRate Rate Structure
              * */
