@@ -11,6 +11,11 @@ import java.util.*
 
 class CostSavings {
 
+    companion object {
+        private val regex = "^.*TOU$".toRegex()
+        fun isTOU(rate: String) = rate.matches(regex)
+    }
+
     class Mapper : Function<Unit, DataHolder> {
 
         lateinit var computable: Computable<*>
@@ -63,15 +68,11 @@ class CostSavings {
             var partPeakPrice = 0.0
             var offPeakPrice = 0.0
 
-            if (electricRateStructure.matches("^.*TOU$".toRegex())) {
-
-                peakPrice = electricityUtilityRate.structure[ERateKey.SummerOn.value]!![0].toDouble()
-                partPeakPrice =
-                        (electricityUtilityRate.structure[ERateKey.SummerPart.value]!![0].toDouble()
-                                + electricityUtilityRate.structure[ERateKey.WinterPart.value]!![0].toDouble()) / 2
-                offPeakPrice =
-                        (electricityUtilityRate.structure[ERateKey.SummerOff.value]!![0].toDouble()
-                                + electricityUtilityRate.structure[ERateKey.WinterOff.value]!![0].toDouble()) / 2
+            if (isTOU(electricRateStructure)) {
+                val electricRate = electricityUtilityRate.timeOfUse()
+                peakPrice = electricRate.summerOn()
+                partPeakPrice = (electricRate.summerPart() + electricRate.winterPart()) / 2
+                offPeakPrice = (electricRate.summerOff() + electricRate.winterOff()) / 2
             }
 
             Timber.d("----::::---- Electricity Peak Price ($peakPrice) ----::::----")
@@ -81,8 +82,9 @@ class CostSavings {
             /**
              * UtilityRate Rate - Gas
              * */
-            val winterRate = gasUtilityRate.structure[ERateKey.GasWinter.value]!![0].toDouble()
-            val summerRate = gasUtilityRate.structure[ERateKey.GasSummer.value]!![0].toDouble()
+            val gasRate = gasUtilityRate.nonTimeOfUse()
+            val winterRate = gasRate.winterNone()
+            val summerRate = gasRate.summerNone()
 
             Timber.d("----::::---- Gas Winter Rate ($winterRate) ----::::----")
             Timber.d("----::::---- Gas Summer Rate ($summerRate) ----::::----")
