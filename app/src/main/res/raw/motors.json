@@ -113,13 +113,13 @@
     },
     {
       "index": 2,
-      "section": "Suggested Alternative",
+      "section": "Operating Hours",
       "elements": [
         {
           "index": 21,
           "dataType": "textrow",
           "defaultValues": "",
-          "param": "Alternate Make",
+          "param": "Monday Operating Hours",
           "validation": "",
           "id": "21"
         },
@@ -127,52 +127,115 @@
           "index": 22,
           "dataType": "textrow",
           "defaultValues": "",
-          "param": "Alternate Model",
+          "param": "Tuesday Operating Hours",
           "validation": "",
           "id": "22"
         },
         {
           "index": 23,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
-          "param": "Alternate Horsepower (HP)",
+          "param": "Wednesday Operating Hours",
           "validation": "",
           "id": "23"
         },
         {
           "index": 24,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
-          "param": "Alternate Rated Voltage",
+          "param": "Thursday Operating Hours",
           "validation": "",
           "id": "24"
         },
         {
           "index": 25,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
-          "param": "Alternate Full Loaded Amps",
+          "param": "Friday Operating Hours",
           "validation": "",
           "id": "25"
         },
         {
           "index": 26,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
-          "param": "Alternate Phase",
+          "param": "Saturday Operating Hours",
           "validation": "",
           "id": "26"
         },
         {
           "index": 27,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
-          "param": "Alternate Efficiency",
+          "param": "Sunday Operating Hours",
           "validation": "",
           "id": "27"
         }
       ],
       "id": "2"
+    },
+    {
+      "index": 3,
+      "section": "Suggested Alternative",
+      "elements": [
+        {
+          "index": 31,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Make",
+          "validation": "",
+          "id": "31"
+        },
+        {
+          "index": 32,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Model",
+          "validation": "",
+          "id": "32"
+        },
+        {
+          "index": 33,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Horsepower (HP)",
+          "validation": "",
+          "id": "33"
+        },
+        {
+          "index": 34,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Rated Voltage",
+          "validation": "",
+          "id": "34"
+        },
+        {
+          "index": 35,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Full Loaded Amps",
+          "validation": "",
+          "id": "35"
+        },
+        {
+          "index": 36,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Phase",
+          "validation": "",
+          "id": "36"
+        },
+        {
+          "index": 37,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Efficiency",
+          "validation": "",
+          "id": "37"
+        }
+      ],
+      "id": "3"
     }
   ]
 }
