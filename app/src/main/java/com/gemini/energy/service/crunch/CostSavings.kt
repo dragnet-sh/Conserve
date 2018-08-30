@@ -31,14 +31,12 @@ class CostSavings {
             /**
              * Pre UsageHours Hours - Mapped Peak Hours (Specific)
              * */
-            val preUsageByPeak = usageHoursSpecific.mappedPeakHourYearly()
-            val preHoursOnPeakPricing = preUsageByPeak[ERateKey.SummerOn]!! * .504
-            val preHoursOnPartPeakPricing = preUsageByPeak[ERateKey.SummerPart]!! * .504 +
-                    preUsageByPeak[ERateKey.WinterPart]!! * .496 
-            val preHoursOnOffPeakPricing = preUsageByPeak[ERateKey.SummerOff]!! * .504 +
-                    preUsageByPeak[ERateKey.WinterOff]!! * .496
+            val usagePre = usageHoursSpecific.timeOfUse()
+            val preHoursOnPeakPricing = usagePre.summerOn()
+            val preHoursOnPartPeakPricing = usagePre.summerPart() + usagePre.winterPart()
+            val preHoursOnOffPeakPricing = usagePre.summerOff() + usagePre.winterOff()
 
-            Timber.d("----::::---- Pre UsageHours By Peak ($preUsageByPeak) ----::::----")
+            Timber.d("----::::---- Pre UsageHours By Peak ($usagePre) ----::::----")
             Timber.d("----::::---- Pre Hours On Peak Pricing ($preHoursOnPeakPricing) ----::::----")
             Timber.d("----::::---- Pre Hours On Part Peak Pricing ($preHoursOnPartPeakPricing) ----::::----")
             Timber.d("----::::---- Pre Hours On Off Peak Pricing ($preHoursOnOffPeakPricing) ----::::----")
@@ -46,14 +44,12 @@ class CostSavings {
             /**
              * Post UsageHours Hours - Mapped Peak Hours (Business)
              * */
-            val postUsageByPeak = usageHoursBusiness.mappedPeakHourYearly()
-            val postHoursOnPeakPricing = postUsageByPeak[ERateKey.SummerOn]!! * .504
-            val postHoursOnPartPeakPricing = postUsageByPeak[ERateKey.SummerPart]!! * .504 +
-                    postUsageByPeak[ERateKey.WinterPart]!! * .496 
-            val postHoursOnOffPeakPricing = postUsageByPeak[ERateKey.SummerOff]!! * .504 +
-                    postUsageByPeak[ERateKey.WinterOff]!! * .496
+            val usagePost = usageHoursBusiness.timeOfUse()
+            val postHoursOnPeakPricing = usagePost.summerOn()
+            val postHoursOnPartPeakPricing = usagePost.summerPart() + usagePost.winterPart()
+            val postHoursOnOffPeakPricing = usagePost.summerOff() + usagePost.winterOff()
 
-            Timber.d("----::::---- Post UsageHours By Peak ($postUsageByPeak) ----::::----")
+            Timber.d("----::::---- Post UsageHours By Peak ($usagePost) ----::::----")
             Timber.d("----::::---- Post Hours On Peak Pricing ($postHoursOnPeakPricing) ----::::----")
             Timber.d("----::::---- Post Hours On Part Peak Pricing ($postHoursOnPartPeakPricing) ----::::----")
             Timber.d("----::::---- Post Hours On Off Peak Pricing ($postHoursOnOffPeakPricing) ----::::----")
