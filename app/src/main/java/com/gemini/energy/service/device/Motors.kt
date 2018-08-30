@@ -93,10 +93,13 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
         val powerUsed = hp * KW_CONVERSION * percentageLoad / efficiency
         val nemaPremium = extractNemaPremium(elements)
 
-        val usageHours = UsageMotors()
-        usageHours.peakHours = peakHours
-        usageHours.partPeakHours = partPeakHours
-        usageHours.offPeakHours = offPeakHours
+        var usageHours = usageHoursSpecific
+        if (peakHours != 0.0 || partPeakHours != 0.0 || offPeakHours != 0.0) {
+            usageHours = UsageMotors()
+            usageHours.peakHours = peakHours
+            usageHours.partPeakHours = partPeakHours
+            usageHours.offPeakHours = offPeakHours
+        }
 
         return costElectricity(powerUsed, usageHours, electricityRate)
     }
