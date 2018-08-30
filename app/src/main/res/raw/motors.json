@@ -107,6 +107,24 @@
           "param": "Used During Peak",
           "validation": "",
           "id": "113"
+        },
+        {
+          "index": 114,
+          "dataType": "decimalrow",
+          "param": "Rated Voltage",
+          "id": "114"
+        },
+        {
+          "index": 115,
+          "dataType": "decimalrow",
+          "param": "Full Loaded Amps",
+          "id": "115"
+        },
+        {
+          "index": 116,
+          "dataType": "decimalrow",
+          "param": "Phase",
+          "id": "116"
         }
       ],
       "id": "1"
