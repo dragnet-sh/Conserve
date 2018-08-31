@@ -132,18 +132,15 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
         //2. Demand Saving
         val demandSavings = energyPowerChange() / usageHoursPre()
 
-        //3. Utility Incentive
-        val utilityIncentive = (energySavings * 0.08) + (demandSavings * 150)
-
-        //4. Implementation Cost
-        val costMotorReplacement = 697
-        val costUnit = 555
-        val implementationCost = (costMotorReplacement - costUnit) - utilityIncentive
+        //3. Implementation Cost
+        // ToDo - The below cost would be a look up in the future.
+        val costPremiumMotor = 697
+        val costStandardMotor = 555
+        val implementationCost = (costPremiumMotor - costStandardMotor)
 
         val postRow = mutableMapOf<String, String>()
         postRow["__energy_savings"] = energySavings.toString()
         postRow["__demand_savings"] = demandSavings.toString()
-        postRow["__utility_incentive"] = utilityIncentive.toString()
         postRow["__implementation_cost"] = implementationCost.toString()
 
         dataHolder.header = postStateFields()
@@ -179,9 +176,23 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
         val horsePowerPost = alternateHp / alternateEfficiency
         val deltaHorsePower = (horsePowerPre - horsePowerPost) * KW_CONVERSION
 
-        val percentageLoad = (srs - mrs) / (srs - nrs).toString().toDouble()
-        val delta = deltaHorsePower * percentageLoad
+        // ** Note :: Load shouldn't be 1 - Ideally increase the Power of the Motor and lower the load to less than 1
+        // ** If the load is above 1 - Notify the User above 100 % - Replace a Higher Size
+        // ** The better Rating would be a Motor of HP 7
 
+        // ** This is what we recommended
+        // Change Motor with the same Horse Power - Overload it
+        // Get a new Motor which is bigger in size and of a Premium Efficient
+        // Less Load and more efficiency
+        var percentageLoad = (srs - mrs) / (srs - nrs).toString().toDouble()
+        Timber.d("*** Percentage Load :: ($percentageLoad)")
+
+        if (percentageLoad > 1.0) {
+            percentageLoad *= (hp / alternateHp)
+            Timber.d("********* NEW LOAD :: $percentageLoad *********")
+        }
+
+        val delta = deltaHorsePower * percentageLoad
         return delta * usageHoursPre()
     }
 
