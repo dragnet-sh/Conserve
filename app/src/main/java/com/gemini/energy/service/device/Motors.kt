@@ -172,8 +172,11 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
      * PowerTimeChange >> Energy Efficiency Calculations
      * */
     override fun energyPowerChange(): Double {
-        val horsePowerPre = (hp / efficiency)
-        val horsePowerPost = alternateHp / alternateEfficiency
+        val percentageLoadPre = (srs - mrs) / (srs - nrs).toString().toDouble()
+        val percentageLoadPost = if (percentageLoadPre > 1.0) (hp / alternateHp) * percentageLoadPre else percentageLoadPre
+
+        val horsePowerPre = (hp / efficiency) * percentageLoadPre
+        val horsePowerPost = (alternateHp / alternateEfficiency) * percentageLoadPost
         val deltaHorsePower = (horsePowerPre - horsePowerPost) * KW_CONVERSION
 
         // ** Note :: Load shouldn't be 1 - Ideally increase the Power of the Motor and lower the load to less than 1
@@ -184,16 +187,11 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
         // Change Motor with the same Horse Power - Overload it
         // Get a new Motor which is bigger in size and of a Premium Efficient
         // Less Load and more efficiency
-        var percentageLoad = (srs - mrs) / (srs - nrs).toString().toDouble()
-        Timber.d("*** Percentage Load :: ($percentageLoad)")
+        Timber.d("*** Percentage Load Pre :: ($percentageLoadPre)")
+        Timber.d("*** Percentage Load Post :: ($percentageLoadPost)")
 
-        if (percentageLoad > 1.0) {
-            percentageLoad *= (hp / alternateHp)
-            Timber.d("********* NEW LOAD :: $percentageLoad *********")
-        }
-
-        val delta = deltaHorsePower * percentageLoad
-        return delta * usageHoursPre()
+        val delta = deltaHorsePower * usageHoursPre()
+        return delta
     }
 
     override fun energyTimeChange(): Double = 0.0
