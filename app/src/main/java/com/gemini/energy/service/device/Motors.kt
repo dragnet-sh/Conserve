@@ -14,6 +14,7 @@ import com.google.gson.JsonElement
 import io.reactivex.Observable
 import org.json.JSONObject
 import timber.log.Timber
+import java.util.*
 
 class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
            usageHours: UsageHours, outgoingRows: OutgoingRows, private val context: Context) :
@@ -58,6 +59,12 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
     private var efficiency = 0.0
     private var hourPercentage = 0.0
 
+    /**
+     * Suggested Alternative
+     * */
+    private var alternateHp = 0.0
+    private var alternateEfficiency = 0.0
+
     private var peakHours = 0.0
     private var partPeakHours = 0.0
     private var offPeakHours = 0.0
@@ -70,6 +77,9 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
             hp = featureData["Horsepower (HP)"]!! as Double
             efficiency = featureData["Efficiency"]!! as Double
             hourPercentage = featureData["Hours (%)"]!! as Double
+
+            alternateHp = featureData["Alternate Horsepower (HP)"]!! as Double
+            alternateEfficiency = featureData["Alternate Efficiency"]!! as Double
 
             peakHours = featureData["Peak Hours"]!! as Double
             partPeakHours = featureData["Part Peak Hours"]!! as Double
@@ -93,6 +103,8 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
         val powerUsed = hp * KW_CONVERSION * percentageLoad / efficiency
         val nemaPremium = extractNemaPremium(elements)
 
+        Timber.d("*** Nema Premium :: ($nemaPremium) ***")
+
         var usageHours = usageHoursSpecific
         if (peakHours != 0.0 || partPeakHours != 0.0 || offPeakHours != 0.0) {
             usageHours = UsageMotors()
@@ -114,6 +126,31 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
         Timber.d("!!! COST POST STATE - Motors !!!")
         Timber.d("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 
+        //1. Energy Savings
+        val energySavings = energyPowerChange()
+
+        //2. Demand Saving
+        val demandSavings = energyPowerChange() / usageHoursPre()
+
+        //3. Utility Incentive
+        val utilityIncentive = (energySavings * 0.08) + (demandSavings * 150)
+
+        //4. Implementation Cost
+        val costMotorReplacement = 697
+        val costUnit = 555
+        val implementationCost = (costMotorReplacement - costUnit) - utilityIncentive
+
+        val postRow = mutableMapOf<String, String>()
+        postRow["__energy_savings"] = energySavings.toString()
+        postRow["__demand_savings"] = demandSavings.toString()
+        postRow["__utility_incentive"] = utilityIncentive.toString()
+        postRow["__implementation_cost"] = implementationCost.toString()
+
+        dataHolder.header = postStateFields()
+        dataHolder.computable = computable
+        dataHolder.fileName = "${Date().time}_post_state.csv"
+        dataHolder.rows?.add(postRow)
+
         return -99.99
 
     }
@@ -131,13 +168,23 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
     /**
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
      * */
-    override fun usageHoursPre(): Double = 0.0
-    override fun usageHoursPost(): Double = 0.0
+    override fun usageHoursPre(): Double = usageHoursSpecific.yearly()
+    override fun usageHoursPost(): Double = usageHoursSpecific.yearly()
 
     /**
      * PowerTimeChange >> Energy Efficiency Calculations
      * */
-    override fun energyPowerChange(): Double = 0.0
+    override fun energyPowerChange(): Double {
+        val horsePowerPre = (hp / efficiency)
+        val horsePowerPost = alternateHp / alternateEfficiency
+        val deltaHorsePower = (horsePowerPre - horsePowerPost) * KW_CONVERSION
+
+        val percentageLoad = (srs - mrs) / (srs - nrs).toString().toDouble()
+        val delta = deltaHorsePower * percentageLoad
+
+        return delta * usageHoursPre()
+    }
+
     override fun energyTimeChange(): Double = 0.0
     override fun energyPowerTimeChange(): Double = 0.0
 
@@ -168,7 +215,7 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
 
     override fun preStateFields() = mutableListOf("")
     override fun postStateFields() = mutableListOf("__life_hours", "__maintenance_savings",
-            "__cooling_savings", "__energy_savings", "__energy_at_post_state")
+            "__cooling_savings", "__energy_savings")
 
     override fun computedFields() = mutableListOf("")
 
