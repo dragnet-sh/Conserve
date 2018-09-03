@@ -94,6 +94,8 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
      * 2. Secondary Match - [size_btu_per_hr_min > BTU < size_btu_per_hr_max]
      * */
     private var eer = 0.0
+    private var seer = 0.0
+    private var alternateSeer = 0.0
 
     /**
      * HVAC - Age
@@ -114,11 +116,14 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     override fun setup() {
         try {
             eer = preAudit["EER"]!! as Double
+            seer = preAudit["SEER"]!! as Double
             age = preAudit["Age"]!! as Int
             btu = preAudit["Cooling Capacity (Btu/hr)"]!! as Int
 
             city = preAudit["City"]!! as String
             state = preAudit["State"]!! as String
+
+            alternateSeer = preAudit["Alternate SEER"]!! as Double
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -135,9 +140,7 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
      * */
     override fun costPreState(elements: List<JsonElement?>): Double {
 
-        if (eer == 0.0) {
-            eer = extractEER(elements)
-        }
+        if (eer == 0.0) { eer = extractEER(elements) }
 
         Timber.d("::: PARAM - HVAC :::")
         Timber.d("EER -- $eer")
@@ -148,12 +151,24 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         Timber.d("::: DATA EXTRACTOR - HVAC :::")
         Timber.d(elements.toString())
 
-        val hoursExtract = extractHours(elements)
-        val usageHours = UsageHVAC(usageHoursBusiness, isTOU(), hoursExtract)
+        val usageHours = if (alternateSeer == 0.0) {
+            UsageHVAC(usageHoursBusiness, isTOU(), extractHours(elements))
+        } else { usageHoursBusiness }
+
         computable.udf1 = usageHours
         Timber.d(usageHours.toString())
 
-        val powerUsed = power(btu, eer)
+        val powerUsedCurrent = power(btu, seer)
+        val powerUsedStandard = power(btu, eer)
+        val powerUsedReplaced = power(btu, alternateSeer)
+
+        val powerUsed = if (alternateSeer == 0.0) powerUsedStandard else powerUsedCurrent
+        Timber.d("HVAC :: Power Used (Current) -- [$powerUsedCurrent]")
+        Timber.d("HVAC :: Power Used (Standard) -- [$powerUsedStandard]")
+        Timber.d("HVAC :: Power Used (Replaced) -- [$powerUsedReplaced]")
+
+        Timber.d("HVAC :: Pre Power Used -- [$powerUsed]")
+
         return costElectricity(powerUsed, usageHours, electricityRate)
     }
 
@@ -213,12 +228,13 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
             }
         }
 
-        val deltaEER = eerPS - eer
-        val delta = power(btu, deltaEER) * usageHoursBusiness.yearly()
+        if (eerPS == 0.0) { eerPS = alternateSeer }
 
-        Timber.d("Delta EER :: $deltaEER")
-        Timber.d("Delta :: $delta")
+        val powerPre = power(btu, eer)
+        val powerPost = power(btu, alternateSeer)
+        val delta = (powerPre - powerPost) * usageHoursBusiness.yearly()
 
+        Timber.d("HVAC :: Delta -- $delta")
         return delta
     }
 
