@@ -37,7 +37,11 @@ class CostSavings {
             /**
              * Pre UsageHours Hours - Mapped Peak Hours (Specific)
              * */
-            val usagePre = usageHoursSpecific.timeOfUse()
+            //This change was introduced because of HVAC - Since there is no Specific Usage Hours !!
+            //How does this changes the behaviour of other equipment classes needs to be studied
+            val usagePre = if (usageHoursSpecific.yearly() == 0.0) usageHoursBusiness.timeOfUse()
+            else usageHoursSpecific.timeOfUse()
+
             val preHoursOnPeakPricing = usagePre.summerOn()
             val preHoursOnPartPeakPricing = usagePre.summerPart() + usagePre.winterPart()
             val preHoursOnOffPeakPricing = usagePre.summerOff() + usagePre.winterOff()
@@ -248,8 +252,9 @@ class CostSavings {
             var powerValue = (preHourlyEnergyUse - postHourlyEnergyUse) / 24
 
             // *** This has been done for Lightening Specific - May be applicable to other Equipments as well ***
+            val usageHours = if (usageHoursSpecific.yearly() == 0.0) usageHoursBusiness.yearly() else usageHoursSpecific.yearly()
             if (preHourlyEnergyUse == 0.0) {
-                powerValue = ptc.energySaving() / usageHoursSpecific.yearly()
+                powerValue = ptc.energySaving() / usageHours
             }
 
             Timber.d("----::::---- Power Value ($powerValue) ----::::----")
