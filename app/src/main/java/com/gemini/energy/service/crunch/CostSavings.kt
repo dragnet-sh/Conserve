@@ -2,6 +2,7 @@ package com.gemini.energy.service.crunch
 
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.presentation.util.ERateKey
+import com.gemini.energy.service.CostElectric
 import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
@@ -37,52 +38,13 @@ class CostSavings {
             /**
              * Pre UsageHours Hours - Mapped Peak Hours (Specific)
              * */
-            //This change was introduced because of HVAC - Since there is no Specific Usage Hours !!
-            //How does this changes the behaviour of other equipment classes needs to be studied
-            val usagePre = if (usageHoursSpecific.yearly() == 0.0) usageHoursBusiness.timeOfUse()
-            else usageHoursSpecific.timeOfUse()
-
-            val preHoursOnPeakPricing = usagePre.summerOn()
-            val preHoursOnPartPeakPricing = usagePre.summerPart() + usagePre.winterPart()
-            val preHoursOnOffPeakPricing = usagePre.summerOff() + usagePre.winterOff()
-
-            Timber.d("----::::---- Pre UsageHours By Peak ($usagePre) ----::::----")
-            Timber.d("----::::---- Pre Hours On Peak Pricing ($preHoursOnPeakPricing) ----::::----")
-            Timber.d("----::::---- Pre Hours On Part Peak Pricing ($preHoursOnPartPeakPricing) ----::::----")
-            Timber.d("----::::---- Pre Hours On Off Peak Pricing ($preHoursOnOffPeakPricing) ----::::----")
+            val usagePre = if (usageHoursSpecific.yearly() == 0.0) usageHoursBusiness
+            else usageHoursSpecific
 
             /**
              * Post UsageHours Hours - Mapped Peak Hours (Business)
              * */
-            val usagePost = usageHoursBusiness.timeOfUse()
-            val postHoursOnPeakPricing = usagePost.summerOn()
-            val postHoursOnPartPeakPricing = usagePost.summerPart() + usagePost.winterPart()
-            val postHoursOnOffPeakPricing = usagePost.summerOff() + usagePost.winterOff()
-
-            Timber.d("----::::---- Post UsageHours By Peak ($usagePost) ----::::----")
-            Timber.d("----::::---- Post Hours On Peak Pricing ($postHoursOnPeakPricing) ----::::----")
-            Timber.d("----::::---- Post Hours On Part Peak Pricing ($postHoursOnPartPeakPricing) ----::::----")
-            Timber.d("----::::---- Post Hours On Off Peak Pricing ($postHoursOnOffPeakPricing) ----::::----")
-
-            /**
-             * UtilityRate Rate - Electricity
-             * ToDo - Verify if dividing by 2 is correct to find the average between the Summer | Winter Rate
-             * */
-
-            var peakPrice = 0.0
-            var partPeakPrice = 0.0
-            var offPeakPrice = 0.0
-
-            if (isTOU(electricRateStructure)) {
-                val electricRate = electricityUtilityRate.timeOfUse()
-                peakPrice = electricRate.summerOn()
-                partPeakPrice = (electricRate.summerPart() + electricRate.winterPart()) / 2
-                offPeakPrice = (electricRate.summerOff() + electricRate.winterOff()) / 2
-            }
-
-            Timber.d("----::::---- Electricity Peak Price ($peakPrice) ----::::----")
-            Timber.d("----::::---- Electricity Part Peak Price ($partPeakPrice) ----::::----")
-            Timber.d("----::::---- Electricity Off Peak Price ($offPeakPrice) ----::::----")
+            val usagePost = usageHoursBusiness
 
             /**
              * UtilityRate Rate - Gas
@@ -120,7 +82,6 @@ class CostSavings {
             Timber.d("----::::---- Labor Cost ($laborCost) ----::::----")
 
             /**
-             * ToDo - Where do we get these values from ??
              * Note: Looks like this is going to be Equipment Specific
              * */
             val maintenanceCostSavings = 0.0
@@ -147,36 +108,7 @@ class CostSavings {
                 return 0.0
             }
             val incentives = rebate()
-
             Timber.d("----::::---- Incentive ($incentives) ----::::----")
-
-
-            /**
-             * Fetch these from the UtilityRate Rate Structure
-             * ToDo - Verify if A1 | A10 | E19 qualify as Non TOU
-             * ToDo - Verify if dividing by 2 is correct to find the average between the Summer | Winter Rate
-             * ToDo - Demand Charge can be Empty - Right now i have added 0 in the CSV for the empty ones - need to fix this
-             * */
-            //We can not use blended energy rate because winter and summer energy are different. Therefore we need two
-            //distinct rates for summer and winter [Kinslow]
-
-            var nonTOUEnergyRateSummer = 0.0
-            var nonTOUEnergyRateWinter = 0.0
-            if (isNoTOU(electricRateStructure)) {
-                val electricityRate = electricityUtilityRate.nonTimeOfUse()
-                nonTOUEnergyRateSummer = electricityRate.summerNone()
-                nonTOUEnergyRateWinter = electricityRate.winterNone()
-            }
-
-            Timber.d("----::::---- Non TOU Energy Rate Summer ($nonTOUEnergyRateSummer) ----::::----")
-            Timber.d("----::::---- Non TOU Energy Rate Winter ($nonTOUEnergyRateWinter) ----::::----")
-
-            /**
-             * UtilityRate Rate Structure
-             * */
-            val getRateSchedule = electricRateStructure
-
-            Timber.d("----::::---- Rate Schedule ($getRateSchedule) ----::::----")
 
             /**
              * Flag to denote a gas based equipment
@@ -266,36 +198,37 @@ class CostSavings {
             fun energyCostSaving(): HashMap<String, Double> {
 
                 /**
+                 * Computes the Electric Cost
+                 * */
+                fun costElectricity(powerUsed: Double, usageHours: UsageHours, utilityRate: UtilityRate): Double {
+                    val costElectric = CostElectric(usageHours, utilityRate)
+                    costElectric.structure = electricRateStructure
+                    costElectric.power = powerUsed
+
+                    return costElectric.cost()
+                }
+
+                /**
                  * Energy Cost Savings Calculations - [TOU Based Savings]
                  *
                  * Multiple Power - Time
                  * Single Power - Time
                  * */
-                //PowerValue represents the change
                 fun electricityCostsCalcMultiplePowerChange(powerValues: List<Double>): Double {
                     var cost = 0.0
                     powerValues.forEach { powerValue ->
-                        cost +=
-                                preHoursOnPeakPricing * powerValue * peakPrice +
-                                preHoursOnPartPeakPricing * powerValue * partPeakPrice +
-                                preHoursOnOffPeakPricing * powerValue * offPeakPrice
+                        cost += costElectricity(powerValue, usagePre, electricityUtilityRate)
                     }
-
                     return cost
                 }
 
                 fun electricityCostsCalcMultipleTimeChange(powerValues: List<Double>): Double {
                     var cost = 0.0
-                    val deltaPeak = preHoursOnPeakPricing - postHoursOnPeakPricing
-                    val deltaPartPeak = preHoursOnPartPeakPricing - postHoursOnPartPeakPricing
-                    val deltaOffPeak = preHoursOnOffPeakPricing - postHoursOnOffPeakPricing
                     powerValues.forEach { powerValue ->
-                        cost +=
-                                deltaPeak * powerValue * peakPrice +
-                                deltaPartPeak * powerValue * partPeakPrice +
-                                deltaOffPeak * powerValue * offPeakPrice
-                    }
-
+                        val costPre = costElectricity(powerValue, usagePre, electricityUtilityRate)
+                        val costPost = costElectricity(powerValue, usagePost, electricityUtilityRate)
+                        cost += (costPre - costPost)
+                   }
                     return cost
                 }
 
@@ -308,8 +241,6 @@ class CostSavings {
                 /**
                  * Energy Cost Savings - Case 1 : TOU Based
                  * */
-                //Return whatever is true [Kinslow]
-                //If powerchange return powerchange & if timechange return timechange & if powertimechange return powertimechange [Kinslow]
                 fun findTimeOfUseCostSavings(): HashMap<String, Double> {
                     val outgoing= hashMapOf<String, Double>()
 
@@ -336,10 +267,9 @@ class CostSavings {
                  * Energy Cost Savings - Case 2 : Non TOU Based
                  * */
                 //Need to remove blendedEnergyRate for Summer and Winter and energyUse should be seperated too [Kinslow]
-                fun summerCostNonTOU() = energyUse * nonTOUEnergyRateSummer * .504
-                fun winterCostNonTOU() = energyUse * nonTOUEnergyRateWinter * .496
+                fun costNonTOU() = energyUse * electricityUtilityRate.nonTimeOfUse().weightedAverage()
                 fun findNonTimeOfUseCostSavings() = hashMapOf(
-                        "CostSavingNonTimeOfUse" to summerCostNonTOU() + winterCostNonTOU())
+                        "CostSavingNonTimeOfUse" to costNonTOU())
 
                 /**
                  * Energy Cost Savings - Case 3 : Gas Based
@@ -354,15 +284,12 @@ class CostSavings {
                 /**
                  * Main Block
                  * */
-                val matchTimeOfUse = getRateSchedule.matches("^.*TOU$".toRegex())
-
-                fun negate(flag: Boolean) = !flag
                 val energyCostSavings: HashMap<String, Double>
                 energyCostSavings = when {
 
-                    matchTimeOfUse                  -> findTimeOfUseCostSavings()
-                    negate(matchTimeOfUse)          -> findNonTimeOfUseCostSavings()
-                    checkForGas                     -> findGasCostSavings()
+                    isTOU(electricRateStructure)            -> findTimeOfUseCostSavings()
+                    isNoTOU(electricRateStructure)          -> findNonTimeOfUseCostSavings()
+                    checkForGas                             -> findGasCostSavings()
                     else -> hashMapOf()
 
                 }
@@ -374,7 +301,6 @@ class CostSavings {
 
             /**
              * <<< Demand Cost Saving >>>
-             * ToDo - Do not use Blended Demand Rate - Instead calculate within each Season - This is gonna be applicable all throughout
              * */
             fun demandCostSaving(): Double {
 
