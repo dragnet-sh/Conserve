@@ -13,10 +13,16 @@ import java.util.*
 class CostSavings {
 
     companion object {
+        /**
+         * TOU Validator
+         * */
         private val regex = "^.*TOU$".toRegex()
         fun isTOU(rate: String) = rate.matches(regex)
         fun isNoTOU(rate: String) = !isTOU(rate)
 
+        /**
+         * Gives the first that is Not Zero
+         * */
         fun firstNotNull(specific: UsageHours, business: UsageHours) =
                 if (specific.yearly() == 0.0) business else specific
 
@@ -61,6 +67,8 @@ class CostSavings {
         private const val PURCHASE_PRICE_PER_UNIT = "purchase_price_per_unit"
         private const val REBATE = "rebate"
         private const val DAILY_ENERGY_USE = "daily_energy_use"
+
+        private const val EMPTY = ""
 
     }
 
@@ -315,36 +323,27 @@ class CostSavings {
             fun aggregateEnergyCostSavings(): Double {
 
                 val savings = energyCostSaving()
-                var aggregate = 0.0
+                fun checker(key: String) = if (savings.containsKey(key)) {
+                    savings[key]!!
+                } else 0.0
 
                 /**
                  * TOU Based Savings
                  * */
-                if (savings.containsKey("CostSavingMultiplePowerCheck")) {
-                    aggregate += savings["CostSavingMultiplePowerCheck"]!!
-                }
-                if (savings.containsKey("CostSavingMultipleTimeOrPowerTimeCheck")) {
-                    aggregate += savings["CostSavingMultipleTimeOrPowerTimeCheck"]!!
-                }
-                if (savings.containsKey("CostSavingPowerChangeCheck")) {
-                    aggregate += savings["CostSavingPowerChangeCheck"]!!
-                }
-                if (savings.containsKey("CostSavingTimeChangeCheck")) {
-                    aggregate += savings["CostSavingTimeChangeCheck"]!!
-                }
+                var aggregate = 0.0
+                aggregate += checker("CostSavingMultiplePowerCheck")
+                aggregate += checker("CostSavingMultipleTimeOrPowerTimeCheck")
+                aggregate += checker("CostSavingPowerChangeCheck")
+                aggregate += checker("CostSavingTimeChangeCheck")
 
                 /**
                  * Non TOU Based Saving*/
-                if (savings.containsKey("CostSavingNonTimeOfUse")) {
-                    aggregate += savings["CostSavingNonTimeOfUse"]!!
-                }
+                aggregate += checker("CostSavingNonTimeOfUse")
 
                 /**
                  * Gas Based Savings
                  * */
-                if (savings.containsKey("CostSavingGas")) {
-                    aggregate += savings["CostSavingGas"]!!
-                }
+                aggregate += checker("CostSavingGas")
 
                 return aggregate
             }
@@ -389,40 +388,16 @@ class CostSavings {
             /**
              * Prepare the Outgoing Rows
              * */
+            fun checker(key: String) = if (energyCostSaving().containsKey(key)) {
+                energyCostSaving()[key]!!.toString()
+            } else EMPTY
             dataHolder.rows?.add(mapOf(
-
-                    "__costSavingMultiplePowerCheck" to if (energyCostSaving().containsKey("CostSavingMultiplePowerCheck")) {
-                        energyCostSaving()["CostSavingMultiplePowerCheck"]!!.toString()
-                    } else {
-                        ""
-                    },
-                    "__costSavingMultipleTimeOrPowerTimeCheck" to if (energyCostSaving().containsKey("CostSavingMultipleTimeOrPowerTimeCheck")) {
-                        energyCostSaving()["CostSavingMultipleTimeOrPowerTimeCheck"]!!.toString()
-                    } else {
-                        ""
-                    },
-                    "__costSavingPowerChangeCheck" to if (energyCostSaving().containsKey("CostSavingPowerChangeCheck")) {
-                        energyCostSaving()["CostSavingPowerChangeCheck"]!!.toString()
-                    } else {
-                        ""
-                    },
-                    "__costSavingTimeChangeCheck" to if (energyCostSaving().containsKey("CostSavingTimeChangeCheck")) {
-                        energyCostSaving()["CostSavingTimeChangeCheck"]!!.toString()
-                    } else {
-                        ""
-                    },
-
-                    "__costSavingNonTimeOfUse" to if (energyCostSaving().containsKey("CostSavingNonTimeOfUse")) {
-                        energyCostSaving()["CostSavingNonTimeOfUse"]!!.toString()
-                    } else {
-                        ""
-                    },
-                    "__costSavingGas" to if (energyCostSaving().containsKey("CostSavingGas")) {
-                        energyCostSaving()["CostSavingGas"]!!.toString()
-                    } else {
-                        ""
-                    },
-
+                    "__costSavingMultiplePowerCheck" to checker("CostSavingMultiplePowerCheck"),
+                    "__costSavingMultipleTimeOrPowerTimeCheck" to checker("CostSavingMultipleTimeOrPowerTimeCheck"),
+                    "__costSavingPowerChangeCheck" to checker("CostSavingPowerChangeCheck"),
+                    "__costSavingTimeChangeCheck" to checker("CostSavingTimeChangeCheck"),
+                    "__costSavingNonTimeOfUse" to checker("CostSavingNonTimeOfUse"),
+                    "__costSavingGas" to checker("CostSavingGas"),
                     "__demand_cost_saving" to demandCostSaving().toString(),
                     "__implementation_cost" to implementationCost().toString(),
                     "__total_cost_saved" to totalCostSaved().toString(),
