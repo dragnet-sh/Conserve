@@ -20,6 +20,9 @@ class CostSavings {
         fun firstNotNull(specific: UsageHours, business: UsageHours) =
                 if (specific.yearly() == 0.0) business else specific
 
+        fun firstNotNull (valueFirst: Double, valueSecond: Double) =
+                if (valueFirst == 0.0) valueSecond else valueFirst
+
         /**
          * Accessing Values for the Best Alternative - Post State
          * */
@@ -73,6 +76,9 @@ class CostSavings {
         lateinit var powerTimeChange: PowerTimeChange
 
         lateinit var dailyEnergyUsagePre: () -> Double
+        lateinit var materialCost: () -> Double
+        lateinit var laborCost: () -> Double
+        lateinit var incentives: () -> Double
 
         override fun apply(unit: Unit): DataHolder {
 
@@ -88,8 +94,8 @@ class CostSavings {
              * Parse API Labor Cost - laborCost
              * */
             fun purchasePricePerUnit() = resolve(computable, PURCHASE_PRICE_PER_UNIT)
-            val materialCost = purchasePricePerUnit()
-            val laborCost = computable.laborCost
+            val materialCost = firstNotNull(purchasePricePerUnit(), materialCost())
+            val laborCost = firstNotNull(computable.laborCost, laborCost())
 
             Timber.d("----::::---- Material Cost ($materialCost) ----::::----")
             Timber.d("----::::---- Labor Cost ($laborCost) ----::::----")
@@ -107,7 +113,7 @@ class CostSavings {
              * Parse API Energy Efficient Database - Rebate
              * */
             fun rebate() = resolve(computable, REBATE)
-            val incentives = rebate()
+            val incentives = firstNotNull(rebate(), incentives())
             Timber.d("----::::---- Incentive ($incentives) ----::::----")
 
             /**
@@ -287,7 +293,7 @@ class CostSavings {
 
                 }
 
-                var demandCostSavings = 0.0
+                val demandCostSavings: Double
                 demandCostSavings = when {
                     powerValue > 0 && powerValues.count() == 0 -> demandCostSavingsYearCalc(powerValue)
                     powerValue <= 0 && powerValues.count() > 0 -> demandCostSavingsYearCalc(powerValues[0])

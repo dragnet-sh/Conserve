@@ -27,7 +27,7 @@ abstract class EBase(private val computable: Computable<*>,
                      private val utilityRateGas: UtilityRate,
                      private val utilityRateElectricity: UtilityRate,
                      val operatingHours: UsageHours,
-                     val outgoingRows: OutgoingRows) {
+                     val outgoingRows: OutgoingRows)  {
 
     lateinit var schedulers: Schedulers
     lateinit var gasRate: UtilityRate
@@ -227,8 +227,10 @@ abstract class EBase(private val computable: Computable<*>,
         mapper.featureData = featureData
         mapper.powerTimeChange = powerTimeChange
 
-        //ToDo: Misleading name - Is this Yearly | Weekly | Monthly | Daily ??
         mapper.dailyEnergyUsagePre = { hourlyEnergyUsagePre()[0] }
+        mapper.materialCost = { materialCost() }
+        mapper.laborCost = { laborCost() }
+        mapper.incentives = { incentives() }
 
         //@Johnny - This is where the Material Cost is going to be fetched
         fun prerequisite() = laborCost(queryLaborCost())
@@ -275,6 +277,10 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     abstract fun hourlyEnergyUsagePre(): List<Double>
     abstract fun hourlyEnergyUsagePost(element: JsonElement): List<Double>
+
+    open fun materialCost() = 0.0
+    open fun laborCost() = 0.0
+    open fun incentives() = 0.0
 
     abstract fun usageHoursPre(): Double
     abstract fun usageHoursPost(): Double
