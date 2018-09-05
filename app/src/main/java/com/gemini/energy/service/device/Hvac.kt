@@ -115,15 +115,15 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
     override fun setup() {
         try {
-            eer = preAudit["EER"]!! as Double
-            seer = preAudit["SEER"]!! as Double
-            age = preAudit["Age"]!! as Int
-            btu = preAudit["Cooling Capacity (Btu/hr)"]!! as Int
+            eer = featureData["EER"]!! as Double
+            seer = featureData["SEER"]!! as Double
+            age = featureData["Age"]!! as Int
+            btu = featureData["Cooling Capacity (Btu/hr)"]!! as Int
 
-            city = preAudit["City"]!! as String
-            state = preAudit["State"]!! as String
+            city = featureData["City"]!! as String
+            state = featureData["State"]!! as String
 
-            alternateSeer = preAudit["Alternate SEER"]!! as Double
+            alternateSeer = featureData["Alternate SEER"]!! as Double
 
         } catch (e: Exception) {
             e.printStackTrace()
