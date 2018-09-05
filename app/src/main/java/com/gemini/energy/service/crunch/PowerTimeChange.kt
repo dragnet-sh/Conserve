@@ -1,9 +1,5 @@
 package com.gemini.energy.service.crunch
 
-import com.gemini.energy.domain.entity.Computable
-import com.gemini.energy.service.type.UsageHours
-import timber.log.Timber
-
 /**
  * Supporting class for the Energy Efficiency Calculation
  * Energy Optimization can be categorized as follows:
@@ -26,7 +22,7 @@ class PowerTimeChange {
     /**
      * Call the appropriate Methods and set the Change Flag accordingly
      * */
-    fun delta(computable: Computable<*>): PowerTimeChange {
+    fun delta(): PowerTimeChange {
 
         checkPowerChange = energyPowerChange() != 0.0
         checkTimeChange = energyTimeChange() != 0.0
@@ -51,14 +47,6 @@ class PowerTimeChange {
             PowerChange, TimeChange, PowerTimeChange
         }
     }
-
-    /**
-     * Gives the Energy Savings Mapped to the Type
-     * */
-    fun energyMap() = hashMapOf(
-            Type.PowerChange to energyPowerChange(),
-            Type.TimeChange to energyTimeChange(),
-            Type.PowerTimeChange to energyPowerTimeChange())
 
     override fun toString() = "" +
                 "----::::---- Energy Power Change : (${energyPowerChange()}) ----::::---- \n" +
