@@ -221,14 +221,14 @@ abstract class EBase(private val computable: Computable<*>,
         mapper.computable = computable
         mapper.usageHoursSpecific = usageHoursSpecific
         mapper.usageHoursBusiness = usageHoursBusiness
-        mapper.electricRateStructure = electricRateStructure
-        mapper.electricityUtilityRate = electricityRate
-        mapper.gasUtilityRate = gasRate
+        mapper.schedule = electricRateStructure
+        mapper.rateElectric = electricityRate
+        mapper.rateGas = gasRate
         mapper.featureData = featureData
         mapper.powerTimeChange = powerTimeChange
 
         //ToDo: Misleading name - Is this Yearly | Weekly | Monthly | Daily ??
-        mapper.hourlyEnergyUsagePre = { hourlyEnergyUsagePre()[0] }
+        mapper.dailyEnergyUsagePre = { hourlyEnergyUsagePre()[0] }
 
         //@Johnny - This is where the Material Cost is going to be fetched
         fun prerequisite() = laborCost(queryLaborCost())
