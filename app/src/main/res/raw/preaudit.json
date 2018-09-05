@@ -397,7 +397,7 @@
         },
         {
           "index": 104,
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "EER",
           "validation": "",
@@ -437,7 +437,7 @@
         },
         {
           "index": 109,
-          "dataType": "introw",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Heating Capacity (Btu/hr)",
           "validation": "",
@@ -474,6 +474,18 @@
           "param": "Cooling Type",
           "validation": "",
           "id": "1013"
+        },
+        {
+          "index": 1014,
+          "dataType": "textrow",
+          "param": "City",
+          "id": "1014"
+        },
+        {
+          "index": 1015,
+          "dataType": "textrow",
+          "param": "State",
+          "id": "1015"
         }
       ],
       "id": "10"
@@ -516,7 +528,7 @@
         },
         {
           "index": 115,
-          "dataType": "introw",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Alternate Heating Capacity",
           "validation": "",
