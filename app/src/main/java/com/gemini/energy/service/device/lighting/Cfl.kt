@@ -54,11 +54,6 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     }
 
     /**
-     * Energy Cost Calculation Formula ToDo: Remove this later
-     * */
-    override fun cost(vararg params: Any) = 0.0
-
-    /**
      * Cost - Pre State
      * */
     override fun costPreState(element: List<JsonElement?>): Double {

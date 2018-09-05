@@ -71,11 +71,6 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
     }
 
     /**
-     * Energy Cost Calculation Formula ToDo: Remove this later
-     * */
-    override fun cost(vararg params: Any) = 0.0
-
-    /**
      * Cost - Pre State
      * */
     override fun costPreState(elements: List<JsonElement?>): Double {
@@ -109,7 +104,7 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
         val coolingSavings = energyAtPreState * cooling * seer // ToDo - Need to revisit
 
         //3. Energy Savings
-        val energySavings = energyPowerChange() * usageHoursSpecific.yearly()
+        val energySavings = energyPowerChange()
 
         val postRow = mutableMapOf<String, String>()
         postRow["__life_hours"] = alternateLifeHours.toString()

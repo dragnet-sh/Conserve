@@ -267,7 +267,6 @@ abstract class EBase(private val computable: Computable<*>,
      * These are Consumed by the Energy Pre State - Post State | Energy - Cost Savings
      * The Equipment Classes define how the calculations are supposed to be done
      * */
-    abstract fun cost(vararg params: Any): Double
     abstract fun costPreState(elements: List<JsonElement?>): Double
     abstract fun costPostState(element: JsonElement, dataHolder: DataHolder): Double
 

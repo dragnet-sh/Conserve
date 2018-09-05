@@ -26,11 +26,6 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
     override fun setup() {}
 
     /**
-     * Energy Cost Calculation Formula ToDo: Remove this later
-     * */
-    override fun cost(vararg params: Any) = 0.0
-
-    /**
      * Cost - Pre State
      * */
     override fun costPreState(elements: List<JsonElement?>): Double {

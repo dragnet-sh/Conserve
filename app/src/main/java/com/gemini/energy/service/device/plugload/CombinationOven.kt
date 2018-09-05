@@ -195,11 +195,6 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
     }
 
     /**
-     * Energy Cost Calculation Formula ToDo: Remove this later
-     * */
-    override fun cost(vararg params: Any) = 0.0
-
-    /**
      * Cost - Pre State
      * The main Cost class does the computing - This way we can use the same Cost class on the Post State
      * */
