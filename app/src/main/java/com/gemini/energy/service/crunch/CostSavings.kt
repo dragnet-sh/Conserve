@@ -98,40 +98,6 @@ class CostSavings {
             val usageHoursPost= usageHoursBusiness
 
             /**
-             * Parse API Energy Efficient Database - materialCost
-             * Parse API Labor Cost - laborCost
-             * */
-            fun purchasePricePerUnit() = resolve(computable, PURCHASE_PRICE_PER_UNIT)
-            val materialCost = firstNotNull(purchasePricePerUnit(), materialCost())
-            val laborCost = firstNotNull(computable.laborCost, laborCost())
-
-            Timber.d("----::::---- Material Cost ($materialCost) ----::::----")
-            Timber.d("----::::---- Labor Cost ($laborCost) ----::::----")
-
-            /**
-             * Note: Looks like this is going to be Equipment Specific
-             * */
-            val maintenanceCostSavings = 0.0
-            val otherEquipmentSavings = 0.0
-
-            Timber.d( "----::::---- Maintenance Cost Savings ($maintenanceCostSavings) ----::::----")
-            Timber.d( "----::::---- Other Equipment Savings ($otherEquipmentSavings) ----::::----")
-
-            /**
-             * Parse API Energy Efficient Database - Rebate
-             * */
-            fun rebate() = resolve(computable, REBATE)
-            val incentives = firstNotNull(rebate(), incentives())
-            Timber.d("----::::---- Incentive ($incentives) ----::::----")
-
-            /**
-             * Flag to denote a gas based equipment
-             * ToDo - Create input and get it from the feature data
-             * */
-            val checkForGas = false
-            Timber.d("----::::---- Check For Gas ($checkForGas) ----::::----")
-
-            /**
              * Power, Time Change or Both
              * */
             val ptc = powerTimeChange.delta()
@@ -262,6 +228,13 @@ class CostSavings {
                 )
 
                 /**
+                 * Flag to denote a gas based equipment
+                 * ToDo - Create input and get it from the feature data
+                 * */
+                val checkForGas = false
+                Timber.d("----::::---- Check For Gas ($checkForGas) ----::::----")
+
+                /**
                  * Main Block
                  * */
                 val energyCostSavings: HashMap<String, Double>
@@ -311,6 +284,33 @@ class CostSavings {
                 return demandCostSavings
 
             }
+
+            /**
+             * Parse API Energy Efficient Database - materialCost
+             * Parse API Labor Cost - laborCost
+             * */
+            fun purchasePricePerUnit() = resolve(computable, PURCHASE_PRICE_PER_UNIT)
+            val materialCost = firstNotNull(purchasePricePerUnit(), materialCost())
+            val laborCost = firstNotNull(computable.laborCost, laborCost())
+
+            Timber.d("----::::---- Material Cost ($materialCost) ----::::----")
+            Timber.d("----::::---- Labor Cost ($laborCost) ----::::----")
+
+            /**
+             * Note: Looks like this is going to be Equipment Specific
+             * */
+            val maintenanceCostSavings = 0.0
+            val otherEquipmentSavings = 0.0
+
+            Timber.d( "----::::---- Maintenance Cost Savings ($maintenanceCostSavings) ----::::----")
+            Timber.d( "----::::---- Other Equipment Savings ($otherEquipmentSavings) ----::::----")
+
+            /**
+             * Parse API Energy Efficient Database - Rebate
+             * */
+            fun rebate() = resolve(computable, REBATE)
+            val incentives = firstNotNull(rebate(), incentives())
+            Timber.d("----::::---- Incentive ($incentives) ----::::----")
 
             /**
              * <<< Implementation Cost >>>
