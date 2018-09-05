@@ -193,6 +193,17 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     }
 
     /**
+     * HVAC - INCENTIVES | MATERIAL COST
+     * */
+    override fun incentives(): Double {
+        return energyPowerChange() * 0.15 + (energyPowerChange() / usageHoursBusiness.yearly()) * 150
+    }
+
+    override fun materialCost(): Double {
+        return (6155.00 - 4589.00)
+    }
+
+    /**
      * PowerTimeChange >> Hourly Energy Use - Pre
      * */
     override fun hourlyEnergyUsagePre(): List<Double> = listOf(0.0, 0.0)
