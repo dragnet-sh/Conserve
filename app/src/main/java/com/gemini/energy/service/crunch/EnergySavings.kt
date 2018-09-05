@@ -15,7 +15,7 @@ class EnergySavings {
             /**
              * The Power Time Change class takes in the computable and calculates the power delta
              * */
-            val ptc = powerTimeChange.delta(computable)
+            val ptc = powerTimeChange.delta()
 
             Timber.d("##### Energy Saving Calculation - ${thread()} #####")
             Timber.d("Energy Post State [Item Count] : (${computable.energyPostState?.count()})")
