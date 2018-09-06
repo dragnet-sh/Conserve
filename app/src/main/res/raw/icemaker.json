@@ -1,1 +1,209 @@
-{"geminiForm": [{"index": 1, "section": "Ice Maker", "elements": [{"index": 11, "dataType": "decimalrow", "defaultValues": "", "param": "Ice Harvest Rate", "validation": "", "id": "11"}, {"index": 12, "dataType": "decimalrow", "defaultValues": "", "param": "Energy Use Rate", "validation": "", "id": "12"}, {"index": 13, "dataType": "pickerinputrow", "defaultValues": "1:Cube,2:Continuous", "param": "Ice Type", "validation": "", "id": "13"}, {"index": 14, "dataType": "textrow", "defaultValues": "", "param": "Machine Type", "validation": "", "id": "14"}, {"index": 15, "dataType": "textrow", "defaultValues": "", "param": "Model Number", "validation": "", "id": "15"}, {"index": 16, "dataType": "textrow", "defaultValues": "", "param": "Company", "validation": "", "id": "16"}, {"index": 17, "dataType": "pickerinputrow", "defaultValues": "1:Yes,2:No", "param": "Used During Peak", "validation": "", "id": "17"}, {"index": 18, "dataType": "introw", "defaultValues": "", "param": "Age", "validation": "", "id": "18"}, {"index": 19, "dataType": "pickerinputrow", "defaultValues": "1:Yes,2:No", "param": "Control", "validation": "", "id": "19"}], "id": "1"}, {"index": 2, "section": "Operating Hours", "elements": [{"index": 21, "dataType": "decimalrow", "defaultValues": "", "param": "Monday Operating Hours", "validation": "", "id": "21"}, {"index": 22, "dataType": "decimalrow", "defaultValues": "", "param": "Tuesday Operating Hours", "validation": "", "id": "22"}, {"index": 23, "dataType": "decimalrow", "defaultValues": "", "param": "Wednesday Operating Hours", "validation": "", "id": "23"}, {"index": 24, "dataType": "decimalrow", "defaultValues": "", "param": "Thursday Operating Hours", "validation": "", "id": "24"}, {"index": 25, "dataType": "decimalrow", "defaultValues": "", "param": "Friday Operating Hours", "validation": "", "id": "25"}, {"index": 26, "dataType": "decimalrow", "defaultValues": "", "param": "Saturday Operating Hours", "validation": "", "id": "26"}, {"index": 27, "dataType": "decimalrow", "defaultValues": "", "param": "Sunday Operating Hours", "validation": "", "id": "27"}], "id": "2"}]}
+{
+  "geminiForm": [
+    {
+      "index": 1,
+      "section": "Ice Maker",
+      "elements": [
+        {
+          "index": 11,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Ice Harvest Rate",
+          "validation": "",
+          "id": "11"
+        },
+        {
+          "index": 12,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Energy Use Rate",
+          "validation": "",
+          "id": "12"
+        },
+        {
+          "index": 13,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Cube,2:Continuous",
+          "param": "Ice Type",
+          "validation": "",
+          "id": "13"
+        },
+        {
+          "index": 14,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Machine Type",
+          "validation": "",
+          "id": "14"
+        },
+        {
+          "index": 15,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Model Number",
+          "validation": "",
+          "id": "15"
+        },
+        {
+          "index": 16,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Company",
+          "validation": "",
+          "id": "16"
+        },
+        {
+          "index": 17,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Yes,2:No",
+          "param": "Used During Peak",
+          "validation": "",
+          "id": "17"
+        },
+        {
+          "index": 18,
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Age",
+          "validation": "",
+          "id": "18"
+        },
+        {
+          "index": 19,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Yes,2:No",
+          "param": "Control",
+          "validation": "",
+          "id": "19"
+        }
+      ],
+      "id": "1"
+    },
+    {
+      "index": 2,
+      "section": "Suggested Alternative",
+      "elements": [
+        {
+          "index": 21,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Ice Harvest Rate",
+          "validation": "",
+          "id": "21"
+        },
+        {
+          "index": 22,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate Energy Use Rate",
+          "validation": "",
+          "id": "22"
+        },
+        {
+          "index": 23,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Cube,2:Continuous",
+          "param": "Alternate Ice Type",
+          "validation": "",
+          "id": "23"
+        },
+        {
+          "index": 24,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Machine Type",
+          "validation": "",
+          "id": "24"
+        },
+        {
+          "index": 25,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Model Number",
+          "validation": "",
+          "id": "25"
+        },
+        {
+          "index": 26,
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "Alternate Age",
+          "validation": "",
+          "id": "26"
+        },
+        {
+          "index": 27,
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Yes,2:No",
+          "param": "Alternate Control",
+          "validation": "",
+          "id": "27"
+        }
+      ],
+      "id": "2"
+    },
+    {
+      "index": 3,
+      "section": "Operating Hours",
+      "elements": [
+        {
+          "index": 31,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Monday Operating Hours",
+          "validation": "",
+          "id": "31"
+        },
+        {
+          "index": 32,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Tuesday Operating Hours",
+          "validation": "",
+          "id": "32"
+        },
+        {
+          "index": 33,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Wednesday Operating Hours",
+          "validation": "",
+          "id": "33"
+        },
+        {
+          "index": 34,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Thursday Operating Hours",
+          "validation": "",
+          "id": "34"
+        },
+        {
+          "index": 35,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Friday Operating Hours",
+          "validation": "",
+          "id": "35"
+        },
+        {
+          "index": 36,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Saturday Operating Hours",
+          "validation": "",
+          "id": "36"
+        },
+        {
+          "index": 37,
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Sunday Operating Hours",
+          "validation": "",
+          "id": "37"
+        }
+      ],
+      "id": "3"
+    }
+  ]
+}
