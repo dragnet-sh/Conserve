@@ -30,7 +30,7 @@ abstract class ComputableFactory {
             return when (computable.auditScopeType as EZoneType) {
 
                 EZoneType.Plugload                  -> PlugloadFactory(utilityRateGas,
-                        utilityRateElectricity, usageHours, outgoingRows)
+                        utilityRateElectricity, usageHours, outgoingRows, context)
 
                 EZoneType.HVAC                      -> HvacFactory(utilityRateGas,
                         utilityRateElectricity, usageHours, outgoingRows, context)
@@ -50,7 +50,8 @@ abstract class ComputableFactory {
 class PlugloadFactory(private val utilityRateGas: UtilityRate,
                       private val utilityRateElectricity: UtilityRate,
                       private val usageHours: UsageHours,
-                      private val outgoingRows: OutgoingRows) : ComputableFactory() {
+                      private val outgoingRows: OutgoingRows,
+                      private val context: Context) : ComputableFactory() {
 
     override fun build(): IComputable {
         return when(computable.auditScopeSubType as EApplianceType) {
@@ -61,7 +62,10 @@ class PlugloadFactory(private val utilityRateGas: UtilityRate,
             EApplianceType.ConvectionOven           -> ConvectionOven()
             EApplianceType.ConveyorOven             -> ConveyorOven()
             EApplianceType.Fryer                    -> Fryer()
-            EApplianceType.IceMaker                 -> IceMaker()
+
+            EApplianceType.IceMaker                 -> IceMaker(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
             EApplianceType.RackOven                 -> RackOven()
 
             EApplianceType.Refrigerator             -> Refrigerator(computable,
