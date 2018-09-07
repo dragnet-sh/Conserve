@@ -125,7 +125,7 @@
         },
         {
           "index": 26,
-          "dataType": "textrow",
+          "dataType": "introw",
           "defaultValues": "",
           "param": "Alternate Age",
           "validation": "",
@@ -148,7 +148,7 @@
       "elements": [
         {
           "index": 31,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Monday Operating Hours",
           "validation": "",
@@ -156,7 +156,7 @@
         },
         {
           "index": 32,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Tuesday Operating Hours",
           "validation": "",
@@ -164,7 +164,7 @@
         },
         {
           "index": 33,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Wednesday Operating Hours",
           "validation": "",
@@ -172,7 +172,7 @@
         },
         {
           "index": 34,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Thursday Operating Hours",
           "validation": "",
@@ -180,7 +180,7 @@
         },
         {
           "index": 35,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Friday Operating Hours",
           "validation": "",
@@ -188,7 +188,7 @@
         },
         {
           "index": 36,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Saturday Operating Hours",
           "validation": "",
@@ -196,7 +196,7 @@
         },
         {
           "index": 37,
-          "dataType": "decimalrow",
+          "dataType": "textrow",
           "defaultValues": "",
           "param": "Sunday Operating Hours",
           "validation": "",
