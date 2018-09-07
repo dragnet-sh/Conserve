@@ -354,7 +354,7 @@ class CostSavings {
             /**
              * <<< Payback Period - Months >>>
              * */
-            fun paybackPeriodMonths() = (implementationCost() / totalCostSaved()) / 12
+            fun paybackPeriodMonths() = (implementationCost() / totalCostSaved()) * 12
 
 
             /**
