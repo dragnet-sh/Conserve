@@ -14,7 +14,7 @@ import com.google.gson.JsonElement
 import io.reactivex.Observable
 import timber.log.Timber
 
-class IceMaker(private val computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
+class IceMaker(computable: Computable<*>, utilityRateGas: UtilityRate, utilityRateElectricity: UtilityRate,
                    usageHours: UsageHours, outgoingRows: OutgoingRows, private val context: Context) :
         EBase(computable, utilityRateGas, utilityRateElectricity, usageHours, outgoingRows), IComputable {
 
@@ -71,16 +71,15 @@ class IceMaker(private val computable: Computable<*>, utilityRateGas: UtilityRat
     /**
      * PowerTimeChange >> Hourly Energy Use - Pre
      * */
-    override fun hourlyEnergyUsagePre(): List<Double> = listOf()
+    override fun hourlyEnergyUsagePre(): List<Double> = listOf(0.0, 0.0)
 
     /**
      * PowerTimeChange >> Hourly Energy Use - Post
      * */
-    override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> = listOf()
+    override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> = listOf(0.0, 0.0)
 
     /**
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
-     * Pre and Post are the same for Refrigerator - 24 hrs
      * */
     override fun usageHoursPre(): Double = usageHoursBusiness.yearly()
     override fun usageHoursPost(): Double = usageHoursBusiness.yearly()
