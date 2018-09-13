@@ -103,7 +103,8 @@
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Name",
-          "validation": "",
+          "validation": "mandatory",
+          "hint": "John Doe",
           "id": "31"
         },
         {
@@ -111,7 +112,8 @@
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Position",
-          "validation": "",
+          "validation": "mandatory",
+          "hint": "CEO",
           "id": "32"
         },
         {
@@ -119,7 +121,8 @@
           "dataType": "emailrow",
           "defaultValues": "",
           "param": "Email",
-          "validation": "",
+          "validation": "mandatory",
+          "hint": "john@doe.com",
           "id": "33"
         },
         {
@@ -127,7 +130,8 @@
           "dataType": "phonerow",
           "defaultValues": "",
           "param": "Phone Number",
-          "validation": "",
+          "validation": "mandatory",
+          "hint": "9841760774",
           "id": "34"
         }
       ],
