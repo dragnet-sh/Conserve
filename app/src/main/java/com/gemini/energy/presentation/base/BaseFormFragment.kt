@@ -72,19 +72,29 @@ abstract class BaseFormFragment : DaggerFragment() {
 
     private fun saveForm() {
         val formData: MutableList<Feature> = mutableListOf()
+        var isValid = true
         getFormIds().forEach { id ->
             val gElement = getGFormElements()[id] as GElements
             val eBaseRowType = BaseRowType.get(gElement.dataType!!)
 
             eBaseRowType?.let { type ->
                 val gFormElement = getFormElement(formBuilder, type, id)
+
+                if (!gFormElement.isValid) {
+                    // 1. Check if the Form is Valid
+                    // 2. If Valid create feature data
+                    // 3. If InValid give error message
+                    gFormElement.setError("Cannot be Empty !!")
+                    isValid = false
+                }
+
                 buildFeature(gElement, gFormElement)?.let {
                     formData.add(it)
                 }
             }
         }
 
-        createFeatureData(formData)
+        if (isValid) { createFeatureData(formData) }
     }
 
     private fun btnSave(): FormButtonElement {

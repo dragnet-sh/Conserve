@@ -5,7 +5,6 @@ import com.gemini.energy.presentation.util.BaseRowType
 import com.thejuki.kformmaster.model.BaseFormElement
 import com.thejuki.kformmaster.model.FormHeader
 
-
 class FormBuilder {
 
     fun build(section: String, elements: List<GElements>): MutableList<BaseFormElement<*>> {
@@ -15,7 +14,14 @@ class FormBuilder {
         collectRows.add(FormHeader.createInstance(section))
         for (item in elements) {
             val type = BaseRowType.get(item.dataType!!)
-            collectRows.add(instantiate(type!!).create(item))
+            val row = instantiate(type!!).create(item)
+
+            // *** 1. Add Validation :: [Mandatory | Optional] *** //
+            // *** 2. Add Hints :: Placeholder Text *** //
+            if (item.validation == MANDATORY) { row.setRequired(true) }
+            row.setHint(item.hint)
+
+            collectRows.add(row)
         }
 
         return collectRows
@@ -23,6 +29,7 @@ class FormBuilder {
     }
 
     companion object {
+        private const val MANDATORY = "mandatory"
         fun instantiate(type: BaseRowType): IFormElement {
             return when (type) {
                 BaseRowType.IntRow -> IntRow()
