@@ -18,5 +18,6 @@ class GElements {
     val param: String? = null
     val dataType: String? = null
     val validation: String? = null
+    val hint: String? = null
     val defaultValues: String? = null
 }
