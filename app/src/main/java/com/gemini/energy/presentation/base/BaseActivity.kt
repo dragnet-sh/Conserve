@@ -52,9 +52,8 @@ open class BaseActivity : DaggerAppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "BaseActivity"
-        private const val WIDTH_SECOND = 70
-        private const val WIDTH_FIRST = 180
+        private const val WIDTH_SECOND = 100
+        private const val WIDTH_FIRST = 300
     }
 
 }
