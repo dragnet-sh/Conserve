@@ -113,6 +113,14 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideZoneDeleteUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneDeleteUseCase {
+            return ZoneDeleteUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideZoneSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 ZoneSaveUseCase {
             return ZoneSaveUseCase(schedulers, auditGateway)
@@ -132,6 +140,14 @@ internal abstract class HomeModule {
         internal fun provideZoneTypeSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 ZoneTypeSaveUseCase {
             return ZoneTypeSaveUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideZoneTypeDeleteByZoneUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneTypeDeleteByZoneUseCase {
+            return ZoneTypeDeleteByZoneUseCase(schedulers, auditGateway)
         }
 
         @HomeScope
@@ -164,6 +180,14 @@ internal abstract class HomeModule {
         internal fun provideFeatureDeleteUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 FeatureDeleteUseCase {
             return FeatureDeleteUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideFeatureDeleteByZoneUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                FeatureDeleteByZoneUseCase{
+            return FeatureDeleteByZoneUseCase(schedulers, auditGateway)
         }
 
 
@@ -215,14 +239,17 @@ internal abstract class HomeModule {
 
                 zoneGetAllUseCase: ZoneGetAllUseCase,
                 zoneSaveUseCase: ZoneSaveUseCase,
+                zoneDeleteUseCase: ZoneDeleteUseCase,
 
                 zoneTypeGetAllUseCase: ZoneTypeGetAllUseCase,
                 zoneTypeSaveUseCase: ZoneTypeSaveUseCase,
+                zoneTypeDeleteByZoneUseCase: ZoneTypeDeleteByZoneUseCase,
 
                 featureSaveUseCase: FeatureSaveUseCase,
                 featureGetAllUseCase: FeatureGetAllUseCase,
                 featureGetAllByTypeUseCase: FeatureGetAllByTypeUseCase,
-                featureDeleteUseCase: FeatureDeleteUseCase
+                featureDeleteUseCase: FeatureDeleteUseCase,
+                featureDeleteByZoneUseCase: FeatureDeleteByZoneUseCase
 
 
         ): ViewModelProvider.Factory {
@@ -238,7 +265,8 @@ internal abstract class HomeModule {
                             AuditCreateViewModel(context, auditSaveUseCase) as T
 
                         modelClass.isAssignableFrom(ZoneListViewModel::class.java) ->
-                            ZoneListViewModel(context, zoneGetAllUseCase) as T
+                            ZoneListViewModel(context, zoneGetAllUseCase, zoneDeleteUseCase,
+                                    zoneTypeDeleteByZoneUseCase, featureDeleteByZoneUseCase) as T
 
                         modelClass.isAssignableFrom(ZoneCreateViewModel::class.java) ->
                             ZoneCreateViewModel(context, zoneSaveUseCase) as T

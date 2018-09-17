@@ -20,4 +20,12 @@ class ZoneRepository(
         return zoneLocalDataSource.save(zoneMapper.toLocal(zone))
     }
 
+    fun delete(id: Int): Observable<Unit> {
+        return zoneLocalDataSource.delete(id)
+    }
+
+    fun deleteByAuditId(id: Int): Observable<Unit> {
+        return zoneLocalDataSource.deleteByAuditId(id)
+    }
+
 }

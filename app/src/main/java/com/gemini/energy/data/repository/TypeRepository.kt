@@ -20,4 +20,11 @@ class TypeRepository(
         return typeLocalDataSource.save(auditScopeMapper.toLocal(auditScope))
     }
 
+    fun deleteByZoneId(id: Int): Observable<Unit> {
+        return typeLocalDataSource.deleteByZoneId(id)
+    }
+
+    fun deleteByAuditId(id: Int): Observable<Unit> {
+        return typeLocalDataSource.deleteByAuditId(id)
+    }
 }

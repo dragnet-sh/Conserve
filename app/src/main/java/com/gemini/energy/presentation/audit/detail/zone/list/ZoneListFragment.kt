@@ -24,6 +24,7 @@ import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.type.TypeActivity
 import dagger.android.support.DaggerFragment
+import timber.log.Timber
 import javax.inject.Inject
 
 class ZoneListFragment : DaggerFragment(),
@@ -159,6 +160,11 @@ class ZoneListFragment : DaggerFragment(),
 
     }
 
+    override fun onEditClick(view: View, item: ZoneModel) {}
+    override fun onDeleteClick(view: View, item: ZoneModel) {
+        zoneListViewModel.deleteZone(item)
+    }
+
     override fun onZoneCreate(args: Bundle) {
         auditModel?.let {
             zoneCreateViewModel.createZone(it.id, args.getString("zoneTag"))
@@ -170,7 +176,6 @@ class ZoneListFragment : DaggerFragment(),
             refreshViewModel()
         })
     }
-
 
     /*
     * Static Content

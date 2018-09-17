@@ -1,6 +1,5 @@
 package com.gemini.energy.data.gateway.mapper
 
-import android.util.Log
 import com.gemini.energy.data.local.model.*
 import com.gemini.energy.domain.entity.*
 import com.gemini.energy.presentation.util.EApplianceType

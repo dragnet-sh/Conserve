@@ -30,7 +30,8 @@ class AuditGatewayImpl(
                     .map { it.map { mapper.toEntity(it) } }
 
     override fun saveZone(zone: Zone): Observable<Unit> = zoneRepository.save(zone)
-
+    override fun deleteZone(zoneId: Int): Observable<Unit> = zoneRepository.delete(zoneId)
+    override fun deleteZoneByAuditId(id: Int): Observable<Unit> = zoneRepository.deleteByAuditId(id)
 
     /*Audit Zone Type*/
     override fun getAuditScopeList(zoneId: Int, type: String): Observable<List<Type>> =
@@ -38,7 +39,8 @@ class AuditGatewayImpl(
                     .map { it.map { mapper.toEntity(it) } }
 
     override fun saveAuditScope(auditScope: Type) = typeRepository.save(auditScope)
-
+    override fun deleteAuditScopeByZoneId(id: Int): Observable<Unit> = typeRepository.deleteByZoneId(id)
+    override fun deleteAuditScopeByAuditId(id: Int): Observable<Unit> = typeRepository.deleteByAuditId(id)
 
     /*Feature Data*/
     override fun getFeature(auditId: Int): Observable<List<Feature>> =
@@ -54,6 +56,9 @@ class AuditGatewayImpl(
     override fun deleteFeature(feature: List<Feature>): Observable<Unit> =
             featureRepository.delete(feature)
 
+    override fun deleteFeatureByTypeId(id: Int): Observable<Unit> = featureRepository.deleteByTypeId(id)
+    override fun deleteFeatureByAuditId(id: Int): Observable<Unit> = featureRepository.deleteByAuditId(id)
+    override fun deleteFeatureByZoneId(id: Int): Observable<Unit> = featureRepository.deleteByZoneId(id)
 
     /*Computable*/
     override fun getComputable(): Observable<List<Computable<*>>> =

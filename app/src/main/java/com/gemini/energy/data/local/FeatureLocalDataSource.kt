@@ -17,4 +17,16 @@ class FeatureLocalDataSource(private val featureDao: FeatureDao) {
         featureDao.deleteByType(feature)
     }
 
+    fun deleteByTypeId(id: Int): Observable<Unit> = Observable.fromCallable {
+        featureDao.deleteByTypeId(id)
+    }
+
+    fun deleteByAuditId(id: Int): Observable<Unit> = Observable.fromCallable {
+        featureDao.deleteByAuditId(id)
+    }
+
+    fun deleteByZoneId(id: Int): Observable<Unit> = Observable.fromCallable {
+        featureDao.deleteByZoneId(id)
+    }
+
 }

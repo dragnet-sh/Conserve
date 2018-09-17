@@ -3,7 +3,6 @@ package com.gemini.energy.presentation.audit.detail.zone.list.adapter
 import android.app.Activity
 import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,16 +10,18 @@ import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneListItemBinding
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.type.TypeActivity
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.disposables.Disposable
+import timber.log.Timber
 
 class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks: OnZoneClickListener? = null,
                       private val activity: Activity):
-    RecyclerView.Adapter<ZoneListAdapter.ViewHolder>() {
+        RecyclerView.Adapter<ZoneListAdapter.ViewHolder>(),
+
+        View.OnClickListener {
 
     interface OnZoneClickListener { // OnItemClickListener //
         fun onZoneClick(view: View, item: ZoneModel)
+        fun onEditClick(view: View, item: ZoneModel)
+        fun onDeleteClick(view: View, item: ZoneModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ZoneListAdapter.ViewHolder {
@@ -41,6 +42,7 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
 
         holder.binding.showClose = true
         holder.binding.showEdit = true
+        holder.binding.buttonClick = this
 
         // *** Updating UI Based on the Parent Activity **** //
         if (activity is TypeActivity) {
@@ -50,6 +52,16 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
 
     }
 
+    override fun onClick(v: View?) {
+        v?.let {
+            val zone = it.tag as ZoneModel
+            when (it.id) {
+                R.id.button_update_zone -> callbacks?.onEditClick(it, zone)
+                R.id.button_delete_zone -> callbacks?.onDeleteClick(it, zone)
+            }
+            Timber.d("On Click :: Zone - $zone")
+        }
+    }
 
     inner class ViewHolder(val binding: FragmentZoneListItemBinding) : RecyclerView.ViewHolder(binding.root) {
         init {

@@ -113,7 +113,7 @@ class FeatureDataFragment : BaseFormFragment() {
         val date = Date()
         typeModel?.let {
             feature = Feature(null, gElement.id, belongsTo, gElement.dataType,
-                    null, null, it.id, gElement.param, gFormElement.valueAsString,
+                    null, it.zoneId, it.id, gElement.param, gFormElement.valueAsString,
                     null, null, date, date)
         }
 

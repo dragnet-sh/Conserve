@@ -28,4 +28,16 @@ class FeatureRepository(
         return featureLocalDataSource.delete(featureMapper.toLocal(feature))
     }
 
+    fun deleteByTypeId(id: Int): Observable<Unit> {
+        return featureLocalDataSource.deleteByTypeId(id)
+    }
+
+    fun deleteByAuditId(id: Int): Observable<Unit> {
+        return featureLocalDataSource.deleteByAuditId(id)
+    }
+
+    fun deleteByZoneId(id: Int): Observable<Unit> {
+        return featureLocalDataSource.deleteByZoneId(id)
+    }
+
 }
