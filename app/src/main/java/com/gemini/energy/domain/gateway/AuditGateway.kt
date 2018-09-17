@@ -7,8 +7,10 @@ interface AuditGateway {
     fun getAuditList(): Observable<List<Audit>>
     fun saveAudit(audit: Audit): Observable<Unit>
 
+    fun getZone(zoneId: Int): Observable<Zone>
     fun getZoneList(auditId: Int): Observable<List<Zone>>
     fun saveZone(zone: Zone): Observable<Unit>
+    fun updateZone(zone: Zone): Observable<Unit>
     fun deleteZone(zoneId: Int): Observable<Unit>
     fun deleteZoneByAuditId(id: Int): Observable<Unit>
 

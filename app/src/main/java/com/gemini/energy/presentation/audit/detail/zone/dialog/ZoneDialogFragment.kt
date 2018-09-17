@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import com.gemini.energy.R
+import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.util.Navigator
 import com.mobsandgeeks.saripaar.ValidationError
 import com.mobsandgeeks.saripaar.Validator
@@ -19,6 +20,7 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
 
     @NotEmpty
     private lateinit var zoneTag: EditText
+    var zone: ZoneModel? = null
 
     @Inject
     lateinit var navigator: Navigator
@@ -43,6 +45,9 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
         view.findViewById<Button>(R.id.btn_save_zone).setOnClickListener { validator.validate() }
 
         zoneTag = view.findViewById(R.id.edt_create_zone_tag)
+        zone?.let {
+            zoneTag.setText(it.name)
+        }
 
         return view
     }
@@ -64,7 +69,9 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
             parentFragment as OnZoneCreateListener
         }
 
-        callbacks?.onZoneCreate(args)
+        if (zone == null) { callbacks?.onZoneCreate(args) }
+        else { callbacks?.onZoneUpdate(args, zone!!) }
+
         dismiss()
     }
 
@@ -75,6 +82,7 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
 
     interface OnZoneCreateListener {
         fun onZoneCreate(args: Bundle)
+        fun onZoneUpdate(args: Bundle, zone: ZoneModel)
     }
 
 }

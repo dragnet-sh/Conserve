@@ -6,15 +6,15 @@ import io.reactivex.Observable
 
 class ZoneLocalDataSource(private val zoneDao: ZoneDao) {
 
+    fun get(id: Int): Observable<ZoneLocalModel> = zoneDao.get(id).toObservable()
     fun getAllByAudit(id: Int): Observable<List<ZoneLocalModel>> = zoneDao.getAllByAudit(id).toObservable()
 
     fun save(zone: ZoneLocalModel): Observable<Unit> = Observable.fromCallable {
         zoneDao.insert(zone)
     }
 
-    fun delete(id: Int): Observable<Unit> = Observable.fromCallable {
-        zoneDao.delete(id)
-    }
+    fun update(zone: ZoneLocalModel): Observable<Unit> = Observable.fromCallable { zoneDao.update(zone) }
+    fun delete(id: Int): Observable<Unit> = Observable.fromCallable { zoneDao.delete(id) }
 
     fun deleteByAuditId(id: Int): Observable<Unit> = Observable.fromCallable {
         zoneDao.deleteByAuditId(id)

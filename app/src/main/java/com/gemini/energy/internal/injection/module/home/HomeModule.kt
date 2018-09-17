@@ -105,6 +105,14 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideZoneGetUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneGetUseCase {
+            return ZoneGetUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideZoneGetAllUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 ZoneGetAllUseCase {
             return ZoneGetAllUseCase(schedulers, auditGateway)
@@ -124,6 +132,14 @@ internal abstract class HomeModule {
         internal fun provideZoneSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 ZoneSaveUseCase {
             return ZoneSaveUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideZoneUpdateUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneUpdateUseCase {
+            return ZoneUpdateUseCase(schedulers, auditGateway)
         }
 
         @HomeScope
@@ -237,8 +253,10 @@ internal abstract class HomeModule {
                 auditGetAllUseCase: AuditGetAllUseCase,
                 auditSaveUseCase: AuditSaveUseCase,
 
+                zoneGetUseCase: ZoneGetUseCase,
                 zoneGetAllUseCase: ZoneGetAllUseCase,
                 zoneSaveUseCase: ZoneSaveUseCase,
+                zoneUpdateUseCase: ZoneUpdateUseCase,
                 zoneDeleteUseCase: ZoneDeleteUseCase,
 
                 zoneTypeGetAllUseCase: ZoneTypeGetAllUseCase,
@@ -269,7 +287,7 @@ internal abstract class HomeModule {
                                     zoneTypeDeleteByZoneUseCase, featureDeleteByZoneUseCase) as T
 
                         modelClass.isAssignableFrom(ZoneCreateViewModel::class.java) ->
-                            ZoneCreateViewModel(context, zoneSaveUseCase) as T
+                            ZoneCreateViewModel(context, zoneSaveUseCase, zoneGetUseCase, zoneUpdateUseCase) as T
 
                         modelClass.isAssignableFrom(TypeListViewModel::class.java) ->
                             TypeListViewModel(context, zoneTypeGetAllUseCase) as T

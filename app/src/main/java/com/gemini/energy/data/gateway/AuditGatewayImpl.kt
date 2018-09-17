@@ -25,11 +25,13 @@ class AuditGatewayImpl(
 
 
     /*Zone*/
+    override fun getZone(zoneId: Int): Observable<Zone> = zoneRepository.get(zoneId).map { mapper.toEntity(it) }
     override fun getZoneList(auditId: Int): Observable<List<Zone>> =
             zoneRepository.getAllByAudit(auditId)
                     .map { it.map { mapper.toEntity(it) } }
 
     override fun saveZone(zone: Zone): Observable<Unit> = zoneRepository.save(zone)
+    override fun updateZone(zone: Zone): Observable<Unit> = zoneRepository.update(zone)
     override fun deleteZone(zoneId: Int): Observable<Unit> = zoneRepository.delete(zoneId)
     override fun deleteZoneByAuditId(id: Int): Observable<Unit> = zoneRepository.deleteByAuditId(id)
 

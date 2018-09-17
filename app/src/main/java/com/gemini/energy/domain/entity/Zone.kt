@@ -4,7 +4,7 @@ import java.util.*
 
 data class Zone(
     val id: Int?,
-    val name: String,
+    var name: String,
     val type: String,
 
     val auditId: Int,

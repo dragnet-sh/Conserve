@@ -51,8 +51,7 @@ class ZoneListViewModel(context: Context,
                         result.clear()
                         result.addAll(mapper.toModel(t))
                         empty.set(t.isEmpty())
-
-                        Log.d(TAG, t.toString())
+                        Timber.d(t.toString())
                     }
 
                     override fun onError(t: Throwable) {
@@ -67,7 +66,6 @@ class ZoneListViewModel(context: Context,
     }
 
     private fun delete(zone: ZoneModel): Disposable {
-
         return zoneDeleteUseCase.execute(zone.id!!)
                 .subscribeWith(object : DisposableObserver<Unit>() {
                     override fun onComplete() { Timber.d("!! ON COMPLETE !!")}
@@ -81,9 +79,4 @@ class ZoneListViewModel(context: Context,
                     }
                 })
     }
-
-    companion object {
-        private const val TAG = "ZoneListViewModel"
-    }
-
 }
