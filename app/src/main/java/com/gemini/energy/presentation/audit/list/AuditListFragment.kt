@@ -76,8 +76,8 @@ class AuditListFragment : DaggerFragment(),
         // *** This gets passed on to the Adapter via ViewBindingAdapter *** //
         binder.callbacks = this
 
-        binder.recyclerView.addItemDecoration(
-                DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
+//        binder.recyclerView.addItemDecoration(
+//                DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
 
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
 

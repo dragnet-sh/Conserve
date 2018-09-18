@@ -4,6 +4,8 @@ import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.TextView
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentAuditListItemBinding
 import com.gemini.energy.presentation.audit.list.model.AuditModel
@@ -31,15 +33,27 @@ class AuditListAdapter(private val items: List<AuditModel>, private val callback
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.audit = items[position]
         holder.binding.executePendingBindings()
+
+        holder.auditTextView?.setOnClickListener {
+            callbacks?.onAuditClick(Observable.just(items[position]))
+        }
+
+        //ToDo :: Implement Delete | Update Calls !!
+
+
     }
 
     inner class ViewHolder(val binding: FragmentAuditListItemBinding) :
             RecyclerView.ViewHolder(binding.root) {
 
+        var auditTextView: TextView? = null
+        var deleteImageButton: ImageButton? = null
+        var updateImageButton: ImageButton? = null
+
         init {
-            itemView.setOnClickListener {
-                callbacks?.onAuditClick(Observable.just(items[adapterPosition]))
-            }
+            auditTextView = itemView.findViewById(R.id.text_audit_id)
+            deleteImageButton = itemView.findViewById(R.id.info_button)
+            updateImageButton = itemView.findViewById(R.id.edit_button)
         }
 
     }
