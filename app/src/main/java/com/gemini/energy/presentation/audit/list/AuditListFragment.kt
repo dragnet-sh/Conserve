@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
+import android.util.TimeFormatException
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import com.gemini.energy.presentation.audit.list.adapter.AuditListAdapter
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import dagger.android.support.DaggerFragment
 import io.reactivex.Observable
+import timber.log.Timber
 import javax.inject.Inject
 
 class AuditListFragment : DaggerFragment(),
@@ -106,6 +108,14 @@ class AuditListFragment : DaggerFragment(),
 
     override fun onAuditCreate(args: Bundle) {
         auditCreateViewModel.createAudit(args.getInt("auditId"), args.getString("auditTag"))
+    }
+
+    override fun onEditClick(view: View, item: AuditModel) {
+        Timber.d(">>> Audit - Edit ${item.name}")
+    }
+
+    override fun onDeleteClick(view: View, item: AuditModel) {
+        Timber.d(">>> Audit - Delete ${item.name}")
     }
 
     private fun setupListeners() {

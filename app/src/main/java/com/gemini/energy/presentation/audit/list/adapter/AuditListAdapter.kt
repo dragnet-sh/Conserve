@@ -3,6 +3,7 @@ package com.gemini.energy.presentation.audit.list.adapter
 import android.databinding.DataBindingUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
@@ -10,12 +11,15 @@ import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentAuditListItemBinding
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import io.reactivex.Observable
+import timber.log.Timber
 
 class AuditListAdapter(private val items: List<AuditModel>, private val callbacks: OnAuditClickListener? = null) :
         RecyclerView.Adapter<AuditListAdapter.ViewHolder>() {
 
     interface OnAuditClickListener {
         fun onAuditClick(observable: Observable<AuditModel>)
+        fun onEditClick(view: View, item: AuditModel)
+        fun onDeleteClick(view: View, item: AuditModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,9 +42,15 @@ class AuditListAdapter(private val items: List<AuditModel>, private val callback
             callbacks?.onAuditClick(Observable.just(items[position]))
         }
 
-        //ToDo :: Implement Delete | Update Calls !!
+        holder.deleteImageButton?.setOnClickListener {
+            val audit = it.tag as AuditModel
+            callbacks?.onDeleteClick(it, audit)
+        }
 
-
+        holder.updateImageButton?.setOnClickListener {
+            val audit = it.tag as AuditModel
+            callbacks?.onEditClick(it, audit)
+        }
     }
 
     inner class ViewHolder(val binding: FragmentAuditListItemBinding) :

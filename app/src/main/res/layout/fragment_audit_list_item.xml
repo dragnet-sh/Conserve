@@ -34,6 +34,7 @@
                     android:layout_height="28dp"
                     android:background="#eeeeee"
                     android:layout_marginRight="10dp"
+                    android:tag="@{audit}"
                     app:srcCompat="@drawable/ic_mode_edit"
                     android:text="Edit"/>
 
@@ -43,6 +44,7 @@
                     android:layout_height="28dp"
                     android:background="#eeeeee"
                     app:srcCompat="@drawable/ic_clear_black"
+                    android:tag="@{audit}"
                     android:layout_marginRight="5dp"
                     android:text="Info"/>
 
@@ -62,6 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:minHeight="30dp"
+                    app:contentPaddingLeft="5dp"
                     app:contentPaddingTop="10dp"
                     app:contentPaddingBottom="10dp">
 
