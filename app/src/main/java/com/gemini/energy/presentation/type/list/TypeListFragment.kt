@@ -28,6 +28,7 @@ import com.gemini.energy.presentation.type.list.model.TypeModel
 import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.util.EZoneType
 import dagger.android.support.DaggerFragment
+import timber.log.Timber
 import javax.inject.Inject
 
 class TypeListFragment : DaggerFragment(),
@@ -106,10 +107,11 @@ class TypeListFragment : DaggerFragment(),
 
     }
 
-    private fun showCreateZoneType() {
+    private fun showCreateZoneType(type: TypeModel? = null) {
         typeId?.let {
             val fragment = TypeDialogFragment.newInstance(it)
             fragment.show(childFragmentManager, FRAG_DIALOG)
+            fragment.type = type
         }
 
     }
@@ -186,8 +188,14 @@ class TypeListFragment : DaggerFragment(),
 
     }
 
-    override fun onEditClick(view: View, typeModel: TypeModel) {}
-    override fun onDeleteClick(view: View, typeModel: TypeModel) {}
+    override fun onEditClick(view: View, typeModel: TypeModel) {
+        Timber.d("On Edit Click")
+        showCreateZoneType(typeModel)
+    }
+
+    override fun onDeleteClick(view: View, typeModel: TypeModel) {
+        Timber.d("On Delete Click")
+    }
 
     override fun onTypeCreate(args: Bundle) {
 

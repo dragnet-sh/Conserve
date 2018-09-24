@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.gemini.energy.R
+import com.gemini.energy.presentation.type.list.model.TypeModel
 import com.gemini.energy.presentation.util.EApplianceType
 import com.gemini.energy.presentation.util.ELightingType
 import com.gemini.energy.presentation.util.EZoneType
@@ -30,7 +31,7 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
     private lateinit var validator: Validator
 
     private var typeId: Int? = null
-
+    var type: TypeModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +42,11 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         typeId = arguments?.getInt("typeId")
         scopeType = getType(typeId ?: 0)!!.value
         scopeSubType = "none"
+
+        type?.let {
+            scopeType = it.type!!
+            scopeSubType = it.subType!!
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -57,6 +63,11 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
 
         val scopeOptions  = getScopeOptions()
         scopeSpinner.adapter = ArrayAdapter(activity, R.layout.support_simple_spinner_dropdown_item, scopeOptions)
+
+        type?.let {
+            scopeName.setText(it.name)
+            scopeSpinner.setSelection(getScopeOptions().indexOf(it.subType))
+        }
 
         scopeSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
@@ -75,7 +86,7 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
     }
 
     override fun onValidationSucceeded() {
-        var args = Bundle().apply {
+        val args = Bundle().apply {
             this.putString("typeTag", scopeName.text.toString())
             this.putString("type", scopeType)
             this.putString("subType", scopeSubType)
