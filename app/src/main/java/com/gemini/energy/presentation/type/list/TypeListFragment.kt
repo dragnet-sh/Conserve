@@ -18,6 +18,7 @@ import com.gemini.energy.databinding.FragmentZoneTypeListBinding
 import com.gemini.energy.internal.util.lazyThreadSafetyNone
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.audit.list.model.AuditModel
+import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.type.SharedViewModel
 import com.gemini.energy.presentation.type.TypeActivity
 import com.gemini.energy.presentation.type.dialog.TypeCreateViewModel
@@ -96,6 +97,7 @@ class TypeListFragment : DaggerFragment(),
         binder.viewModel = typeListViewModel
         binder.callbacks = this
         binder.fabClick = this
+        binder.app = app
         binder.showCreate = app.isParent()
 
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
@@ -183,6 +185,9 @@ class TypeListFragment : DaggerFragment(),
         }
 
     }
+
+    override fun onEditClick(view: View, typeModel: TypeModel) {}
+    override fun onDeleteClick(view: View, typeModel: TypeModel) {}
 
     override fun onTypeCreate(args: Bundle) {
 

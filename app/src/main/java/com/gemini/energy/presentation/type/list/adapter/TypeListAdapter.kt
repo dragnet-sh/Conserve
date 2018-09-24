@@ -8,13 +8,20 @@ import android.view.ViewGroup
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListItemBinding
 import com.gemini.energy.presentation.type.list.model.TypeModel
+import com.gemini.energy.App
+import timber.log.Timber
 
 
-class TypeListAdapter(private val items: List<TypeModel>, private val callbacks: OnTypeClickListener? = null) :
-        RecyclerView.Adapter<TypeListAdapter.ViewHolder>() {
+class TypeListAdapter(private val items: List<TypeModel>, private val callbacks: OnTypeClickListener? = null,
+                      private val app: App) :
+        RecyclerView.Adapter<TypeListAdapter.ViewHolder>(),
+
+        View.OnClickListener {
 
     interface OnTypeClickListener {
         fun onTypeClick(view: View, typeModel: TypeModel)
+        fun onEditClick(view: View, typeModel: TypeModel)
+        fun onDeleteClick(view: View, typeModel: TypeModel)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,6 +38,22 @@ class TypeListAdapter(private val items: List<TypeModel>, private val callbacks:
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.type = items[position]
         holder.binding.executePendingBindings()
+
+        holder.binding.showClose = true
+        holder.binding.showEdit = true
+        holder.binding.buttonClick = this
+
+        Timber.d("Is Parent :: ${app.isParent()}")
+        Timber.d("Is Child :: ${app.isChild()}")
+
+        if (app.isChild()) {
+            holder.binding.showClose = false
+            holder.binding.showEdit = false
+        }
+    }
+
+    override fun onClick(v: View?) {
+
     }
 
     inner class ViewHolder(val binding: FragmentZoneTypeListItemBinding) : RecyclerView.ViewHolder(binding.root) {

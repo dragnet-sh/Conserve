@@ -21,6 +21,10 @@
             type="android.view.View.OnClickListener" />
 
         <variable
+            name="app"
+            type="com.gemini.energy.App" />
+
+        <variable
             name="showCreate"
             type="java.lang.Boolean" />
 
@@ -36,6 +40,7 @@
 
             app:zoneTypeList="@{viewModel.result}"
             app:zoneTypeListCallback="@{callbacks}"
+            app:app="@{app}"
 
             tools:listitem="@layout/fragment_type_list_item" />
 
