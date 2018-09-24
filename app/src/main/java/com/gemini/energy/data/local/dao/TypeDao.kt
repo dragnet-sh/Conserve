@@ -17,6 +17,9 @@ interface TypeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(auditScope: TypeLocalModel)
 
+    @Query("DELETE FROM AuditZoneType WHERE id = :id")
+    fun delete(id: Int)
+
     @Query("DELETE FROM AuditZoneType WHERE zone_id = :id")
     fun deleteByZoneId(id: Int)
 

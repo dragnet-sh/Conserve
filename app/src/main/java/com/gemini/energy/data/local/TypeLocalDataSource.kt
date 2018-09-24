@@ -17,6 +17,10 @@ class TypeLocalDataSource(
         auditZoneTypeDao.insert(auditZoneType)
     }
 
+    fun delete(id: Int): Observable<Unit> = Observable.fromCallable {
+        auditZoneTypeDao.delete(id)
+    }
+
     fun deleteByZoneId(id: Int): Observable<Unit> = Observable.fromCallable {
         auditZoneTypeDao.deleteByZoneId(id)
     }

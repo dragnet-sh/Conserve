@@ -189,12 +189,11 @@ class TypeListFragment : DaggerFragment(),
     }
 
     override fun onEditClick(view: View, typeModel: TypeModel) {
-        Timber.d("On Edit Click")
         showCreateZoneType(typeModel)
     }
 
     override fun onDeleteClick(view: View, typeModel: TypeModel) {
-        Timber.d("On Delete Click")
+        typeListViewModel.deleteZoneType(typeModel)
     }
 
     override fun onTypeCreate(args: Bundle) {
@@ -219,6 +218,8 @@ class TypeListFragment : DaggerFragment(),
             }
         }
     }
+
+    override fun onTypeUpdate(args: Bundle, type: TypeModel) {}
 
     private fun setupListeners() {
         typeCreateViewModel.result.observe(this, Observer {

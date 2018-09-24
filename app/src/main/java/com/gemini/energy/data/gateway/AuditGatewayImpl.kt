@@ -47,6 +47,7 @@ class AuditGatewayImpl(
                 .map { it.map { mapper.toEntity(it) } }
 
     override fun saveAuditScope(auditScope: Type) = typeRepository.save(auditScope)
+    override fun deleteAuditScope(id: Int): Observable<Unit> = typeRepository.delete(id)
     override fun deleteAuditScopeByZoneId(id: Int): Observable<Unit> = typeRepository.deleteByZoneId(id)
     override fun deleteAuditScopeByAuditId(id: Int): Observable<Unit> = typeRepository.deleteByAuditId(id)
 

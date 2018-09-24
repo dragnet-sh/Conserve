@@ -20,6 +20,7 @@ interface AuditGateway {
     fun getAuditScopeList(zoneId: Int, type: String): Observable<List<Type>>
     fun getAuditScopeByAudit(auditId: Int): Observable<List<Type>>
     fun saveAuditScope(auditScope: Type): Observable<Unit>
+    fun deleteAuditScope(id: Int): Observable<Unit>
     fun deleteAuditScopeByZoneId(id: Int): Observable<Unit>
     fun deleteAuditScopeByAuditId(id: Int): Observable<Unit>
 
