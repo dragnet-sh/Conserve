@@ -219,7 +219,9 @@ class TypeListFragment : DaggerFragment(),
         }
     }
 
-    override fun onTypeUpdate(args: Bundle, type: TypeModel) {}
+    override fun onTypeUpdate(args: Bundle, type: TypeModel, scopeName: String) {
+        typeCreateViewModel.updateZoneType(type, scopeName)
+    }
 
     private fun setupListeners() {
         typeCreateViewModel.result.observe(this, Observer {

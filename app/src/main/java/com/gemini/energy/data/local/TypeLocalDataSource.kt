@@ -7,6 +7,9 @@ import io.reactivex.Observable
 class TypeLocalDataSource(
         private val auditZoneTypeDao: TypeDao) {
 
+    fun get(id: Int): Observable<TypeLocalModel> =
+            auditZoneTypeDao.get(id).toObservable()
+
     fun getAllTypeByZone(id: Int, type: String): Observable<List<TypeLocalModel>> =
             auditZoneTypeDao.getAllTypeByZone(id, type).toObservable()
 
@@ -15,6 +18,10 @@ class TypeLocalDataSource(
 
     fun save(auditZoneType: TypeLocalModel): Observable<Unit> = Observable.fromCallable {
         auditZoneTypeDao.insert(auditZoneType)
+    }
+
+    fun update(type: TypeLocalModel): Observable<Unit> = Observable.fromCallable {
+        auditZoneTypeDao.update(type)
     }
 
     fun delete(id: Int): Observable<Unit> = Observable.fromCallable {

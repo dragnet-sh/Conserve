@@ -95,7 +95,7 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
         if (parentFragment != null) {
             val callbacks = parentFragment as OnTypeCreateListener?
             if (type == null) { callbacks?.onTypeCreate(args) }
-            else { callbacks?.onTypeUpdate(args, type!!) }
+            else { callbacks?.onTypeUpdate(args, type!!, scopeName.text.toString()) }
         }
 
         dismiss()
@@ -133,7 +133,7 @@ class TypeDialogFragment : DialogFragment(), Validator.ValidationListener {
 
     interface OnTypeCreateListener {
         fun onTypeCreate(args: Bundle)
-        fun onTypeUpdate(args: Bundle, type: TypeModel)
+        fun onTypeUpdate(args: Bundle, type: TypeModel, scopeName: String)
     }
 
 }

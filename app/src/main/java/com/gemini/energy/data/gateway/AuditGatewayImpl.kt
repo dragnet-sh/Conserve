@@ -38,6 +38,9 @@ class AuditGatewayImpl(
     override fun deleteZoneByAuditId(id: Int): Observable<Unit> = zoneRepository.deleteByAuditId(id)
 
     /*Audit Zone Type*/
+    override fun getAuditScope(id: Int): Observable<Type> =
+            typeRepository.get(id).map { mapper.toEntity(it) }
+
     override fun getAuditScopeList(zoneId: Int, type: String): Observable<List<Type>> =
             typeRepository.getAllTypeByZone(zoneId, type)
                     .map { it.map { mapper.toEntity(it) } }
@@ -47,6 +50,7 @@ class AuditGatewayImpl(
                 .map { it.map { mapper.toEntity(it) } }
 
     override fun saveAuditScope(auditScope: Type) = typeRepository.save(auditScope)
+    override fun updateAuditScope(auditScope: Type): Observable<Unit> = typeRepository.update(auditScope)
     override fun deleteAuditScope(id: Int): Observable<Unit> = typeRepository.delete(id)
     override fun deleteAuditScopeByZoneId(id: Int): Observable<Unit> = typeRepository.deleteByZoneId(id)
     override fun deleteAuditScopeByAuditId(id: Int): Observable<Unit> = typeRepository.deleteByAuditId(id)

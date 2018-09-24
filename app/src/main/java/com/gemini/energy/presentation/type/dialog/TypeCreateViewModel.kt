@@ -5,14 +5,23 @@ import android.content.Context
 import android.util.Log
 import com.gemini.energy.R
 import com.gemini.energy.domain.entity.Type
+import com.gemini.energy.domain.interactor.ZoneTypeGetUseCase
 import com.gemini.energy.domain.interactor.ZoneTypeSaveUseCase
+import com.gemini.energy.domain.interactor.ZoneTypeUpdateUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.internal.util.SingleLiveData
+import com.gemini.energy.presentation.type.list.model.TypeModel
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
+import timber.log.Timber
 import java.util.*
 
-class TypeCreateViewModel(context: Context, private val zoneTypeCreateUseCase: ZoneTypeSaveUseCase) :
+class TypeCreateViewModel(context: Context,
+
+                          private val zoneTypeCreateUseCase: ZoneTypeSaveUseCase,
+                          private val zoneTypeGetUseCase: ZoneTypeGetUseCase,
+                          private val zoneTypeUpdateUseCase: ZoneTypeUpdateUseCase) :
+
         BaseAndroidViewModel(context.applicationContext as Application) {
 
     private val _result = SingleLiveData<Boolean>()
@@ -27,12 +36,20 @@ class TypeCreateViewModel(context: Context, private val zoneTypeCreateUseCase: Z
         addDisposable(save(Type(null, zoneTypeTag, zoneType, zoneSubType, zoneId, auditId, date, date)))
     }
 
+    fun updateZoneType(type: TypeModel, scopeName: String) = addDisposable(
+            zoneTypeGetUseCase.execute(type.id)
+                    .subscribe{
+                        it.name = scopeName
+                        update(it)
+                    }
+    )
+
     private fun save(scope: Type): Disposable {
         return zoneTypeCreateUseCase.execute(scope)
                 .subscribeWith(object : DisposableObserver<Unit>() {
 
                     override fun onNext(t: Unit) {
-                        Log.d(TAG, "ON-NEXT !!! \\m/")
+                        Timber.d("ON-NEXT !!! \\m/")
                         result.value = true
                     }
 
@@ -45,8 +62,16 @@ class TypeCreateViewModel(context: Context, private val zoneTypeCreateUseCase: Z
                 })
     }
 
-    companion object {
-        private const val TAG = "ZoneTypeCreateViewModel"
+    private fun update(type: Type): Disposable {
+        return zoneTypeUpdateUseCase.execute(type)
+                .subscribeWith(object : DisposableObserver<Unit>() {
+                    override fun onNext(t: Unit) {
+                        Timber.d("ON-NEXT !!! \\m/ -- [[ Type Update ]]")
+                        result.value = true
+                    }
+                    override fun onError(e: Throwable) { e.printStackTrace() }
+                    override fun onComplete() {}
+                })
     }
 
 }

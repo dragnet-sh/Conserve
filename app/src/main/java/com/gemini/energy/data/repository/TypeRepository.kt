@@ -12,6 +12,7 @@ class TypeRepository(
         private val typeRemoteDataSource: TypeRemoteDataSource,
         private val auditScopeMapper: TypeMapper) {
 
+    fun get(id: Int): Observable<TypeLocalModel> = typeLocalDataSource.get(id)
     fun getAllTypeByZone(id: Int, type: String): Observable<List<TypeLocalModel>> =
             typeLocalDataSource.getAllTypeByZone(id, type)
     fun getAllTypeByAudit(id: Int): Observable<List<TypeLocalModel>> =
@@ -20,6 +21,7 @@ class TypeRepository(
     fun save(auditScope: Type): Observable<Unit> =
             typeLocalDataSource.save(auditScopeMapper.toLocal(auditScope))
 
+    fun update(type: Type): Observable<Unit> = typeLocalDataSource.update(auditScopeMapper.toLocal(type))
     fun delete(id: Int): Observable<Unit> = typeLocalDataSource.delete(id)
     fun deleteByZoneId(id: Int): Observable<Unit> = typeLocalDataSource.deleteByZoneId(id)
     fun deleteByAuditId(id: Int): Observable<Unit> = typeLocalDataSource.deleteByAuditId(id)

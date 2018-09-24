@@ -8,6 +8,9 @@ import java.lang.reflect.Type
 @Dao
 interface TypeDao {
 
+    @Query("SELECT * FROM AuditZoneType WHERE id = :id")
+    fun get(id: Int): Maybe<TypeLocalModel>
+
     @Query("SELECT * FROM AuditZoneType WHERE zone_id = :id AND type = :type")
     fun getAllTypeByZone(id: Int, type: String): Maybe<List<TypeLocalModel>>
 
@@ -16,6 +19,9 @@ interface TypeDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(auditScope: TypeLocalModel)
+
+    @Update
+    fun update(type: TypeLocalModel)
 
     @Query("DELETE FROM AuditZoneType WHERE id = :id")
     fun delete(id: Int)

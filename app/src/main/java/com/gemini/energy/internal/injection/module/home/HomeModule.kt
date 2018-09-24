@@ -177,6 +177,14 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideZoneTypeGetUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneTypeGetUseCase{
+            return ZoneTypeGetUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideZoneTypeGetAllUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 ZoneTypeGetAllUseCase {
             return ZoneTypeGetAllUseCase(schedulers, auditGateway)
@@ -196,6 +204,14 @@ internal abstract class HomeModule {
         internal fun provideZoneTypeSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 ZoneTypeSaveUseCase {
             return ZoneTypeSaveUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideZoneTypeUpdateUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneTypeUpdateUseCase{
+            return ZoneTypeUpdateUseCase(schedulers, auditGateway)
         }
 
         @HomeScope
@@ -319,9 +335,11 @@ internal abstract class HomeModule {
                 zoneDeleteUseCase: ZoneDeleteUseCase,
                 zoneDeleteByAuditUseCase: ZoneDeleteByAuditUseCase,
 
+                zoneTypeGetUseCase: ZoneTypeGetUseCase,
                 zoneTypeGetAllUseCase: ZoneTypeGetAllUseCase,
                 zoneTypeGetAllByAuditUseCase: ZoneTypeGetAllByAuditUseCase,
                 zoneTypeSaveUseCase: ZoneTypeSaveUseCase,
+                zoneTypeUpdateUseCase: ZoneTypeUpdateUseCase,
                 zoneTypeDeleteUseCase: TypeDeleteUseCase,
                 zoneTypeDeleteByAuditUseCase: ZoneTypeDeleteByAuditUseCase,
                 zoneTypeDeleteByZoneUseCase: ZoneTypeDeleteByZoneUseCase,
@@ -359,7 +377,8 @@ internal abstract class HomeModule {
                                     featureGetAllByTypeUseCase, featureDeleteUseCase, zoneTypeDeleteUseCase) as T
 
                         modelClass.isAssignableFrom(TypeCreateViewModel::class.java) ->
-                            TypeCreateViewModel(context, zoneTypeSaveUseCase) as T
+                            TypeCreateViewModel(context, zoneTypeSaveUseCase,
+                                    zoneTypeGetUseCase, zoneTypeUpdateUseCase) as T
 
                         modelClass.isAssignableFrom(PreAuditCreateViewModel::class.java) ->
                             PreAuditCreateViewModel(context, featureSaveUseCase,

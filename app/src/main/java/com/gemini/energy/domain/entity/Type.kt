@@ -4,7 +4,7 @@ import java.util.*
 
 data class Type(
     val id: Int?,
-    val name: String?,
+    var name: String?,
     val type: String?,
     var subType: String?,
 
