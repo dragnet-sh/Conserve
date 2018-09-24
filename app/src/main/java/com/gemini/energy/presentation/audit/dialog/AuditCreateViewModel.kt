@@ -5,14 +5,21 @@ import android.content.Context
 import android.util.Log
 import com.gemini.energy.R
 import com.gemini.energy.domain.entity.Audit
+import com.gemini.energy.domain.interactor.AuditGetUseCase
 import com.gemini.energy.domain.interactor.AuditSaveUseCase
+import com.gemini.energy.domain.interactor.AuditUpdateUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.internal.util.SingleLiveData
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
+import timber.log.Timber
 import java.util.*
 
-class AuditCreateViewModel(context: Context, private val auditSaveUseCase: AuditSaveUseCase) :
+class AuditCreateViewModel(context: Context,
+                           private val auditSaveUseCase: AuditSaveUseCase,
+                           private val auditGetUseCase: AuditGetUseCase,
+                           private val auditUpdateCaseCase: AuditUpdateUseCase) :
         BaseAndroidViewModel(context.applicationContext as Application) {
 
     private val _result = SingleLiveData<Boolean>()
@@ -21,9 +28,17 @@ class AuditCreateViewModel(context: Context, private val auditSaveUseCase: Audit
     private val _error = SingleLiveData<String>()
     val error = _error
 
-    fun createAudit(id: Int, tag: String) {
+    fun createAudit(tag: String) {
         val date = Date()
-        addDisposable(save(Audit(id, tag, date, date)))
+        addDisposable(save(Audit(99, tag, date, date)))
+    }
+
+    fun updateAudit(auditModel: AuditModel, auditTag: String) {
+        auditGetUseCase.execute(auditModel.id)
+                .subscribe {
+                    it.name = auditTag
+                    update(it)
+                }
     }
 
     private fun save(audit: Audit): Disposable {
@@ -40,6 +55,18 @@ class AuditCreateViewModel(context: Context, private val auditSaveUseCase: Audit
                                 context.getString(R.string.unknown_error)
                     }
 
+                    override fun onComplete() {}
+                })
+    }
+
+    private fun update(audit: Audit): Disposable? {
+        return auditUpdateCaseCase.execute(audit)
+                .subscribeWith(object : DisposableObserver<Unit>() {
+                    override fun onNext(t: Unit) {
+                        Timber.d("ON-NEXT !!! \\m/ -- [[ Audit Update ]]")
+                        result.value = true
+                    }
+                    override fun onError(e: Throwable) { e.printStackTrace() }
                     override fun onComplete() {}
                 })
     }

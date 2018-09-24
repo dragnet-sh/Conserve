@@ -11,6 +11,9 @@ interface TypeDao {
     @Query("SELECT * FROM AuditZoneType WHERE zone_id = :id AND type = :type")
     fun getAllTypeByZone(id: Int, type: String): Maybe<List<TypeLocalModel>>
 
+    @Query("SELECT * FROM AuditZoneType WHERE audit_id = :id")
+    fun getAllTypeByAudit(id: Int): Maybe<List<TypeLocalModel>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(auditScope: TypeLocalModel)
 

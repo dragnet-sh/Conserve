@@ -16,13 +16,15 @@ class AuditGatewayImpl(
     private val mapper = SystemMapper()
 
     /*Audit*/
+    override fun getAudit(auditId: Int): Observable<Audit> = auditRepository.get(auditId).map { mapper.toEntity(it) }
     override fun getAuditList(): Observable<List<Audit>> =
             auditRepository.getAll()
                     .doOnError { println("Audit Get Error") }
                     .map { it.map { mapper.toEntity(it) } }
 
     override fun saveAudit(audit: Audit): Observable<Unit> = auditRepository.save(audit)
-
+    override fun updateAudit(audit: Audit): Observable<Unit> = auditRepository.update(audit)
+    override fun deleteAudit(auditId: Int): Observable<Unit> = auditRepository.delete(auditId)
 
     /*Zone*/
     override fun getZone(zoneId: Int): Observable<Zone> = zoneRepository.get(zoneId).map { mapper.toEntity(it) }
@@ -40,6 +42,10 @@ class AuditGatewayImpl(
             typeRepository.getAllTypeByZone(zoneId, type)
                     .map { it.map { mapper.toEntity(it) } }
 
+    override fun getAuditScopeByAudit(auditId: Int): Observable<List<Type>> =
+        typeRepository.getAllTypeByAudit(auditId)
+                .map { it.map { mapper.toEntity(it) } }
+
     override fun saveAuditScope(auditScope: Type) = typeRepository.save(auditScope)
     override fun deleteAuditScopeByZoneId(id: Int): Observable<Unit> = typeRepository.deleteByZoneId(id)
     override fun deleteAuditScopeByAuditId(id: Int): Observable<Unit> = typeRepository.deleteByAuditId(id)
@@ -51,6 +57,10 @@ class AuditGatewayImpl(
 
     override fun getFeatureByType(zoneId: Int): Observable<List<Feature>> =
             featureRepository.getAllByType(zoneId)
+                    .map { it.map { mapper.toEntity(it) } }
+
+    override fun getFeatureByAudit(auditId: Int): Observable<List<Feature>> =
+            featureRepository.getAllByAudit(auditId)
                     .map { it.map { mapper.toEntity(it) } }
 
     override fun saveFeature(feature: List<Feature>): Observable<Unit> = featureRepository.save(feature)

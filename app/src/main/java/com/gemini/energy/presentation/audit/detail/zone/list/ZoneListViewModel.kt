@@ -5,10 +5,12 @@ import android.content.Context
 import android.databinding.ObservableArrayList
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
-import android.util.Log
 import com.gemini.energy.R
 import com.gemini.energy.domain.entity.Zone
-import com.gemini.energy.domain.interactor.*
+import com.gemini.energy.domain.interactor.FeatureDeleteByZoneUseCase
+import com.gemini.energy.domain.interactor.ZoneDeleteUseCase
+import com.gemini.energy.domain.interactor.ZoneGetAllUseCase
+import com.gemini.energy.domain.interactor.ZoneTypeDeleteByZoneUseCase
 import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.presentation.audit.detail.zone.list.mapper.ZoneMapper
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel

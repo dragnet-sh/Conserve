@@ -11,7 +11,6 @@ import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentAuditListItemBinding
 import com.gemini.energy.presentation.audit.list.model.AuditModel
 import io.reactivex.Observable
-import timber.log.Timber
 
 class AuditListAdapter(private val items: List<AuditModel>, private val callbacks: OnAuditClickListener? = null) :
         RecyclerView.Adapter<AuditListAdapter.ViewHolder>() {

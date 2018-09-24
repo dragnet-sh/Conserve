@@ -104,7 +104,7 @@ class ZoneListFragment : DaggerFragment(),
 
     private fun refreshViewModel() {
         auditModel?.let {
-            zoneListViewModel.loadZoneList(it.id)
+            zoneListViewModel.loadZoneList(it.id!!)
         }
     }
 

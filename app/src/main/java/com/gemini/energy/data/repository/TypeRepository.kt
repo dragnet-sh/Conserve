@@ -16,6 +16,10 @@ class TypeRepository(
         return typeLocalDataSource.getAllTypeByZone(id, type)
     }
 
+    fun getAllTypeByAudit(id: Int): Observable<List<TypeLocalModel>> {
+        return typeLocalDataSource.getAllTypeByAudit(id)
+    }
+
     fun save(auditScope: Type): Observable<Unit> {
         return typeLocalDataSource.save(auditScopeMapper.toLocal(auditScope))
     }

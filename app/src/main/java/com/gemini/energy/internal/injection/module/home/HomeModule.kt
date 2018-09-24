@@ -97,9 +97,33 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideAuditGetUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                AuditGetUseCase {
+            return AuditGetUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideAuditGetAllUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 AuditGetAllUseCase {
             return AuditGetAllUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideAuditUpdateUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                AuditUpdateUseCase {
+            return AuditUpdateUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideAuditDeleteUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                AuditDeleteUseCase {
+            return AuditDeleteUseCase(schedulers, auditGateway)
         }
 
         @HomeScope
@@ -129,6 +153,14 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideZoneDeleteByAuditUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneDeleteByAuditUseCase{
+            return ZoneDeleteByAuditUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideZoneSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 ZoneSaveUseCase {
             return ZoneSaveUseCase(schedulers, auditGateway)
@@ -153,9 +185,25 @@ internal abstract class HomeModule {
         @HomeScope
         @Provides
         @JvmStatic
+        internal fun provideZoneTypeGetAllByAuditUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneTypeGetAllByAuditUseCase {
+            return ZoneTypeGetAllByAuditUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
         internal fun provideZoneTypeSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
                 ZoneTypeSaveUseCase {
             return ZoneTypeSaveUseCase(schedulers, auditGateway)
+        }
+
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideZoneTypeDeleteByAuditUseCase(schedulers: Schedulers, auditGateway: AuditGateway):
+                ZoneTypeDeleteByAuditUseCase{
+            return ZoneTypeDeleteByAuditUseCase(schedulers, auditGateway)
         }
 
         @HomeScope
@@ -250,17 +298,23 @@ internal abstract class HomeModule {
 
                 context: Context,
 
+                auditGetUseCase: AuditGetUseCase,
                 auditGetAllUseCase: AuditGetAllUseCase,
                 auditSaveUseCase: AuditSaveUseCase,
+                auditUpdateUseCase: AuditUpdateUseCase,
+                auditDeleteUseCase: AuditDeleteUseCase,
 
                 zoneGetUseCase: ZoneGetUseCase,
                 zoneGetAllUseCase: ZoneGetAllUseCase,
                 zoneSaveUseCase: ZoneSaveUseCase,
                 zoneUpdateUseCase: ZoneUpdateUseCase,
                 zoneDeleteUseCase: ZoneDeleteUseCase,
+                zoneDeleteByAuditUseCase: ZoneDeleteByAuditUseCase,
 
                 zoneTypeGetAllUseCase: ZoneTypeGetAllUseCase,
+                zoneTypeGetAllByAuditUseCase: ZoneTypeGetAllByAuditUseCase,
                 zoneTypeSaveUseCase: ZoneTypeSaveUseCase,
+                zoneTypeDeleteByAuditUseCase: ZoneTypeDeleteByAuditUseCase,
                 zoneTypeDeleteByZoneUseCase: ZoneTypeDeleteByZoneUseCase,
 
                 featureSaveUseCase: FeatureSaveUseCase,
@@ -277,10 +331,12 @@ internal abstract class HomeModule {
                     return when {
 
                         modelClass.isAssignableFrom(AuditListViewModel::class.java) ->
-                            AuditListViewModel(context, auditGetAllUseCase) as T
+                            AuditListViewModel(context, auditGetAllUseCase, zoneTypeGetAllByAuditUseCase,
+                                    featureGetAllByTypeUseCase, featureGetAllUseCase, featureDeleteUseCase,
+                                    zoneTypeDeleteByAuditUseCase, zoneDeleteByAuditUseCase, auditDeleteUseCase) as T
 
                         modelClass.isAssignableFrom(AuditCreateViewModel::class.java) ->
-                            AuditCreateViewModel(context, auditSaveUseCase) as T
+                            AuditCreateViewModel(context, auditSaveUseCase, auditGetUseCase, auditUpdateUseCase) as T
 
                         modelClass.isAssignableFrom(ZoneListViewModel::class.java) ->
                             ZoneListViewModel(context, zoneGetAllUseCase, zoneDeleteUseCase,

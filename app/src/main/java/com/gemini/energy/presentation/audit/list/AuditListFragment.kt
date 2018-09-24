@@ -5,10 +5,7 @@ import android.arch.lifecycle.ViewModelProvider
 import android.arch.lifecycle.ViewModelProviders
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
-import android.util.TimeFormatException
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,10 +74,6 @@ class AuditListFragment : DaggerFragment(),
         // *** onAuditClick *** //
         // *** This gets passed on to the Adapter via ViewBindingAdapter *** //
         binder.callbacks = this
-
-//        binder.recyclerView.addItemDecoration(
-//                DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
 
         return binder.root
@@ -107,15 +100,27 @@ class AuditListFragment : DaggerFragment(),
     }
 
     override fun onAuditCreate(args: Bundle) {
-        auditCreateViewModel.createAudit(args.getInt("auditId"), args.getString("auditTag"))
+        auditCreateViewModel.createAudit(args.getString("auditTag"))
+    }
+
+    override fun onAuditUpdate(args: Bundle, audit: AuditModel) {
+        auditCreateViewModel.updateAudit(audit, args.getString("auditTag"))
+    }
+
+    private fun showCreateAudit(audit: AuditModel? = null) {
+        val dialogFragment = AuditDialogFragment()
+        dialogFragment.audit = audit
+        dialogFragment.show(childFragmentManager, FRAG_DIALOG)
     }
 
     override fun onEditClick(view: View, item: AuditModel) {
         Timber.d(">>> Audit - Edit ${item.name}")
+        showCreateAudit(item)
     }
 
     override fun onDeleteClick(view: View, item: AuditModel) {
         Timber.d(">>> Audit - Delete ${item.name}")
+        auditListViewModel.deleteAudit(item)
     }
 
     private fun setupListeners() {
@@ -133,6 +138,6 @@ class AuditListFragment : DaggerFragment(),
             return AuditListFragment()
         }
 
-        private const val TAG = "AuditListFragment"
+        private const val FRAG_DIALOG = "AuditDialogFragment"
     }
 }

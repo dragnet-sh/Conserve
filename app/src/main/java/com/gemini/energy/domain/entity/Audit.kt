@@ -3,7 +3,7 @@ import java.util.*
 
 data class Audit(
         val id: Int,
-        val name: String,
+        var name: String,
         val createdAt: Date,
         val updatedAt: Date
 )

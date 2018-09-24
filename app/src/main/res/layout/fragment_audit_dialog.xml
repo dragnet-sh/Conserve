@@ -8,13 +8,6 @@
     android:layout_height="match_parent">
 
     <EditText
-        android:id="@+id/edt_create_audit_id"
-        style="@style/EditTextCreateMessage"
-        android:layout_width="match_parent"
-        android:hint="@string/audit_id"
-        android:layout_height="wrap_content" />
-
-    <EditText
         android:id="@+id/edt_create_audit_tag"
         android:layout_width="match_parent"
         android:hint="@string/audit_tag"

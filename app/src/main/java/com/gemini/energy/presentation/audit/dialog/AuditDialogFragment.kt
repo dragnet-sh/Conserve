@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import com.gemini.energy.R
+import com.gemini.energy.presentation.audit.list.adapter.AuditListAdapter
+import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.util.Navigator
 import com.gemini.energy.presentation.util.hideInput
 import com.mobsandgeeks.saripaar.ValidationError
@@ -19,9 +21,10 @@ import javax.inject.Inject
 
 class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
 
-    @NotEmpty
-    @Pattern(regex = "^\\d+$")
-    private lateinit var auditId: EditText
+//    @NotEmpty
+//    @Pattern(regex = "^\\d+$")
+//    private lateinit var auditId: EditText
+    var audit: AuditModel? = null
 
     @NotEmpty
     private lateinit var auditTag: EditText
@@ -49,8 +52,10 @@ class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
         view.findViewById<Button>(R.id.btn_cancel_audit).setOnClickListener { dismiss(); view.hideInput() }
         view.findViewById<Button>(R.id.btn_save_audit).setOnClickListener { validator.validate() }
 
-        auditId = view.findViewById(R.id.edt_create_audit_id)
         auditTag = view.findViewById(R.id.edt_create_audit_tag)
+        audit?.let {
+            auditTag.setText(it.name)
+        }
 
         return view
     }
@@ -61,24 +66,28 @@ class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
     }
 
     override fun onValidationSucceeded() {
-        var args = Bundle().apply {
-            this.putInt("auditId", auditId.text.toString().toInt())
+        val args = Bundle().apply {
             this.putString("auditTag", auditTag.text.toString())
         }
 
-        val callbacks = fragmentManager?.findFragmentByTag(TAG_AUDIT_LIST) as OnAuditCreateListener
-        callbacks.onAuditCreate(args)
+        val callbacks: OnAuditCreateListener? = if (parentFragment == null) {
+            fragmentManager?.findFragmentByTag(TAG_AUDIT_LIST) as OnAuditCreateListener
+        } else { parentFragment as OnAuditCreateListener }
+
+        if (audit == null) { callbacks?.onAuditCreate(args) }
+        else { callbacks?.onAuditUpdate(args, audit!!) }
+
         dismiss()
         view?.hideInput()
     }
 
 
     companion object {
-        private const val TAG = "AuditDialogFragment"
         private const val TAG_AUDIT_LIST = "AuditListFragment"
     }
 
     interface OnAuditCreateListener {
         fun onAuditCreate(args: Bundle)
+        fun onAuditUpdate(args: Bundle, audit: AuditModel)
     }
 }

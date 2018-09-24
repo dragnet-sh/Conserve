@@ -5,17 +5,31 @@ import android.content.Context
 import android.databinding.ObservableArrayList
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
-import android.util.Log
+import android.widget.Toast
 import com.gemini.energy.R
+import com.gemini.energy.domain.entity.Audit
+import com.gemini.energy.domain.entity.Feature
+import com.gemini.energy.domain.interactor.*
+import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.presentation.audit.list.mapper.AuditMapper
 import com.gemini.energy.presentation.audit.list.model.AuditModel
-import com.gemini.energy.domain.entity.Audit
-import com.gemini.energy.domain.interactor.AuditGetAllUseCase
-import com.gemini.energy.internal.util.BaseAndroidViewModel
+import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
+import io.reactivex.rxkotlin.merge
+import timber.log.Timber
 
-class AuditListViewModel(context: Context, private val auditGetAllUseCase: AuditGetAllUseCase) :
+class AuditListViewModel(context: Context,
+
+                         private val auditGetAllUseCase: AuditGetAllUseCase,
+                         private val zoneTypeGetAllByAuditUseCase: ZoneTypeGetAllByAuditUseCase,
+                         private val featureGetAllByTypeUseCase: FeatureGetAllByTypeUseCase,
+                         private val featureGetAllUseCase: FeatureGetAllUseCase,
+                         private val featureDeleteUseCase: FeatureDeleteUseCase,
+                         private val typeDeleteByAuditUseCase: ZoneTypeDeleteByAuditUseCase,
+                         private val zoneDeleteByAuditUseCase: ZoneDeleteByAuditUseCase,
+                         private val auditDeleteUseCase: AuditDeleteUseCase) :
+
         BaseAndroidViewModel(context.applicationContext as Application) {
 
     private val mapper = AuditMapper(context)
@@ -26,6 +40,34 @@ class AuditListViewModel(context: Context, private val auditGetAllUseCase: Audit
     val error = ObservableField<String>()
 
     fun loadAuditList() = addDisposable(getAll())
+    fun deleteAudit(audit: AuditModel) = addDisposable(
+            zoneTypeGetAllByAuditUseCase.execute(audit.id)
+                    .subscribe {
+
+                        Timber.d("Audit Id :: ${audit.id}")
+                        Timber.d("Zone Type Get All By Audit :: [${it.count()}]")
+
+                        val getFeatureObservable: MutableList<Observable<List<Feature>>> = mutableListOf()
+                        val feature: MutableList<Feature> = mutableListOf()
+
+                        getFeatureObservable.add(featureGetAllUseCase.execute(audit.id))
+                        it.forEach { getFeatureObservable.add(featureGetAllByTypeUseCase.execute(it.id)) }
+
+                        getFeatureObservable.merge().subscribe({ it.forEach { feature.add(it) } }, {}, {
+                            Timber.d("::: Feature Delete - Count [${feature.count()}] :::")
+                            featureDeleteUseCase.execute(feature)
+                                    .subscribe {
+                                        typeDeleteByAuditUseCase.execute(audit.id)
+                                                .subscribe {
+                                                    zoneDeleteByAuditUseCase.execute(audit.id)
+                                                            .subscribe { delete(audit) }
+                                                }
+                                    }
+
+                        })
+
+                    }
+    )
 
     private fun getAll(): Disposable {
         return auditGetAllUseCase.execute()
@@ -40,8 +82,7 @@ class AuditListViewModel(context: Context, private val auditGetAllUseCase: Audit
                         result.clear()
                         result.addAll(mapper.toModel(t))
                         empty.set(t.isEmpty())
-
-                        Log.d(TAG, t.toString())
+                        Timber.d(t.toString())
                     }
 
                     override fun onError(t: Throwable) {
@@ -56,7 +97,23 @@ class AuditListViewModel(context: Context, private val auditGetAllUseCase: Audit
 
     }
 
-    companion object {
-        private const val TAG = "AuditListViewModel"
+    private fun delete(audit: AuditModel): Disposable? {
+        return auditDeleteUseCase.execute(audit.id)
+                .subscribeWith(object : DisposableObserver<Unit>() {
+                    override fun onComplete() {
+                        Timber.d("!! ON COMPLETE !!")
+                        Toast.makeText(context, "Audit Delete Completed.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onNext(t: Unit) {
+                        Timber.d("[[ ON NEXT :: AUDIT DELETE ]]")
+                        Timber.d("<< REFRESHING LIST -- NOW >>")
+                        getAll()
+                    }
+
+                    override fun onError(e: Throwable) {
+                        e.printStackTrace()
+                    }
+                })
     }
 }
