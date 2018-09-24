@@ -12,8 +12,9 @@
 
     <com.gemini.energy.presentation.audit.SwipeRevealLayout
         android:layout_width="match_parent"
-        android:layout_height="90dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:layout_marginBottom="10dp"
         app:dragFromEdge="right">
 
         <FrameLayout
@@ -22,8 +23,8 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical|end"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|end"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:orientation="horizontal">
@@ -63,7 +64,6 @@
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="30dp"
                     app:contentPaddingLeft="5dp"
                     app:contentPaddingTop="10dp"
                     app:contentPaddingBottom="10dp">
