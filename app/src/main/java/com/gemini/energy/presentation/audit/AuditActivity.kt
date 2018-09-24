@@ -153,6 +153,7 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
 
     private fun showCreateAudit() {
         val dialogFragment = AuditDialogFragment()
+        dialogFragment.audit = null
         dialogFragment.show(supportFragmentManager, FRAG_DIALOG)
     }
 

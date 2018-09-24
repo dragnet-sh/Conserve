@@ -14,6 +14,7 @@ import com.gemini.energy.presentation.audit.list.model.AuditModel
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import timber.log.Timber
+import java.time.Instant
 import java.util.*
 
 class AuditCreateViewModel(context: Context,
@@ -30,7 +31,7 @@ class AuditCreateViewModel(context: Context,
 
     fun createAudit(tag: String) {
         val date = Date()
-        addDisposable(save(Audit(99, tag, date, date)))
+        addDisposable(save(Audit(date.time.toInt(), tag, date, date)))
     }
 
     fun updateAudit(auditModel: AuditModel, auditTag: String) {

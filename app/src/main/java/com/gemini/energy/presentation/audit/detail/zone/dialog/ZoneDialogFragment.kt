@@ -39,8 +39,6 @@ class ZoneDialogFragment: DialogFragment(), Validator.ValidationListener {
                               savedInstanceState: Bundle?): View? {
 
         val view = inflater.inflate(R.layout.fragment_zone_dialog, container, false)
-        dialog.setTitle(R.string.create_zone)
-
         view.findViewById<Button>(R.id.btn_cancel_zone).setOnClickListener { dismiss() }
         view.findViewById<Button>(R.id.btn_save_zone).setOnClickListener { validator.validate() }
 

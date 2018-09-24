@@ -17,6 +17,7 @@ import com.mobsandgeeks.saripaar.Validator
 import com.mobsandgeeks.saripaar.annotation.NotEmpty
 import com.mobsandgeeks.saripaar.annotation.Pattern
 import dagger.android.support.AndroidSupportInjection
+import timber.log.Timber
 import javax.inject.Inject
 
 class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
@@ -47,8 +48,6 @@ class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
                               savedInstanceState: Bundle?): View? {
 
         val view = inflater.inflate(R.layout.fragment_audit_dialog, container, false)
-        dialog.setTitle(R.string.create_audit)
-
         view.findViewById<Button>(R.id.btn_cancel_audit).setOnClickListener { dismiss(); view.hideInput() }
         view.findViewById<Button>(R.id.btn_save_audit).setOnClickListener { validator.validate() }
 
@@ -74,8 +73,13 @@ class AuditDialogFragment : DialogFragment(), Validator.ValidationListener {
             fragmentManager?.findFragmentByTag(TAG_AUDIT_LIST) as OnAuditCreateListener
         } else { parentFragment as OnAuditCreateListener }
 
-        if (audit == null) { callbacks?.onAuditCreate(args) }
-        else { callbacks?.onAuditUpdate(args, audit!!) }
+        if (audit == null) {
+            Timber.d("ON AUDIT CREATE CALLING")
+            callbacks?.onAuditCreate(args) }
+        else {
+            Timber.d("ON AUDIT UPDATE CALLING")
+            callbacks?.onAuditUpdate(args, audit!!)
+        }
 
         dismiss()
         view?.hideInput()
