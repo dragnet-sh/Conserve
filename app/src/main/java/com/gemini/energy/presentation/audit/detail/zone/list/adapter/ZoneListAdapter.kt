@@ -19,7 +19,7 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
         View.OnClickListener {
 
     interface OnZoneClickListener { // OnItemClickListener //
-        fun onZoneClick(view: View, item: ZoneModel)
+        fun onZoneClick(view: View, item: ZoneModel, position: Int)
         fun onEditClick(view: View, item: ZoneModel)
         fun onDeleteClick(view: View, item: ZoneModel)
     }
@@ -67,14 +67,10 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
         init {
 
             itemView.setOnClickListener {
-                callbacks?.onZoneClick(it, items[adapterPosition])
+                callbacks?.onZoneClick(it, items[adapterPosition], adapterPosition)
+                Timber.d(">>>>> CLICK ZONE -- [$adapterPosition] <<<<<")
             }
-
         }
-    }
-
-    companion object {
-        private const val TAG = "ZoneListAdapter"
     }
 
 }

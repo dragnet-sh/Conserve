@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
@@ -24,6 +25,7 @@ import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.type.TypeActivity
 import dagger.android.support.DaggerFragment
+import timber.log.Timber
 import javax.inject.Inject
 
 class ZoneListFragment : DaggerFragment(),
@@ -35,7 +37,7 @@ class ZoneListFragment : DaggerFragment(),
 
 
     interface OnZoneSelectedListener {
-        fun onZoneSelected(zone: ZoneModel)
+        fun onZoneSelected(zone: ZoneModel, position: Int)
     }
 
 
@@ -66,7 +68,7 @@ class ZoneListFragment : DaggerFragment(),
     * 2. Type Activity
     * */
     private var auditModel: AuditModel? = null
-
+    private var position = -1
 
     /*
     * Fragment Lifecycle Methods
@@ -90,10 +92,22 @@ class ZoneListFragment : DaggerFragment(),
         binder.showCreate = true
 
         if (activity is TypeActivity) { binder.showCreate = false }
-
         binder.recyclerView.layoutManager = LinearLayoutManager(context)
 
         return binder.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (position == -1) return
+        val handler = Handler()
+        handler.postDelayed({
+            try {
+                val vh = binder.recyclerView.findViewHolderForAdapterPosition(position)
+                vh.itemView.performClick()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }, 100)
     }
 
     private fun showCreateZone(zone: ZoneModel? = null) {
@@ -104,15 +118,24 @@ class ZoneListFragment : DaggerFragment(),
 
     private fun refreshViewModel() {
         auditModel?.let {
-            zoneListViewModel.loadZoneList(it.id!!)
+            zoneListViewModel.loadZoneList(it.id)
         }
     }
 
     private fun setupArguments() {
         val auditId = arguments?.getInt("auditId")
+        val position = arguments?.getInt("position")
+
         auditId?.let {
             setAuditModel(AuditModel(auditId, "n/a"))
         }
+
+        position?.let { this.position = it }
+
+        Timber.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        Timber.d("POSITION -- DEFAULT ZONE !! DEFAULT ZONE !! -- POSITION")
+        Timber.d("$position")
+        Timber.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
     }
 
 
@@ -138,11 +161,14 @@ class ZoneListFragment : DaggerFragment(),
         showCreateZone()
     }
 
-    override fun onZoneClick(view: View, item: ZoneModel) {
+    override fun onZoneClick(view: View, item: ZoneModel, position: Int) {
 
         val intent = Intent(activity, TypeActivity::class.java)
         intent.putExtra(PARCEL_ZONE, item)
         intent.putExtra(PARCEL_AUDIT, auditModel)
+        intent.putExtra(PARCEL_POSITION, position)
+
+        this.position = position
 
         //Case 1: Navigate form Audit Activity to Type Activity
         if (activity is AuditActivity) {
@@ -154,8 +180,11 @@ class ZoneListFragment : DaggerFragment(),
         //Case 2: Populate Zone Type for each of the Zone Click
         if (activity is TypeActivity) {
             val callbacks = activity as OnZoneSelectedListener
-            callbacks.onZoneSelected(ZoneModel(item.id, item.name, item.auditId))
-            Log.d(TAG, "Zone Id : ${item.id} | Zone Name : ${item.name} | Audit Id : ${item.auditId}")
+            callbacks.onZoneSelected(item, position)
+            Timber.d("******************************************************************************")
+            Timber.d("Zone Id : ${item.id} | Zone Name : ${item.name} | Audit Id : ${item.auditId}")
+            Timber.d("Zone Position : $position")
+            Timber.d("******************************************************************************")
         }
 
     }
@@ -188,12 +217,13 @@ class ZoneListFragment : DaggerFragment(),
     * Static Content
     * */
     companion object {
-        fun newInstance(auditId: Int? = null, auditTag: String? = null): ZoneListFragment {
+        fun newInstance(auditId: Int? = null, auditTag: String? = null, position: Int? = null): ZoneListFragment {
             val fragment = ZoneListFragment()
 
             fragment.arguments = Bundle().apply {
                 auditId?.let {this.putInt("auditId", it)}
                 auditTag?.let {this.putString("auditTag", it)}
+                position?.let { this.putInt("position", it) }
             }
 
             return fragment
@@ -204,5 +234,6 @@ class ZoneListFragment : DaggerFragment(),
 
         private const val PARCEL_ZONE = "EXTRA.ZONE"
         private const val PARCEL_AUDIT = "EXTRA.AUDIT"
+        private const val PARCEL_POSITION = "EXTRA.POSITION"
     }
 }

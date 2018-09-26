@@ -1,7 +1,6 @@
 package com.gemini.energy.presentation.type
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.TextView
 import com.gemini.energy.App
 import com.gemini.energy.R
@@ -16,6 +15,7 @@ import com.gemini.energy.presentation.type.list.TypeListFragment
 import com.gemini.energy.presentation.type.list.model.TypeModel
 import com.gemini.energy.presentation.util.EAction
 import kotlinx.android.synthetic.main.activity_home_detail.*
+import timber.log.Timber
 
 class TypeActivity : BaseActivity(),
         ZoneListFragment.OnZoneSelectedListener,
@@ -31,6 +31,7 @@ class TypeActivity : BaseActivity(),
     private var typeModel: TypeModel? = null
 
     private var typeId: Int? = null
+    private var defaultZonePosition = -1
 
 
     /*
@@ -53,21 +54,20 @@ class TypeActivity : BaseActivity(),
 
     }
 
-
     override fun onResume() {
         super.onResume()
 
         when (app.getCount()) {
-            0 -> Log.d(TAG, "*** PARENT TYPE ACTIVITY ***")
-            1 -> Log.d(TAG, "*** CHILD TYPE ACTIVITY ***")
+            0 -> Timber.d("*** PARENT TYPE ACTIVITY ***")
+            1 -> Timber.d("*** CHILD TYPE ACTIVITY ***")
         }
     }
-
 
     private fun setupArguments() {
 
         setAudit(intent.getParcelableExtra(PARCEL_AUDIT))
         setZone(intent.getParcelableExtra(PARCEL_ZONE))
+        setZonePosition(intent.getIntExtra(PARCEL_POSITION, -1))
 
         setType(intent.getParcelableExtra(PARCEL_TYPE))
         setTypeId(intent.getIntExtra("typeId", 0))
@@ -86,7 +86,7 @@ class TypeActivity : BaseActivity(),
     private fun setupContent(binder: ActivityHomeDetailBinding) {
 
         if (zoneModel == null || auditModel == null) {
-            Log.e(TAG, "Null - Zone or Audit")
+            Timber.d("Null - Zone or Audit")
             return
         }
 
@@ -115,7 +115,7 @@ class TypeActivity : BaseActivity(),
     * */
     private fun setupZoneList() {
         val zoneListFragment =
-                ZoneListFragment.newInstance(zoneModel?.auditId!!, "n/a")
+                ZoneListFragment.newInstance(zoneModel?.auditId!!, "n/a", defaultZonePosition)
 
         supportFragmentManager
                 .beginTransaction()
@@ -126,9 +126,9 @@ class TypeActivity : BaseActivity(),
 
     private fun setupTypeList() {
 
-        Log.d(TAG, "Type Id -- $typeId")
-        Log.d(TAG, "Zone Model -- ${zoneModel.toString()}")
-        Log.d(TAG, "Audit Model -- ${auditModel.toString()}")
+        Timber.d("Type Id -- $typeId")
+        Timber.d("Zone Model -- ${zoneModel.toString()}")
+        Timber.d("Audit Model -- ${auditModel.toString()}")
 
         if (typeId != null && zoneModel != null && auditModel != null) {
             val typeListFragment = TypeListFragment.newInstance(
@@ -165,8 +165,9 @@ class TypeActivity : BaseActivity(),
     /*
     * Listeners Setup
     * */
-    override fun onZoneSelected(zone: ZoneModel) {
+    override fun onZoneSelected(zone: ZoneModel, position: Int) {
         setZone(zone)
+        setZonePosition(position)
         setHeader(zone)
         refreshTypeViewModel(zone)
     }
@@ -187,6 +188,10 @@ class TypeActivity : BaseActivity(),
 
     private fun setZone(zone: ZoneModel?) {
         this.zoneModel = zone
+    }
+
+    private fun setZonePosition(position: Int) {
+        this.defaultZonePosition = position
     }
 
     private fun setType(type: TypeModel?) {
@@ -225,7 +230,6 @@ class TypeActivity : BaseActivity(),
     }
 
     companion object {
-        private const val TAG = "TypeActivity"
         private var app: App = App.instance
 
         private const val FRAG_ZONE_LIST    = "TypeActivityZoneListFragment"
@@ -234,6 +238,7 @@ class TypeActivity : BaseActivity(),
         private const val PARCEL_AUDIT      = "EXTRA.AUDIT"
         private const val PARCEL_ZONE       = "EXTRA.ZONE"
         private const val PARCEL_TYPE       = "EXTRA.TYPE"
+        private const val PARCEL_POSITION   = "EXTRA.POSITION"
 
         private const val ANDROID_SWITCHER = "android:switcher"
     }
