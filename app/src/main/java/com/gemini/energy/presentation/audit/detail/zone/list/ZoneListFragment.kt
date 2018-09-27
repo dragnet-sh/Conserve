@@ -8,8 +8,8 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.ActivityCompat
+import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -103,7 +103,7 @@ class ZoneListFragment : DaggerFragment(),
         handler.postDelayed({
             try {
                 val vh = binder.recyclerView.findViewHolderForAdapterPosition(position)
-                vh.itemView.performClick()
+                vh.itemView.findViewById<CardView>(R.id.card_view_zone).performClick()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -229,9 +229,7 @@ class ZoneListFragment : DaggerFragment(),
             return fragment
         }
 
-        private const val TAG = "ZoneListFragment"
         private const val FRAG_DIALOG = "ZoneDialogFragment"
-
         private const val PARCEL_ZONE = "EXTRA.ZONE"
         private const val PARCEL_AUDIT = "EXTRA.AUDIT"
         private const val PARCEL_POSITION = "EXTRA.POSITION"

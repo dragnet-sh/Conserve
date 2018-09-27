@@ -2,21 +2,20 @@ package com.gemini.energy.presentation.audit.detail.zone.list.adapter
 
 import android.app.Activity
 import android.databinding.DataBindingUtil
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneListItemBinding
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.type.TypeActivity
-import timber.log.Timber
 
 class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks: OnZoneClickListener? = null,
                       private val activity: Activity):
-        RecyclerView.Adapter<ZoneListAdapter.ViewHolder>(),
-
-        View.OnClickListener {
+        RecyclerView.Adapter<ZoneListAdapter.ViewHolder>() {
 
     interface OnZoneClickListener { // OnItemClickListener //
         fun onZoneClick(view: View, item: ZoneModel, position: Int)
@@ -42,7 +41,6 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
 
         holder.binding.showClose = true
         holder.binding.showEdit = true
-        holder.binding.buttonClick = this
 
         // *** Updating UI Based on the Parent Activity **** //
         if (activity is TypeActivity) {
@@ -50,26 +48,30 @@ class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks:
             holder.binding.showEdit = false
         }
 
-    }
+        holder.cardViewZone?.setOnClickListener {
+            callbacks?.onZoneClick(it, items[position], position)
+        }
 
-    override fun onClick(v: View?) {
-        v?.let {
-            val zone = it.tag as ZoneModel
-            when (it.id) {
-                R.id.button_update_zone -> callbacks?.onEditClick(it, zone)
-                R.id.button_delete_zone -> callbacks?.onDeleteClick(it, zone)
-            }
-            Timber.d("On Click :: Zone - $zone")
+        holder.deleteImageButton?.setOnClickListener {
+            callbacks?.onDeleteClick(it, items[position])
+        }
+
+        holder.editImageButton?.setOnClickListener {
+            callbacks?.onEditClick(it, items[position])
         }
     }
 
-    inner class ViewHolder(val binding: FragmentZoneListItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        init {
+    inner class ViewHolder(val binding: FragmentZoneListItemBinding) :
+            RecyclerView.ViewHolder(binding.root) {
 
-            itemView.setOnClickListener {
-                callbacks?.onZoneClick(it, items[adapterPosition], adapterPosition)
-                Timber.d(">>>>> CLICK ZONE -- [$adapterPosition] <<<<<")
-            }
+        var cardViewZone: CardView? = null
+        var deleteImageButton: ImageButton? = null
+        var editImageButton: ImageButton? = null
+
+        init {
+            cardViewZone = itemView.findViewById(R.id.card_view_zone)
+            deleteImageButton = itemView.findViewById(R.id.button_delete_zone)
+            editImageButton = itemView.findViewById(R.id.button_update_zone)
         }
     }
 

@@ -19,10 +19,6 @@
             name="showEdit"
             type="java.lang.Boolean" />
 
-        <variable
-            name="buttonClick"
-            type="android.view.View.OnClickListener" />
-
     </data>
 
     <RelativeLayout
@@ -33,6 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
+            android:id="@+id/card_view_zone"
             android:minHeight="30dp"
             app:cardCornerRadius="5dp"
             app:cardElevation="2dp"
@@ -55,7 +52,6 @@
                 android:layout_gravity="center|right"
                 android:background="@drawable/ic_mode_edit"
                 android:tag="@{zone}"
-                android:onClick="@{buttonClick}"
                 android:visibility="@{showEdit ? View.VISIBLE : View.GONE}"
                 android:layout_marginRight="50dp" />
 
@@ -67,7 +63,6 @@
                 android:clickable="true"
                 android:layout_marginRight="10dp"
                 android:tag="@{zone}"
-                android:onClick="@{buttonClick}"
                 android:visibility="@{showClose ? View.VISIBLE : View.GONE}"
                 android:background="@drawable/ic_clear_black" />
 
