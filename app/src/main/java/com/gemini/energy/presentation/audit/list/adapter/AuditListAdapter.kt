@@ -1,6 +1,8 @@
 package com.gemini.energy.presentation.audit.list.adapter
 
 import android.databinding.DataBindingUtil
+import android.graphics.Color
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -33,12 +35,21 @@ class AuditListAdapter(private val items: List<AuditModel>, private val callback
         return items.size
     }
 
+    private var currentPosition = RecyclerView.NO_POSITION
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.audit = items[position]
         holder.binding.executePendingBindings()
 
-        holder.auditTextView?.setOnClickListener {
+        when (currentPosition == position) {
+            true    -> holder.cardViewAudit?.setBackgroundColor(Color.LTGRAY)
+            false   -> holder.cardViewAudit?.setBackgroundColor(Color.WHITE)
+        }
+
+        holder.cardViewAudit?.setOnClickListener {
             callbacks?.onAuditClick(Observable.just(items[position]))
+            currentPosition = position
+            notifyDataSetChanged()
         }
 
         holder.deleteImageButton?.setOnClickListener {
@@ -55,12 +66,12 @@ class AuditListAdapter(private val items: List<AuditModel>, private val callback
     inner class ViewHolder(val binding: FragmentAuditListItemBinding) :
             RecyclerView.ViewHolder(binding.root) {
 
-        var auditTextView: TextView? = null
+        var cardViewAudit: CardView? = null
         var deleteImageButton: ImageButton? = null
         var updateImageButton: ImageButton? = null
 
         init {
-            auditTextView = itemView.findViewById(R.id.text_audit_id)
+            cardViewAudit = itemView.findViewById(R.id.card_view_audit)
             deleteImageButton = itemView.findViewById(R.id.info_button)
             updateImageButton = itemView.findViewById(R.id.edit_button)
         }
