@@ -31,6 +31,7 @@
 
         <android.support.v7.widget.CardView
             android:layout_width="match_parent"
+            android:id="@+id/card_view_type"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
             android:minHeight="30dp"
@@ -63,7 +64,7 @@
             </LinearLayout>
 
             <ImageButton
-                android:id="@+id/button_update_zone"
+                android:id="@+id/button_update_type"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:clickable="true"
@@ -75,7 +76,7 @@
                 android:layout_marginRight="50dp" />
 
             <ImageButton
-                android:id="@+id/button_delete_zone"
+                android:id="@+id/button_delete_type"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:layout_gravity="center|right"

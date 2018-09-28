@@ -31,8 +31,9 @@ class TypeActivity : BaseActivity(),
     private var typeModel: TypeModel? = null
 
     private var typeId: Int? = null
-    private var defaultZonePosition = -1
 
+    private var defaultZonePosition = -1
+    private var defaultTypePosition = -1
 
     /*
     * Fragment Lifecycle Methods
@@ -67,9 +68,10 @@ class TypeActivity : BaseActivity(),
 
         setAudit(intent.getParcelableExtra(PARCEL_AUDIT))
         setZone(intent.getParcelableExtra(PARCEL_ZONE))
-        setZonePosition(intent.getIntExtra(PARCEL_POSITION, -1))
+        setZonePosition(intent.getIntExtra(PARCEL_POSITION_ZONE, -1))
 
         setType(intent.getParcelableExtra(PARCEL_TYPE))
+        setTypePosition(intent.getIntExtra(PARCEL_POSITION_TYPE, -1))
         setTypeId(intent.getIntExtra("typeId", 0))
 
         zoneModel?.let {
@@ -92,7 +94,7 @@ class TypeActivity : BaseActivity(),
 
         if (app.isParent()) {
             binder.viewPager.adapter = TypePagerAdapter(
-                    supportFragmentManager, zoneModel!!, auditModel!!)
+                    supportFragmentManager, zoneModel!!, auditModel!!, defaultTypePosition)
         }
 
         if (app.isChild()) {
@@ -132,7 +134,7 @@ class TypeActivity : BaseActivity(),
 
         if (typeId != null && zoneModel != null && auditModel != null) {
             val typeListFragment = TypeListFragment.newInstance(
-                    typeId!!, zoneModel!!, auditModel!!
+                    typeId!!, zoneModel!!, auditModel!!, defaultTypePosition
             )
 
             supportFragmentManager
@@ -172,7 +174,7 @@ class TypeActivity : BaseActivity(),
         refreshTypeViewModel(zone)
     }
 
-    override fun onTypeSelected(type: TypeModel) {
+    override fun onTypeSelected(type: TypeModel, positon: Int) {
         if (zoneModel != null) {
             setHeader(zoneModel!!, type)
         }
@@ -192,6 +194,10 @@ class TypeActivity : BaseActivity(),
 
     private fun setZonePosition(position: Int) {
         this.defaultZonePosition = position
+    }
+
+    private fun setTypePosition(position: Int) {
+        this.defaultTypePosition = position
     }
 
     private fun setType(type: TypeModel?) {
@@ -238,7 +244,8 @@ class TypeActivity : BaseActivity(),
         private const val PARCEL_AUDIT      = "EXTRA.AUDIT"
         private const val PARCEL_ZONE       = "EXTRA.ZONE"
         private const val PARCEL_TYPE       = "EXTRA.TYPE"
-        private const val PARCEL_POSITION   = "EXTRA.POSITION"
+        private const val PARCEL_POSITION_ZONE      = "EXTRA.POSITION.ZONE"
+        private const val PARCEL_POSITION_TYPE      = "EXTRA.POSITION.TYPE"
 
         private const val ANDROID_SWITCHER = "android:switcher"
     }

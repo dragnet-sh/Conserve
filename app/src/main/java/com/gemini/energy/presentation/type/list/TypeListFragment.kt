@@ -6,7 +6,9 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
+import android.os.Handler
 import android.support.v4.app.ActivityCompat
+import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
@@ -40,7 +42,7 @@ class TypeListFragment : DaggerFragment(),
 
 
     interface OnTypeSelectedListener {
-        fun onTypeSelected(type: TypeModel)
+        fun onTypeSelected(type: TypeModel, position: Int)
     }
 
 
@@ -67,6 +69,7 @@ class TypeListFragment : DaggerFragment(),
     private var auditModel: AuditModel? = null
     private var zoneModel: ZoneModel? = null
     private var typeModel: TypeModel? = null
+    private var position = -1
 
 
     /*
@@ -107,6 +110,20 @@ class TypeListFragment : DaggerFragment(),
 
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        Timber.d("PIT STOP !! PIT STOP -- DEFAULT TYPE POSITION -- [$position]")
+        if (position == -1) return
+        val handler = Handler()
+        handler.postDelayed({
+            try {
+                val vh = binder.recyclerView.findViewHolderForAdapterPosition(position)
+                vh.itemView.findViewById<CardView>(R.id.card_view_type).performClick()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }, 100)
+    }
+
     private fun showCreateZoneType(type: TypeModel? = null) {
         typeId?.let {
             val fragment = TypeDialogFragment.newInstance(it)
@@ -131,12 +148,20 @@ class TypeListFragment : DaggerFragment(),
 
         val zone = arguments?.getParcelable<ZoneModel>(PARCEL_ZONE)
         val audit = arguments?.getParcelable<AuditModel>(PARCEL_AUDIT)
+        val position = arguments?.getInt(PARCEL_POSITION, -1)
 
         setAuditModel(audit)
         setZoneModel(zone)
         setTypeId(arguments?.getInt("typeId"))
 
         if (app.isChild()) { refreshViewModel() }
+
+        position?.let { this.position = it }
+
+        Timber.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        Timber.d("POSITION -- DEFAULT TYPE !! DEFAULT TYPE !! -- POSITION")
+        Timber.d("$position")
+        Timber.d(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 
     }
 
@@ -147,9 +172,8 @@ class TypeListFragment : DaggerFragment(),
         showCreateZoneType()
     }
 
-
     // *** Navigator : Audit Activity <> Type Activity *** //
-    override fun onTypeClick(view: View, typeModel: TypeModel) {
+    override fun onTypeClick(view: View, typeModel: TypeModel, position: Int) {
 
         // Step 1 : Check if the Type has a Child
         // Step 2 : If it has a Child load the Type Activity with the proper set of Dialog
@@ -166,6 +190,7 @@ class TypeListFragment : DaggerFragment(),
             intent.putExtra(PARCEL_AUDIT, auditModel)
             intent.putExtra(PARCEL_ZONE, zoneModel)
             intent.putExtra(PARCEL_TYPE, typeModel)
+            intent.putExtra(PARCEL_POSITION, position)
             intent.putExtra("typeId", typeId as Int)
 
             context?.let {
@@ -178,11 +203,15 @@ class TypeListFragment : DaggerFragment(),
 
             setTypeModel(typeModel)
             val callbacks = activity as OnTypeSelectedListener
-            callbacks.onTypeSelected(typeModel)
+            callbacks.onTypeSelected(typeModel, position)
 
             Log.d(TAG, "Setting Up Shared View Model")
             Log.d(TAG, typeModel.toString())
             sharedViewModel.setType(typeModel)
+
+            Timber.d("******************************************************************************")
+            Timber.d("TYPE POSITION : $position")
+            Timber.d("******************************************************************************")
 
         }
 
@@ -252,12 +281,13 @@ class TypeListFragment : DaggerFragment(),
     companion object {
         private fun getType(pagerIndex: Int) = EZoneType.get(pagerIndex)
 
-        fun newInstance(type: Int, zone: ZoneModel, audit: AuditModel): TypeListFragment {
+        fun newInstance(type: Int, zone: ZoneModel, audit: AuditModel, position: Int): TypeListFragment {
             val fragment = TypeListFragment()
 
             fragment.arguments = Bundle().apply {
                 this.putParcelable(PARCEL_ZONE, zone)
                 this.putParcelable(PARCEL_AUDIT, audit)
+                this.putInt(PARCEL_POSITION, position)
                 this.putInt("typeId", type)
             }
 
@@ -271,6 +301,7 @@ class TypeListFragment : DaggerFragment(),
         private const val PARCEL_AUDIT      = "EXTRA.AUDIT"
         private const val PARCEL_ZONE       = "EXTRA.ZONE"
         private const val PARCEL_TYPE       = "EXTRA.TYPE"
+        private const val PARCEL_POSITION   = "EXTRA.POSITION.TYPE"
 
     }
 

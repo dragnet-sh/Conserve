@@ -1,10 +1,13 @@
 package com.gemini.energy.presentation.type.list.adapter
 
 import android.databinding.DataBindingUtil
+import android.graphics.Color
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import com.gemini.energy.App
 import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneTypeListItemBinding
@@ -14,12 +17,10 @@ import timber.log.Timber
 
 class TypeListAdapter(private val items: List<TypeModel>, private val callbacks: OnTypeClickListener? = null,
                       private val app: App) :
-        RecyclerView.Adapter<TypeListAdapter.ViewHolder>(),
-
-        View.OnClickListener {
+        RecyclerView.Adapter<TypeListAdapter.ViewHolder>() {
 
     interface OnTypeClickListener {
-        fun onTypeClick(view: View, typeModel: TypeModel)
+        fun onTypeClick(view: View, typeModel: TypeModel, position: Int)
         fun onEditClick(view: View, typeModel: TypeModel)
         fun onDeleteClick(view: View, typeModel: TypeModel)
     }
@@ -34,39 +35,51 @@ class TypeListAdapter(private val items: List<TypeModel>, private val callbacks:
 
     override fun getItemCount() = items.count()
 
+    private var currentPosition = RecyclerView.NO_POSITION
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.binding.type = items[position]
         holder.binding.executePendingBindings()
 
         holder.binding.showClose = true
         holder.binding.showEdit = true
-        holder.binding.buttonClick = this
 
         if (app.isChild()) {
             holder.binding.showClose = false
             holder.binding.showEdit = false
         }
-    }
 
-    override fun onClick(v: View?) {
-        v?.let {
-            val type = it.tag as TypeModel
-            when (it.id) {
-                R.id.button_update_zone -> callbacks?.onEditClick(it, type)
-                R.id.button_delete_zone -> callbacks?.onDeleteClick(it, type)
-            }
-            Timber.d("On Click :: Type - $type")
+        when (currentPosition == position) {
+            true    -> holder.cardViewType?.setBackgroundColor(Color.LTGRAY)
+            false   -> holder.cardViewType?.setBackgroundColor(Color.WHITE)
+        }
+
+        holder.cardViewType?.setOnClickListener {
+            callbacks?.onTypeClick(it, items[position], position)
+            currentPosition = position
+            notifyDataSetChanged()
+        }
+
+        holder.deleteImageButton?.setOnClickListener {
+            callbacks?.onDeleteClick(it, items[position])
+        }
+
+        holder.editImageButton?.setOnClickListener {
+            callbacks?.onEditClick(it, items[position])
         }
     }
 
-    inner class ViewHolder(val binding: FragmentZoneTypeListItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(val binding: FragmentZoneTypeListItemBinding) :
+            RecyclerView.ViewHolder(binding.root) {
+
+        var cardViewType: CardView? = null
+        var deleteImageButton: ImageButton? = null
+        var editImageButton: ImageButton? = null
 
         init {
-
-            itemView.setOnClickListener {
-                callbacks?.onTypeClick(it, items[adapterPosition])
-            }
-
+            cardViewType = itemView.findViewById(R.id.card_view_type)
+            deleteImageButton = itemView.findViewById(R.id.button_delete_type)
+            editImageButton = itemView.findViewById(R.id.button_update_type)
         }
 
     }

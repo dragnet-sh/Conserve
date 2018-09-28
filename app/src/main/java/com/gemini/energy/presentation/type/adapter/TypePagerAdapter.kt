@@ -8,11 +8,12 @@ import com.gemini.energy.presentation.audit.list.model.AuditModel
 import com.gemini.energy.presentation.util.EZoneType
 import com.gemini.energy.presentation.type.list.TypeListFragment
 
-class TypePagerAdapter(fm: FragmentManager, private val zone: ZoneModel, private val audit: AuditModel)
+class TypePagerAdapter(fm: FragmentManager, private val zone: ZoneModel,
+                       private val audit: AuditModel, private val defaultTypePosition: Int)
     : FragmentPagerAdapter(fm) {
 
     override fun getItem(position: Int): Fragment {
-        return TypeListFragment.newInstance(position, zone, audit)
+        return TypeListFragment.newInstance(position, zone, audit, defaultTypePosition)
     }
 
     override fun getCount(): Int {

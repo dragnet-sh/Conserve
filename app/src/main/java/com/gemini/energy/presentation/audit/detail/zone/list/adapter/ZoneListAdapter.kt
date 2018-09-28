@@ -13,7 +13,6 @@ import com.gemini.energy.R
 import com.gemini.energy.databinding.FragmentZoneListItemBinding
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
 import com.gemini.energy.presentation.type.TypeActivity
-import timber.log.Timber
 
 class ZoneListAdapter(private val items: List<ZoneModel>, private val callbacks: OnZoneClickListener? = null,
                       private val activity: Activity):
