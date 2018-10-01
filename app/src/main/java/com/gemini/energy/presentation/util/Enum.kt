@@ -46,7 +46,13 @@ enum class EApplianceType(val value: String) {
     IceMaker("Ice Maker"),
     RackOven("Rack Oven"),
     Refrigerator("Refrigerator"),
-    SteamCooker("Steam Cooker");
+    SteamCooker("Steam Cooker"),
+
+    Griddle("Griddle"),
+    HotFoodCabinet("Hot Food Cabinet"),
+    ConveyorBroiler("Conveyor Broiler"),
+    DishWasher("Dish Washer"),
+    PreRinseSpray("Pre Rinse Spray");
 
     companion object {
         private val map = EApplianceType.values()

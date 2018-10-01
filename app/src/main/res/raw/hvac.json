@@ -1,229 +1,320 @@
 {
   "geminiForm": [
     {
-      "index": 10,
-      "section": "HVAC - Main",
+      "index": 1,
+      "section": "HVAC - Main ",
       "elements": [
         {
-          "index": 101,
+          "index": 11,
+          "hint": "Heat Pump",
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Type",
-          "validation": "",
-          "id": "101"
+          "validation": "mandatory",
+          "id": "11"
         },
         {
-          "index": 102,
+          "index": 12,
+          "hint": "",
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Make",
-          "validation": "",
-          "id": "102"
+          "validation": "mandatory",
+          "id": "12"
         },
         {
-          "index": 103,
+          "index": 13,
+          "hint": "",
           "dataType": "textrow",
           "defaultValues": "",
-          "param": "Model #",
-          "validation": "",
-          "id": "103"
+          "param": "Model Number",
+          "validation": "mandatory",
+          "id": "13"
         },
         {
-          "index": 104,
+          "index": 14,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Quantity",
+          "validation": "mandatory",
+          "id": "14"
+        },
+        {
+          "index": 15,
+          "hint": "",
           "dataType": "decimalrow",
           "defaultValues": "",
           "param": "EER",
-          "validation": "",
-          "id": "104"
+          "validation": "optional",
+          "id": "15"
         },
         {
-          "index": 105,
+          "index": 16,
+          "hint": "",
           "dataType": "decimalrow",
           "defaultValues": "",
           "param": "SEER",
-          "validation": "",
-          "id": "105"
+          "validation": "optional",
+          "id": "16"
         },
         {
-          "index": 106,
-          "dataType": "introw",
+          "index": 17,
+          "hint": "",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "HSPF",
-          "validation": "",
-          "id": "106"
+          "validation": "optional",
+          "id": "17"
         },
         {
-          "index": 107,
+          "index": 18,
+          "hint": "",
           "dataType": "introw",
           "defaultValues": "",
           "param": "Cooling Capacity (Btu/hr)",
-          "validation": "",
-          "id": "107"
+          "validation": "optional",
+          "id": "18"
         },
         {
-          "index": 108,
+          "index": 19,
+          "hint": "",
           "dataType": "introw",
           "defaultValues": "",
           "param": "Cooling Capacity (Tons)",
-          "validation": "",
-          "id": "108"
+          "validation": "optional",
+          "id": "19"
         },
         {
-          "index": 109,
-          "dataType": "textrow",
+          "index": 110,
+          "hint": "",
+          "dataType": "introw",
           "defaultValues": "",
           "param": "Heating Capacity (Btu/hr)",
-          "validation": "",
-          "id": "109"
+          "validation": "optional",
+          "id": "110"
         },
         {
-          "index": 1010,
+          "index": 111,
+          "hint": "Boiler",
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Heating Type",
-          "validation": "",
-          "id": "1010"
-        },
-        {
-          "index": 1011,
-          "dataType": "introw",
-          "defaultValues": "",
-          "param": "Heating Power",
-          "validation": "",
-          "id": "1011"
-        },
-        {
-          "index": 1012,
-          "dataType": "introw",
-          "defaultValues": "",
-          "param": "Age",
-          "validation": "",
-          "id": "1012"
-        },
-        {
-          "index": 1013,
-          "dataType": "pickerinputrow",
-          "defaultValues": "1:Water_Evaporatively,2:Air_Cooled",
-          "param": "Cooling Type",
-          "validation": "",
-          "id": "1013"
-        },
-        {
-          "index": 1014,
-          "dataType": "textrow",
-          "param": "City",
-          "id": "1014"
-        },
-        {
-          "index": 1015,
-          "dataType": "textrow",
-          "param": "State",
-          "id": "1015"
-        }
-      ],
-      "id": "10"
-    },
-    {
-      "index": 11,
-      "section": "HVAC - Other",
-      "elements": [
-        {
-          "index": 111,
-          "dataType": "pickerinputrow",
-          "defaultValues": "1:programmable,2:analog",
-          "param": "Thermostat Type",
-          "validation": "",
+          "validation": "optional",
           "id": "111"
         },
         {
           "index": 112,
+          "hint": "",
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Temperature Set Point",
-          "validation": "",
+          "param": "Heating Power (kW)",
+          "validation": "optional",
           "id": "112"
         },
         {
           "index": 113,
+          "hint": "",
           "dataType": "pickerinputrow",
-          "defaultValues": "1:yes,2:no",
-          "param": "Thermostat Easily Accessible?",
-          "validation": "",
+          "defaultValues": "1:Water_Evaporatively,2:Air_Cooled",
+          "param": "Cooling Type",
+          "validation": "optional",
           "id": "113"
         },
         {
           "index": 114,
-          "dataType": "decimalrow",
+          "hint": "",
+          "dataType": "introw",
           "defaultValues": "",
-          "param": "Temperature in room",
-          "validation": "",
+          "param": "Age",
+          "validation": "mandatory",
           "id": "114"
         },
         {
           "index": 115,
+          "hint": "",
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "City",
+          "validation": "mandatory",
+          "id": "115"
+        },
+        {
+          "index": 116,
+          "hint": "",
+          "dataType": "textrow",
+          "defaultValues": "",
+          "param": "State",
+          "validation": "mandatory",
+          "id": "116"
+        }
+      ],
+      "id": "1"
+    },
+    {
+      "index": 2,
+      "section": "TOU",
+      "elements": [
+        {
+          "index": 21,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Peak Hours",
+          "validation": "optional",
+          "id": "21"
+        },
+        {
+          "index": 22,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Part Peak Hours",
+          "validation": "optional",
+          "id": "22"
+        },
+        {
+          "index": 23,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Off Peak Hours",
+          "validation": "mandatory",
+          "id": "23"
+        }
+      ],
+      "id": "2"
+    },
+    {
+      "index": 3,
+      "section": "HVAC - Other",
+      "elements": [
+        {
+          "index": 31,
+          "hint": "",
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Programmable,2:Analog",
+          "param": "Thermostat Type",
+          "validation": "optional",
+          "id": "31"
+        },
+        {
+          "index": 32,
+          "hint": "",
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Temperature Set Point (oF)",
+          "validation": "optional",
+          "id": "32"
+        },
+        {
+          "index": 33,
+          "hint": "",
+          "dataType": "pickerinputrow",
+          "defaultValues": "1:Yes,2:No",
+          "param": "Thermostat Easily Accessible?",
+          "validation": "optional",
+          "id": "33"
+        },
+        {
+          "index": 34,
+          "hint": "",
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Room Temperature (oF)",
+          "validation": "optional",
+          "id": "34"
+        },
+        {
+          "index": 35,
+          "hint": "",
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Company/Brand",
-          "validation": "",
-          "id": "115"
+          "validation": "optional",
+          "id": "35"
         }
       ],
-      "id": "11"
+      "id": "3"
     },
     {
-      "index": 12,
-      "section": "Suggested Alternative (HVAC)",
+      "index": 4,
+      "section": "Suggested Alternative",
       "elements": [
         {
-          "index": 121,
+          "index": 41,
+          "hint": "",
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Alternate Make",
-          "validation": "",
-          "id": "121"
+          "validation": "optional",
+          "id": "41"
         },
         {
-          "index": 122,
+          "index": 42,
+          "hint": "",
           "dataType": "textrow",
           "defaultValues": "",
-          "param": "Alternate Model",
-          "validation": "",
-          "id": "122"
+          "param": "Alternate Model Number",
+          "validation": "optional",
+          "id": "42"
         },
         {
-          "index": 123,
+          "index": 43,
+          "hint": "",
           "dataType": "introw",
           "defaultValues": "",
           "param": "Alternate Cooling Capacity (Btu/hr)",
-          "validation": "",
-          "id": "123"
+          "validation": "optional",
+          "id": "43"
         },
         {
-          "index": 124,
+          "index": 44,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Quantity",
+          "validation": "optional",
+          "id": "44"
+        },
+        {
+          "index": 45,
+          "hint": "",
           "dataType": "introw",
           "defaultValues": "",
           "param": "Alternate Cooling Capacity (Tons)",
-          "validation": "",
-          "id": "124"
+          "validation": "optional",
+          "id": "45"
         },
         {
-          "index": 125,
-          "dataType": "textrow",
+          "index": 46,
+          "hint": "",
+          "dataType": "introw",
           "defaultValues": "",
           "param": "Alternate Heating Capacity",
-          "validation": "",
-          "id": "125"
+          "validation": "optional",
+          "id": "46"
         },
         {
-          "index": 126,
+          "index": 47,
+          "hint": "",
           "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Alternate SEER",
-          "validation": "",
-          "id": "126"
+          "validation": "optional",
+          "id": "47"
+        },
+        {
+          "index": 48,
+          "hint": "",
+          "dataType": "decimalrow",
+          "defaultValues": "",
+          "param": "Alternate EER",
+          "validation": "optional",
+          "id": "48"
         }
       ],
-      "id": "12"
+      "id": "4"
     }
   ]
 }

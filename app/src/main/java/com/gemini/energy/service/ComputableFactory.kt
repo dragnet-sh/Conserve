@@ -72,6 +72,13 @@ class PlugloadFactory(private val utilityRateGas: UtilityRate,
                     utilityRateGas, utilityRateElectricity, usageHours, outgoingRows)
 
             EApplianceType.SteamCooker              -> SteamCooker()
+
+            EApplianceType.Griddle                  -> Griddle()
+            EApplianceType.HotFoodCabinet           -> HotFoodCabinet()
+            EApplianceType.ConveyorBroiler          -> ConveyorBroiler()
+            EApplianceType.DishWasher               -> DishWasher()
+            EApplianceType.PreRinseSpray            -> PreRinseSpray()
+
         }
     }
 
