@@ -116,12 +116,13 @@ class TypeListFragment : DaggerFragment(),
         val handler = Handler()
         handler.postDelayed({
             try {
+                binder.recyclerView.scrollToPosition(position)
                 val vh = binder.recyclerView.findViewHolderForAdapterPosition(position)
                 vh.itemView.findViewById<CardView>(R.id.card_view_type).performClick()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }, 100)
+        }, 200)
     }
 
     private fun showCreateZoneType(type: TypeModel? = null) {

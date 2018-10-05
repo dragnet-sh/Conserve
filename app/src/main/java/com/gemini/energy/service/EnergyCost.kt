@@ -9,7 +9,8 @@ interface ICost {
 
 class EmptyRateStructureException(message: String) : Exception(message)
 
-class CostElectric(private val usageHours: UsageHours, private val utilityRate: UtilityRate) : ICost {
+class CostElectric(private val usageHours: UsageHours, private val utilityRate: UtilityRate,
+                   private val debug: Boolean = false) : ICost {
 
     var structure: String = NONE
     var power: Double = 0.0
@@ -42,7 +43,7 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
         val costSummerPart = hours.summerPart() * power * rate.summerPart()
         val costSummerOff = hours.summerOff() * power * rate.summerOff()
 
-        if (isTOU(structure)) {
+        if (isTOU(structure) && debug) {
             Timber.d("## TOU Cost - Summer ##")
             Timber.d(">>> Summer On : $costSummerOn")
             Timber.d(">>> Summer Part : $costSummerPart")
@@ -52,7 +53,7 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
         val summerTOU = costSummerOn + costSummerPart + costSummerOff
         val summerTOUNone = hours.summerNone() * power * rate.summerNone()
 
-        if (isNoTOU(structure)) {
+        if (isNoTOU(structure) && debug) {
             Timber.d("## Non TOU Cost - Summer ##")
             Timber.d(">>> Cost Summer None : $summerTOUNone")
         }
@@ -69,7 +70,7 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
         val costWinterPart = hours.winterPart() * power * rate.winterPart()
         val costWinterOff = hours.winterOff() * power * rate.winterOff()
 
-        if (isTOU(structure)) {
+        if (isTOU(structure) && debug) {
             Timber.d("## TOU Cost - Winter ##")
             Timber.d(">>> Winter Part : $costWinterPart")
             Timber.d(">>> Winter Off : $costWinterOff")
@@ -78,7 +79,7 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
         val winterTOU = costWinterPart + costWinterOff
         val winterTOUNone = hours.winterNone() * power * rate.winterNone()
 
-        if (isNoTOU(structure)) {
+        if (isNoTOU(structure) && debug) {
             Timber.d("## NON TOU Cost - Winter ##")
             Timber.d(">>> Winter None : $winterTOUNone")
         }
@@ -95,10 +96,12 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
         val costPartPeak = hours.partPeak() * power * rate.weightedAverage()
         val costNoPeak = hours.noPeak() * power * rate.weightedAverage()
 
-        Timber.d("## Blended Cost - No Season ##")
-        Timber.d(">>> Cost Peak : $costPeak")
-        Timber.d(">>> Cost Part Peak : $costPartPeak")
-        Timber.d(">>> Cost No Peak : $costNoPeak")
+        if (debug) {
+            Timber.d("## Blended Cost - No Season ##")
+            Timber.d(">>> Cost Peak : $costPeak")
+            Timber.d(">>> Cost Part Peak : $costPartPeak")
+            Timber.d(">>> Cost No Peak : $costNoPeak")
+        }
 
         return costPeak + costPartPeak + costNoPeak
     }
@@ -110,20 +113,24 @@ class CostElectric(private val usageHours: UsageHours, private val utilityRate: 
             val hours = hours as TOU
             val rate = rate as TOU
 
-            Timber.d("## TOU Hours ##")
-            Timber.d(hours.toString())
-            Timber.d("## TOU Rate ##")
-            Timber.d(rate.toString())
+            if (debug) {
+                Timber.d("## TOU Hours ##")
+                Timber.d(hours.toString())
+                Timber.d("## TOU Rate ##")
+                Timber.d(rate.toString())
+            }
 
         } else {
 
             val hours = hours as TOUNone
             val rate = rate as TOUNone
 
-            Timber.d("## Non TOU Hours ##")
-            Timber.d(hours.toString())
-            Timber.d("## Non TOU Rate ##")
-            Timber.d(rate.toString())
+            if (debug) {
+                Timber.d("## Non TOU Hours ##")
+                Timber.d(hours.toString())
+                Timber.d("## Non TOU Rate ##")
+                Timber.d(rate.toString())
+            }
 
         }
 

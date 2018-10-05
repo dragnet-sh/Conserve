@@ -9,9 +9,14 @@ import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.type.UsageHVAC
 import com.gemini.energy.service.type.UsageHours
+import com.gemini.energy.service.type.UsageSimple
 import com.gemini.energy.service.type.UtilityRate
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import io.reactivex.Observable
+import io.reactivex.Single
+import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -38,6 +43,9 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         private const val HVAC_EER = "hvac_eer"
         private const val HVAC_COOLING_HOURS = "cooling_hours"
         private const val HVAC_EFFICIENCY = "hvac_efficiency"
+
+        private const val HVAC_DB_BTU = "size_btu_hr"
+        private const val HVAC_DB_EER = "eer"
 
         /**
          * Fetches the EER based on the specific Match Criteria via the Parse API
@@ -80,11 +88,18 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
          * Year At - Current minus the Age
          * */
         private val dateFormatter = SimpleDateFormat("yyyy", Locale.ENGLISH)
+
         fun getYear(age: Int): Int {
             val calendar = Calendar.getInstance()
             calendar.add(Calendar.YEAR, "-$age".toInt()) //** Subtracting the Age **
             return dateFormatter.format(calendar.time).toInt()
         }
+
+        fun firstNotNull (valueFirst: Double, valueSecond: Double) =
+                if (valueFirst == 0.0) valueSecond else valueFirst
+
+        fun firstNotNull (valueFirst: Int, valueSecond: Int) =
+                if (valueFirst == 0) valueSecond else valueFirst
     }
 
     /**
@@ -96,6 +111,8 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     private var eer = 0.0
     private var seer = 0.0
     private var alternateSeer = 0.0
+    private var alternateEer = 0.0
+    private var alternateBtu = 0
 
     /**
      * HVAC - Age
@@ -108,22 +125,42 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     private var btu = 0
 
     /**
+     * HVAC - Tons
+     * */
+    private var tons = 0
+
+    /**
      * City | State
      * */
-    private var city: String = ""
-    private var state: String = ""
+    private var city = ""
+    private var state = ""
+
+    /**
+     * Usage Hours
+     * */
+    private var peakHours = 0
+    private var partPeakHours = 0
+    private var offPeakHours = 0
 
     override fun setup() {
         try {
+
             eer = featureData["EER"]!! as Double
             seer = featureData["SEER"]!! as Double
             age = featureData["Age"]!! as Int
             btu = featureData["Cooling Capacity (Btu/hr)"]!! as Int
+            tons = featureData["Cooling Capacity (Tons)"]!! as Int
 
             city = featureData["City"]!! as String
             state = featureData["State"]!! as String
 
+            peakHours = featureData["Peak Hours"]!! as Int
+            partPeakHours = featureData["Part Peak Hours"]!! as Int
+            offPeakHours = featureData["Off Peak Hours"]!! as Int
+
             alternateSeer = featureData["Alternate SEER"]!! as Double
+            alternateEer = featureData["Alternate EER"]!! as Double
+            alternateBtu = featureData["Alternate Cooling Capacity (Btu/hr)"]!! as Int
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -135,7 +172,11 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
      * */
     override fun costPreState(elements: List<JsonElement?>): Double {
 
-        if (eer == 0.0) { eer = extractEER(elements) }
+        // Extracting the EER from the Database - Standard EER
+        // If no value has been inputted by the user
+        if (eer == 0.0) {
+            eer = extractEER(elements)
+        }
 
         Timber.d("::: PARAM - HVAC :::")
         Timber.d("EER -- $eer")
@@ -146,10 +187,7 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         Timber.d("::: DATA EXTRACTOR - HVAC :::")
         Timber.d(elements.toString())
 
-        val usageHours = if (alternateSeer == 0.0) {
-            UsageHVAC(usageHoursBusiness, isTOU(), extractHours(elements))
-        } else { usageHoursBusiness }
-
+        val usageHours = UsageSimple(peakHours, partPeakHours, offPeakHours)
         computable.udf1 = usageHours
         Timber.d(usageHours.toString())
 
@@ -180,16 +218,37 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         var postEER = 0.0
 
         try {
-            postSize = element.asJsonObject.get("size_btu_per_hour").asInt
-            postEER = element.asJsonObject.get("eer").asDouble
+            postSize = element.asJsonObject.get(HVAC_DB_BTU).asInt
+            postEER = element.asJsonObject.get(HVAC_DB_EER).asDouble
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
         val postPowerUsed = power(postSize, postEER)
-        val postUsageHours = computable.udf1 as UsageHVAC
+        val postUsageHours = computable.udf1 as UsageSimple
 
         return costElectricity(postPowerUsed, postUsageHours, electricityRate)
+    }
+
+    /**
+     * Manually Builds the Post State Response from the Suggested Alternative
+     * */
+    override fun buildPostState(): Single<JsonObject> {
+        val element = JsonObject()
+        val data = JsonObject()
+        data.addProperty("eer", firstNotNull(alternateSeer, alternateEer))
+        data.addProperty("size_btu_hr", alternateBtu)
+
+        element.add("data", data)
+        element.addProperty("type", HVAC_EFFICIENCY)
+
+        val response = JsonArray()
+        response.add(element)
+
+        val wrapper = JsonObject()
+        wrapper.add("results", response)
+
+        return Single.just(wrapper)
     }
 
     /**
@@ -225,6 +284,7 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     override fun energyPowerChange(): Double {
         var eerPS = 0.0
 
+        // Step 1 : Try to get the Post State EER from the Database
         val element = computable.efficientAlternative
         element?.let {
             try {
@@ -234,8 +294,12 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
             }
         }
 
-        if (eerPS == 0.0) { eerPS = alternateSeer }
+        // Step 2 : If none found in DB use the given Alternate SEER
+        if (eerPS == 0.0) {
+            eerPS = alternateSeer
+        }
 
+        // Step 3 : Get the Delta
         val powerPre = power(btu, eer)
         val powerPost = power(btu, alternateSeer)
         val delta = (powerPre - powerPost) * usageHoursBusiness.yearly()
@@ -250,14 +314,15 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     /**
      * Energy Efficiency Lookup Query Definition
      * */
-    override fun efficientLookup() = true
-    override fun queryEfficientFilter() = ""
-
-    override fun queryHVACAlternative() = JSONObject()
+    override fun efficientLookup() = (firstNotNull(alternateSeer, alternateEer) == 0.0 || alternateBtu == 0)
+    override fun queryEfficientFilter() = JSONObject()
             .put("type", HVAC_EFFICIENCY)
             .put("data.size_btu_hr", btu)
             .toString()
 
+    /**
+     * HVAC specific Query Builders
+     * */
     override fun queryHVACEer() = JSONObject()
             .put("type", HVAC_EER)
             .put("data.year", getYear(age))
@@ -292,6 +357,5 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     private fun getFormMapper() = FormMapper(context, R.raw.hvac)
     private fun getModel() = getFormMapper().decodeJSON()
     private fun getGFormElements() = getFormMapper().mapIdToElements(getModel())
-
 
 }

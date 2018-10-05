@@ -17,8 +17,10 @@ import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.functions.Function
 import org.json.JSONObject
 import timber.log.Timber
@@ -186,16 +188,7 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         return starValidator(queryEnergyStar())
-                .flatMap {
-                    if (efficientLookup()) {
-                        efficientAlternative().map(mapper)
-                    } else {
-                        Observable.just(DataHolder()).map { dataHolder ->
-                            costPostState(JsonPrimitive(-99.99), dataHolder)
-                            dataHolder
-                        }
-                    }
-                }
+                .flatMap { efficientAlternative().map(mapper) }
     }
 
     /**
@@ -253,10 +246,19 @@ abstract class EBase(private val computable: Computable<*>,
 
     fun isTOU(rate: String = electricRateStructure) = rate.matches(regex)
 
-    //ToDo: Remove this as now there is specific lookup for each Zone Type
     abstract fun queryEfficientFilter(): String
     abstract fun efficientLookup(): Boolean
     abstract fun usageHoursSpecific(): Boolean
+
+    /**
+     * The equipment class is supposed to override this method
+     * if in-case of a Suggested Alternative being present as Feature Data
+     * */
+    open fun buildPostState(): Single<JsonObject> {
+        val wrapper = JsonObject()
+        wrapper.add("results", JsonArray())
+        return Single.just(wrapper)
+    }
 
     abstract fun preAuditFields(): MutableList<String>
     abstract fun featureDataFields(): MutableList<String>
@@ -323,7 +325,6 @@ abstract class EBase(private val computable: Computable<*>,
      * Need a better alternative that covers the Use-Case where the query parameters can be specific to the
      * States.
      * */
-    open fun queryHVACAlternative() = ""
     open fun queryHVACCoolingHours() = ""
     open fun queryHVACEer() = ""
 
@@ -347,15 +348,20 @@ abstract class EBase(private val computable: Computable<*>,
     private fun efficientAlternative(): Observable<JsonArray> {
 
         // ** Load the Efficient Query for each of the Zone Type **
-        val query = when (computable.auditScopeType) {
-            EZoneType.HVAC          -> queryHVACAlternative()
-            EZoneType.Plugload      -> queryEfficientFilter() //ToDo: Need to have a specific PlugLoad Filter
-            else -> ""
+        Timber.d("Efficient Alternative for Type -- [${computable.auditScopeType}]")
+        Timber.d("Efficient Lookup -- ${efficientLookup()}")
+        val query = queryEfficientFilter()
+
+        fun switcherHVAC() = if (efficientLookup()) parseAPIService.fetchHVAC(query) else buildPostState()
+
+        val result = when (computable.auditScopeType) {
+            EZoneType.HVAC          -> switcherHVAC()
+            EZoneType.Plugload      -> parseAPIService.fetchPlugload(query)
+            else                    -> Single.just(JsonObject())
         }
 
-        return parseAPIService.fetchPlugload(query)
-                .map { it.getAsJsonArray("results") }
-                .toObservable()
+        return result.map {
+            it.getAsJsonArray("results") }.toObservable()
     }
 
     private fun laborCost(query: String): Observable<JsonArray> {
@@ -421,7 +427,7 @@ abstract class EBase(private val computable: Computable<*>,
      * Computes the Electric Cost
      * */
     fun costElectricity(powerUsed: Double, usageHours: UsageHours, utilityRate: UtilityRate): Double {
-        val costElectric = CostElectric(usageHours, utilityRate)
+        val costElectric = CostElectric(usageHours, utilityRate, true)
         costElectric.structure = electricRateStructure
         costElectric.power = powerUsed
 

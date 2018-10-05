@@ -19,11 +19,18 @@ class EnergyPostState {
 
             Timber.d("##### Post-State Energy Calculation - (${thread()}) #####")
             Timber.d("### Efficient Alternate Count - [${response.count()}] - ###")
+            Timber.d("$response")
 
-            val jsonElements = response.map { it.asJsonObject.get("data") }
             val dataHolderPostState = initDataHolder()
             val costCollector = mutableListOf<Double>()
             val costToElement: MutableMap<Double, JsonElement> = hashMapOf()
+            var jsonElements: List<JsonElement> = listOf()
+
+            try {
+                jsonElements = response.map { it.asJsonObject.get("data") }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+            }
 
             jsonElements.forEach { element ->
                 val postRow = mutableMapOf<String, String>()
