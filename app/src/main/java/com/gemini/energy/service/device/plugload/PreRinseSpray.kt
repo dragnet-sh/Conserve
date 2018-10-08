@@ -37,7 +37,7 @@ class PreRinseSpray(private val computable: Computable<*>, utilityRateGas: Utili
 
     private var flowRate = 0.0
     private var annualHours = 0
-    private var waterTemperature = 0.0
+    private var waterTemperature = 0
     private var efficiency = 0.0
     private var waterHeater = ""
 
@@ -49,7 +49,7 @@ class PreRinseSpray(private val computable: Computable<*>, utilityRateGas: Utili
         usageHours = UsageSimple(peakHours, partPeakHours, offPeakHours)
 
         flowRate = featureData["Flow Rate"]!! as Double
-        waterTemperature = featureData["Water Temperature (oF)"]!! as Double
+        waterTemperature = featureData["Water Temperature (oF)"]!! as Int
         efficiency = featureData["Efficiency"]!! as Double
         waterHeater = featureData["Water Heater"]!! as String
 
