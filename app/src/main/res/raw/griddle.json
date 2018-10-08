@@ -18,7 +18,7 @@
           "hint": "sq. ft.",
           "dataType": "decimalrow",
           "defaultValues": "",
-          "param": "Surface Area ",
+          "param": "Surface Area",
           "validation": "mandatory",
           "id": "12"
         },
@@ -27,7 +27,7 @@
           "hint": "ft.",
           "dataType": "decimalrow",
           "defaultValues": "",
-          "param": "Nominal Width ",
+          "param": "Nominal Width",
           "validation": "mandatory",
           "id": "13"
         },
@@ -36,7 +36,7 @@
           "hint": "Btu or Wh",
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Preheat Energy ",
+          "param": "Preheat Energy",
           "validation": "optional",
           "id": "14"
         },
