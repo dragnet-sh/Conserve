@@ -93,30 +93,26 @@ class PreRinseSpray(private val computable: Computable<*>, utilityRateGas: Utili
      * PowerTimeChange >> Hourly Energy Use - Pre
      * */
     override fun hourlyEnergyUsagePre(): List<Double> {
-        var hourlyEnergyUseElectric = 0.0
-        var hourlyEnergyUseGas = 0.0
+        var annualEnergyUseElectric = 0.0
+        var annualEnergyUseGas = 0.0
 
         try {
-            val annualEnergyUsedElectric = (flowRate * 60 * annualHours * 8.34 * waterTemperature) / (3412.14 * efficiency)
-            hourlyEnergyUseElectric = annualEnergyUsedElectric / 8766
-
-            val annualEnergyUsedGas = (flowRate * 60 * annualHours * 8.34 * waterTemperature) / (99976.1 * efficiency)
-            hourlyEnergyUseGas = annualEnergyUsedGas / 8766
-
-
+            val alpha = (flowRate * 60 * annualHours * 8.34 * waterTemperature)
+            annualEnergyUseElectric = alpha / (3412.14 * efficiency)
+            annualEnergyUseGas = alpha / (99976.1 * efficiency)
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        return listOf(hourlyEnergyUseElectric, hourlyEnergyUseGas)
+        return listOf(annualEnergyUseElectric, annualEnergyUseGas)
     }
 
     /**
      * PowerTimeChange >> Hourly Energy Use - Post
      * */
     override fun hourlyEnergyUsagePost(element: JsonElement): List<Double> {
-        var hourlyEnergyUseElectric = 0.0
-        var hourlyEnergyUseGas = 0.0
+        var annualEnergyUseElectric = 0.0
+        var annualEnergyUseGas = 0.0
 
         val flowRatePost = element.asJsonObject.get("flow_rate").asDouble
         val annualHoursPost = usageHoursPost()
@@ -124,20 +120,15 @@ class PreRinseSpray(private val computable: Computable<*>, utilityRateGas: Utili
         val efficiencyPost = efficiency
 
         try {
-            val annualEnergyUsedElectric = (flowRatePost * 60 * annualHoursPost * 8.34 * waterTemperaturePost) /
-                    (3412.14 * efficiencyPost)
-            hourlyEnergyUseElectric = annualEnergyUsedElectric / 8766
-
-            val annualEnergyUsedGas = (flowRatePost * 60 * annualHoursPost * 8.34 * waterTemperaturePost) /
-                    (99976.1 * efficiencyPost)
-            hourlyEnergyUseGas = annualEnergyUsedGas / 8766
-
+            val alpha = flowRatePost * 60 * annualHoursPost * 8.34 * waterTemperaturePost
+            annualEnergyUseElectric = alpha / (3412.14 * efficiencyPost)
+            annualEnergyUseGas = alpha / (99976.1 * efficiencyPost)
 
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
-        return listOf(hourlyEnergyUseElectric, hourlyEnergyUseGas)
+        return listOf(annualEnergyUseElectric, annualEnergyUseGas)
     }
 
     /**
