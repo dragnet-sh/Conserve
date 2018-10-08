@@ -27,7 +27,7 @@
           "hint": "",
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Quantity ",
+          "param": "Quantity",
           "validation": "mandatory",
           "id": "13"
         },
@@ -60,7 +60,7 @@
         },
         {
           "index": 17,
-          "hint": "gal/rack",
+          "hint": "gal/rack.cycle",
           "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Water Consumption",
@@ -111,6 +111,15 @@
           "param": "Efficiency",
           "validation": "mandatory",
           "id": "112"
+        },
+        {
+          "index": 113,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Days Used",
+          "validation": "mandatory",
+          "id": "113"
         }
       ],
       "id": "1"
@@ -148,6 +157,40 @@
         }
       ],
       "id": "2"
+    },
+    {
+      "index": 3,
+      "section": "Suggested Time",
+      "elements": [
+        {
+          "index": 31,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Peak Hours",
+          "validation": "optional",
+          "id": "31"
+        },
+        {
+          "index": 32,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Part Peak Hours",
+          "validation": "optional",
+          "id": "32"
+        },
+        {
+          "index": 33,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Off Peak Hours",
+          "validation": "optional",
+          "id": "33"
+        }
+      ],
+      "id": "3"
     }
   ]
 }
