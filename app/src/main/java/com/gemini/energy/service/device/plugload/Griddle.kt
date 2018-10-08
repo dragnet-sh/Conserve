@@ -35,8 +35,8 @@ class Griddle(private val computable: Computable<*>, utilityRateGas: UtilityRate
     private var offPeakHours = 0
     private var usageHours: UsageSimple? = null
 
-    private var idleEnergy = 0.0
-    private var preHeatEnergy = 0.0
+    private var idleEnergy = 0
+    private var preHeatEnergy = 0
 
     private var numberOfSides = ""
     private var surfaceArea = 0.0
@@ -50,8 +50,8 @@ class Griddle(private val computable: Computable<*>, utilityRateGas: UtilityRate
         partPeakHours = featureData["Part Peak Hours"]!! as Int
         offPeakHours = featureData["Off Peak Hours"]!! as Int
 
-        idleEnergy = featureData["Idle Energy"]!! as Double
-        preHeatEnergy = featureData["Preheat Energy"]!! as Double
+        idleEnergy = featureData["Idle Energy"]!! as Int
+        preHeatEnergy = featureData["Preheat Energy"]!! as Int
 
         numberOfSides = featureData["Number of Sides"]!! as String
         surfaceArea = featureData["Surface Area"]!! as Double
@@ -99,7 +99,7 @@ class Griddle(private val computable: Computable<*>, utilityRateGas: UtilityRate
         var annualEnergy = 0.0
 
         try {
-            val annualEnergyUsed = (idleEnergy + preHeatEnergy) / 1000
+            val annualEnergyUsed = (idleEnergy + preHeatEnergy) / 1000.0
             annualEnergy = annualEnergyUsed
         } catch (e: Exception) {
             e.printStackTrace()
@@ -125,7 +125,7 @@ class Griddle(private val computable: Computable<*>, utilityRateGas: UtilityRate
             val idleEnergyPost= if (isGas()) {idleEnergyGas} else {idleEnergyElectric}
             val preHeatEnergyPost= if (isGas()) {preHeatEnergyGas} else {preHeatEnergyElectric}
 
-            val postAnnualEnergyUsed = (idleEnergyPost + preHeatEnergyPost) / 1000
+            val postAnnualEnergyUsed = (idleEnergyPost + preHeatEnergyPost) / 1000.0
             annualEnergy = postAnnualEnergyUsed
 
         } catch (e: Exception) {
