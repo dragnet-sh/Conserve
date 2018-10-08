@@ -118,10 +118,10 @@ class PreRinseSpray(private val computable: Computable<*>, utilityRateGas: Utili
         var hourlyEnergyUseElectric = 0.0
         var hourlyEnergyUseGas = 0.0
 
-        val flowRatePost = element.asJsonObject.get("flow_rate_post").asDouble
-        val annualHoursPost = peakHours + partPeakHours + offPeakHours //ToDo: @Johnny - Verify if this remains the same
-        val waterTemperaturePost = element.asJsonObject.get("water_temperature_post").asDouble
-        val efficiencyPost = element.asJsonObject.get("efficiency_post").asDouble
+        val flowRatePost = element.asJsonObject.get("flow_rate").asDouble
+        val annualHoursPost = usageHoursPost()
+        val waterTemperaturePost = waterTemperature
+        val efficiencyPost = efficiency
 
         try {
             val annualEnergyUsedElectric = (flowRatePost * 60 * annualHoursPost * 8.34 * waterTemperaturePost) /
@@ -146,7 +146,7 @@ class PreRinseSpray(private val computable: Computable<*>, utilityRateGas: Utili
      * */
     //ToDo - @Johnny Verify this
     override fun usageHoursPre(): Double = usageHours!!.yearly()
-    override fun usageHoursPost(): Double = usageHoursBusiness.yearly()
+    override fun usageHoursPost(): Double = usageHours!!.yearly()
 
     /**
      * PowerTimeChange >> Energy Efficiency Calculations
