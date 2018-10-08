@@ -73,11 +73,20 @@ class PlugloadFactory(private val utilityRateGas: UtilityRate,
 
             EApplianceType.SteamCooker              -> SteamCooker()
 
-            EApplianceType.Griddle                  -> Griddle()
-            EApplianceType.HotFoodCabinet           -> HotFoodCabinet()
-            EApplianceType.ConveyorBroiler          -> ConveyorBroiler()
-            EApplianceType.DishWasher               -> DishWasher()
-            EApplianceType.PreRinseSpray            -> PreRinseSpray()
+            EApplianceType.Griddle                  -> Griddle(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
+            EApplianceType.HotFoodCabinet           -> HotFoodCabinet(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
+            EApplianceType.ConveyorBroiler          -> ConveyorBroiler(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
+            EApplianceType.DishWasher               -> DishWasher(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
+            EApplianceType.PreRinseSpray            -> PreRinseSpray(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
 
         }
     }
