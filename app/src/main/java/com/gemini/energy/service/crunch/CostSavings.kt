@@ -4,6 +4,7 @@ import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.presentation.util.ERateKey
 import com.gemini.energy.service.CostElectric
 import com.gemini.energy.service.DataHolder
+import com.gemini.energy.service.type.Gas
 import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UtilityRate
 import io.reactivex.functions.Function
@@ -62,6 +63,16 @@ class CostSavings {
         }
 
         /**
+         * Compute Cost Gas
+         * */
+        fun costGas(energyUsed: Double, rate: UtilityRate): Double {
+            val gas= rate.nonTimeOfUse()
+            val rateFirst = (gas.summerNone() + gas.winterNone()) / 2
+            val rateExcess = (gas.summerExcess() + gas.winterExcess()) / 2
+            return (energyUsed) * (if (energyUsed > Gas.FIRST_SLAB) rateExcess else rateFirst)
+        }
+
+        /**
          * Key - To access Post State - Best Alternative
          * */
         private const val PURCHASE_PRICE_PER_UNIT = "purchase_price_per_unit"
@@ -88,6 +99,8 @@ class CostSavings {
         lateinit var laborCost: () -> Double
         lateinit var incentives: () -> Double
 
+        lateinit var isGas: () -> Boolean
+
         override fun apply(unit: Unit): DataHolder {
 
             /**
@@ -101,7 +114,7 @@ class CostSavings {
              * Power, Time Change or Both
              * */
             val ptc = powerTimeChange.delta()
-            val powerChangeCheck = ptc.checkPowerChange
+            val powerChangeCheck = ptc.checkPowerChange && !isGas()
             val timeChangeCheck = ptc.checkTimeChange
             val powerTimeChangeCheck = ptc.checkPowerTimeChange
 
@@ -189,8 +202,7 @@ class CostSavings {
                 /**
                  * Energy Cost Savings - Case 1 : TOU Based
                  * */
-                fun findTimeOfUseCostSavings(): HashMap<String, Double> {
-                    val outgoing= hashMapOf<String, Double>()
+                fun findTimeOfUseCostSavings(outgoing: HashMap<String, Double>): HashMap<String, Double> {
 
                     if (multiplePowerCheck) {
                         outgoing["CostSavingMultiplePowerCheck"] = electricityCostsCalcMultiplePowerChange(powerValues)
@@ -215,37 +227,32 @@ class CostSavings {
                  * Energy Cost Savings - Case 2 : Non TOU Based
                  * */
                 fun costNonTOU() = energyUse * rateElectric.nonTimeOfUse().weightedAverage()
-                fun findNonTimeOfUseCostSavings() = hashMapOf(
-                        "CostSavingNonTimeOfUse" to costNonTOU())
+                fun findNonTimeOfUseCostSavings(outgoing: HashMap<String, Double>): HashMap<String, Double> {
+                    outgoing["CostSavingNonTimeOfUse"] = costNonTOU()
+                    return outgoing
+                }
 
                 /**
                  * Energy Cost Savings - Case 3 : Gas Based
                  * */
-                val gasRate = rateGas.nonTimeOfUse().weightedAverage()
-                fun gasCostSavings() = (energyUse / 99976.1) * gasRate
-                fun findGasCostSavings() = hashMapOf(
-                        "CostSavingGas" to gasCostSavings()
-                )
+                fun findGasCostSavings(outgoing: HashMap<String, Double>): HashMap<String, Double> {
+                    outgoing["CostSavingGas"] = costGas(energyUse, rateGas)
+                    return outgoing
+                }
 
                 /**
                  * Flag to denote a gas based equipment
-                 * ToDo - Create input and get it from the feature data
                  * */
-                val checkForGas = false
+                val checkForGas = isGas()
                 Timber.d("----::::---- Check For Gas ($checkForGas) ----::::----")
 
                 /**
                  * Main Block
                  * */
-                val energyCostSavings: HashMap<String, Double>
-                energyCostSavings = when {
-
-                    isTOU(schedule)            -> findTimeOfUseCostSavings()
-                    isNoTOU(schedule)          -> findNonTimeOfUseCostSavings()
-                    checkForGas                -> findGasCostSavings()
-                    else -> hashMapOf()
-
-                }
+                val energyCostSavings: HashMap<String, Double> = hashMapOf()
+                if (isTOU(schedule)) { findTimeOfUseCostSavings(energyCostSavings) }
+                if (isNoTOU(schedule)) { findNonTimeOfUseCostSavings(energyCostSavings) }
+                if (checkForGas) { findGasCostSavings(energyCostSavings) }
 
                 return energyCostSavings
 
@@ -281,7 +288,7 @@ class CostSavings {
                     else -> 0.0
                 }
 
-                return demandCostSavings
+                return if (isGas()) 0.0 else demandCostSavings
 
             }
 
@@ -315,6 +322,7 @@ class CostSavings {
             /**
              * <<< Implementation Cost >>>
              * */
+            //ToDo - @Verify Johnny : How does Quantity Impact this ??
             fun implementationCost() = (materialCost + laborCost) - incentives
 
             /**
@@ -348,8 +356,8 @@ class CostSavings {
                 return aggregate
             }
 
+            //ToDo - @Verify Johnny : How does Quantity Impact this ??
             fun totalCostSaved() = aggregateEnergyCostSavings() + maintenanceCostSavings + otherEquipmentSavings + demandCostSaving()
-
 
             /**
              * <<< Payback Period - Months >>>

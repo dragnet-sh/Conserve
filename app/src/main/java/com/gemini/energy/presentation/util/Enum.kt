@@ -149,11 +149,14 @@ enum class ERateKey(val value: String) {
     Slab4("41.1_123.0"),
     Slab5("123.1_n_up"),
     SummerTransport("summer_first_4000_therms"),
+    SummerExcess("summer_excess"),
     WinterTransport("winter_first_4000_therms"),
+    WinterExcess("winter_excess"),
     Surcharge("surcharge"),
 
     GasWinter("winter_first_4000_therms"),
     GasSummer("summer_first_4000_therms"),
+    GasFirstSlab("4000"),
 
     None("none");
 
@@ -164,12 +167,7 @@ enum class ERateKey(val value: String) {
 
         fun getAllElectric() = listOf(SummerOff, SummerPart, SummerOn, WinterOff,
                 WinterPart, SummerNone, WinterNone)
-        fun getAllSummer() = listOf(SummerOff, SummerPart, SummerOn, SummerNone)
-        fun getAllWinter() = listOf(WinterOff, WinterPart, WinterNone)
-        fun getAllElectricRaw() = getAllElectric().map { it.value }
 
-        fun getAllGas() = listOf(Slab1, Slab2, Slab3, Slab4, Slab5)
-        fun getAllGasRaw() = getAllGas().map { it.value }
     }
 
 }

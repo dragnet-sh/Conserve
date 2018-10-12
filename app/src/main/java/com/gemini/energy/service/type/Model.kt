@@ -13,6 +13,9 @@ interface IUsageType {
     fun summerNone(): Double
     fun winterNone(): Double
 
+    fun summerExcess(): Double
+    fun winterExcess(): Double
+
     fun peak(): Double
     fun partPeak(): Double
     fun noPeak(): Double
@@ -53,6 +56,9 @@ data class TOU(
     override fun summerNone() = 0.0
     override fun winterNone() = 0.0
 
+    override fun summerExcess() = 0.0
+    override fun winterExcess() = 0.0
+
     override fun peak() = peak
     override fun partPeak() = partPeak
     override fun noPeak() = noPeak
@@ -77,13 +83,17 @@ data class TOU(
  * */
 data class TOUNone(
         private var summerNone: Double,
+        private var summerExcess: Double,
         private var winterNone: Double,
+        private var winterExcess: Double,
         private var noPeak: Double
 
 ) : IUsageType {
 
-    constructor(summerNone: Double, winterNone: Double): this(summerNone, winterNone, 0.0)
-    constructor(noPeak: Double): this(0.0, 0.0, noPeak)
+    constructor(summerNone: Double, winterNone: Double): this(summerNone, 0.0, winterNone, 0.0, 0.0)
+    constructor(noPeak: Double): this(0.0, 0.0, 0.0, 0.0, noPeak)
+    constructor(summerNone: Double, summerExcess: Double, winterNone: Double, winterExcess: Double):
+            this(summerNone, summerExcess, winterNone, winterExcess, 0.0)
 
     override fun summerOn() = 0.0
     override fun summerPart() = 0.0
@@ -94,6 +104,9 @@ data class TOUNone(
     override fun summerNone() = summerNone
     override fun winterNone() = winterNone
 
+    override fun summerExcess() = summerExcess
+    override fun winterExcess() = winterExcess
+
     override fun peak() = 0.0
     override fun partPeak() = 0.0
     override fun noPeak() = noPeak
@@ -102,7 +115,9 @@ data class TOUNone(
 
     override fun toString(): String {
         return ">>> Summer None : $summerNone \n" +
+                ">>> Summer Excess : $summerExcess \n" +
                 ">>> Winter None : $winterNone \n" +
+                ">>> Winter Excess : $winterExcess \n" +
                 ">>> No Peak : $noPeak"
     }
 

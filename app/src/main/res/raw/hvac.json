@@ -315,6 +315,40 @@
         }
       ],
       "id": "4"
+    },
+    {
+      "index": 5,
+      "section": "Suggested Time",
+      "elements": [
+        {
+          "index": 51,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Suggested Peak Hours",
+          "validation": "optional",
+          "id": "51"
+        },
+        {
+          "index": 52,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Suggested Part Peak Hours",
+          "validation": "optional",
+          "id": "52"
+        },
+        {
+          "index": 53,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Suggested Off Peak Hours",
+          "validation": "optional",
+          "id": "53"
+        }
+      ],
+      "id": "5"
     }
   ]
 }

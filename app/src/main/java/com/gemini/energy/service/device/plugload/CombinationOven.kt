@@ -45,8 +45,8 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
 
     }
 
-    private var isElectric = false
-    private var isGas = false
+    private fun isElectric() = fuelType == "Electric"
+    override fun isGas() = fuelType == "Gas"
 
     /**
      * This is going to be the Business Hours (Pre Audit Operation Hours)
@@ -68,6 +68,8 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
 
     private var waterUseConvection = 0.0
     private var waterUseSteam = 0.0
+
+    private var fuelType = ""
 
     /**
      * To be used for Efficient Query Filter
@@ -165,9 +167,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
     override fun setup() {
 
         try {
-            val fuelType = featureData["Fuel Type"]!! as String
-            isElectric = (fuelType == "Electric")
-            isGas = (fuelType == "Gas")
+            fuelType = featureData["Fuel Type"]!! as String
 
             //ToDo: DaysInOperation
             //This does not work. See bottom of yesterdays detailed email for clarification.
@@ -212,8 +212,8 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
         cost.waterUseSteam = waterUseSteam
 
         cost.electricityRate = electricityRate
-        cost.isGas = isGas
-        cost.isElectric = isElectric
+        cost.isGas = isGas()
+        cost.isElectric = isElectric()
 
         cost.daysInOperation = daysInOperation
         cost.usageHours = usageHoursSpecific
@@ -269,8 +269,8 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
         cost.waterUseSteam = waterUseSteamPS
 
         cost.electricityRate = electricityRate
-        cost.isGas = isGas
-        cost.isElectric = isElectric
+        cost.isGas = isGas()
+        cost.isElectric = isElectric()
 
         cost.daysInOperation = daysInOperation
         cost.usageHours = usageHoursSpecific
@@ -326,7 +326,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
             }
         }
 
-        val adjustment = if (isGas) ADJUSTMENT_GAS else 1
+        val adjustment = if (isGas()) ADJUSTMENT_GAS else 1
 
         val deltaPreHeatEnergy = preHeatEnergy - adjustPreHeat(rawPreHeatEnergyPS)
         val deltaFanEnergyRate = preFanEnergyRatePS - postFanEnergyRatePS

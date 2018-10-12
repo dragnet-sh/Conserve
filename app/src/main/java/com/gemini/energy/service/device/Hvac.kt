@@ -202,6 +202,7 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
         Timber.d("HVAC :: Pre Power Used -- [$powerUsed]")
 
+        //ToDo -- Multiply by the Quantity
         return costElectricity(powerUsed, usageHours, electricityRate)
     }
 
@@ -305,6 +306,7 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
         val delta = (powerPre - powerPost) * usageHoursBusiness.yearly()
 
         Timber.d("HVAC :: Delta -- $delta")
+        //ToDo: Multiply by the Number of Equipment
         return delta
     }
 

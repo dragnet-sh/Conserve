@@ -18,7 +18,6 @@ import com.gemini.energy.service.type.UtilityRate
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import com.google.gson.JsonPrimitive
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.functions.Function
@@ -188,7 +187,7 @@ abstract class EBase(private val computable: Computable<*>,
         }
 
         return starValidator(queryEnergyStar())
-                .flatMap { efficientAlternative().map(mapper) }
+                .flatMap { efficientAlternative(!it).map(mapper) }
     }
 
     /**
@@ -212,8 +211,11 @@ abstract class EBase(private val computable: Computable<*>,
         Timber.d(identifier())
         val mapper = CostSavings.Mapper()
         mapper.computable = computable
+
+        //ToDo : @Johnny - Verify this - What should be the new Usage Hours be ??
         mapper.usageHoursSpecific = usageHoursSpecific
         mapper.usageHoursBusiness = usageHoursBusiness
+
         mapper.schedule = electricRateStructure
         mapper.rateElectric = electricityRate
         mapper.rateGas = gasRate
@@ -224,6 +226,8 @@ abstract class EBase(private val computable: Computable<*>,
         mapper.materialCost = { materialCost() }
         mapper.laborCost = { laborCost() }
         mapper.incentives = { incentives() }
+
+        mapper.isGas = { isGas() }
 
         //@Johnny - This is where the Material Cost is going to be fetched
         fun prerequisite() = laborCost(queryLaborCost())
@@ -248,6 +252,8 @@ abstract class EBase(private val computable: Computable<*>,
 
     abstract fun queryEfficientFilter(): String
     abstract fun efficientLookup(): Boolean
+
+    //ToDo - Where is this used ?? Cleanup
     abstract fun usageHoursSpecific(): Boolean
 
     /**
@@ -260,10 +266,16 @@ abstract class EBase(private val computable: Computable<*>,
         return Single.just(wrapper)
     }
 
+    //ToDo - Where is this used ?? Cleanup
     abstract fun preAuditFields(): MutableList<String>
+
     abstract fun featureDataFields(): MutableList<String>
+
+    //ToDo - Where is this used ?? Cleanup
     abstract fun preStateFields(): MutableList<String>
     abstract fun postStateFields(): MutableList<String>
+
+    //ToDo - Where is this used ?? Cleanup
     abstract fun computedFields(): MutableList<String>
 
     /**
@@ -280,12 +292,20 @@ abstract class EBase(private val computable: Computable<*>,
     abstract fun hourlyEnergyUsagePre(): List<Double>
     abstract fun hourlyEnergyUsagePost(element: JsonElement): List<Double>
 
+    /**
+     * Other Costs
+     * */
     open fun materialCost() = 0.0
     open fun laborCost() = 0.0
     open fun incentives() = 0.0
 
     abstract fun usageHoursPre(): Double
     abstract fun usageHoursPost(): Double
+
+    /**
+     * Gas Based Equipment Checker
+     * */
+    open fun isGas() = false
 
     /**
      * Energy Efficiency Calculations
@@ -304,8 +324,8 @@ abstract class EBase(private val computable: Computable<*>,
      * To figure out if the Equipment is already in the Energy Efficient List
      * */
     private fun queryEnergyStar() = JSONObject()
-            .put("data.company", featureData["Company"])
-            .put("data.model_number", featureData["Model Number"])
+            .put("data.company", featureData["Company"] ?: "none")
+            .put("data.model_number", featureData["Model Number"] ?: "none")
             .toString()
 
     /**
@@ -338,30 +358,31 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     private fun starValidator(query: String): Observable<Boolean> {
         return parseAPIService.fetchPlugload(query)
-                .map { it.getAsJsonArray("results").count() == 0 }
+                .map { it.getAsJsonArray("results").size() == 0 }
                 .toObservable()
     }
 
     /**
      * Generic Query to retrieve the Energy Efficient
      * */
-    private fun efficientAlternative(): Observable<JsonArray> {
+    private fun efficientAlternative(isEnergyStar: Boolean): Observable<JsonArray> {
 
         // ** Load the Efficient Query for each of the Zone Type **
+        Timber.d("Energy Star -- [$isEnergyStar]")
         Timber.d("Efficient Alternative for Type -- [${computable.auditScopeType}]")
-        Timber.d("Efficient Lookup -- ${efficientLookup()}")
+        Timber.d("Efficient Lookup -- [${efficientLookup()}]")
         val query = queryEfficientFilter()
 
         fun switcherHVAC() = if (efficientLookup()) parseAPIService.fetchHVAC(query) else buildPostState()
+        fun switcherPlugload() = if (isEnergyStar) buildPostState() else parseAPIService.fetchPlugload(query)
 
         val result = when (computable.auditScopeType) {
             EZoneType.HVAC          -> switcherHVAC()
-            EZoneType.Plugload      -> parseAPIService.fetchPlugload(query)
+            EZoneType.Plugload      -> switcherPlugload()
             else                    -> Single.just(JsonObject())
         }
 
-        return result.map {
-            it.getAsJsonArray("results") }.toObservable()
+        return result.map { it.getAsJsonArray("results") }.toObservable()
     }
 
     private fun laborCost(query: String): Observable<JsonArray> {
@@ -439,8 +460,14 @@ abstract class EBase(private val computable: Computable<*>,
      * ToDo: The Gas Rate should be an Average calculated from all the Rates for that Year.
      * */
     fun costGas(energyUsed: Double): Double {
-        val rate = gasRate.nonTimeOfUse()
-        return (energyUsed / 99976.1) * ((rate.summerNone() + rate.winterNone()) / 2)
+        val gas= gasRate.nonTimeOfUse()
+        val rateFirst = (gas.summerNone() + gas.winterNone()) / 2
+        val rateExcess = (gas.summerExcess() + gas.winterExcess()) / 2
+
+        Timber.d("RATE FIRST :: $rateFirst")
+        Timber.d("RATE SECOND :: $rateExcess")
+
+        return (energyUsed) * (if (energyUsed > Gas.FIRST_SLAB) rateExcess else rateFirst)
     }
 
     /**

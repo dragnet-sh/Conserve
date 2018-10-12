@@ -27,7 +27,7 @@
           "hint": "cu. ft.",
           "dataType": "decimalrow",
           "defaultValues": "",
-          "param": "Total Volume ",
+          "param": "Total Volume",
           "validation": "mandatory",
           "id": "13"
         },
@@ -81,7 +81,7 @@
           "hint": "kWh",
           "dataType": "decimalrow",
           "defaultValues": "",
-          "param": "Daily Energy Used ",
+          "param": "Daily Energy Used",
           "validation": "optional",
           "id": "19"
         }
@@ -146,6 +146,40 @@
         }
       ],
       "id": "3"
+    },
+    {
+      "index": 4,
+      "section": "Suggested Time",
+      "elements": [
+        {
+          "index": 41,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Peak Hours",
+          "validation": "optional",
+          "id": "41"
+        },
+        {
+          "index": 42,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Part Peak Hours",
+          "validation": "optional",
+          "id": "42"
+        },
+        {
+          "index": 43,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Off Peak Hours",
+          "validation": "optional",
+          "id": "43"
+        }
+      ],
+      "id": "4"
     }
   ]
 }

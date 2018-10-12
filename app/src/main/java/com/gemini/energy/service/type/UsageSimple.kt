@@ -29,4 +29,8 @@ class UsageSimple(private val peakHours: Int,
     override fun nonTimeOfUse() = TOUNone(summerNone, winterNone)
     override fun yearly(): Double = peakHours.toDouble() + partPeakHours.toDouble() + offPeakHours.toDouble()
 
+    override fun toString(): String =
+            "Summer On : $summerOn | Summer Part : $summerPart | Summer Off : $summerOff" +
+            "\nWinter Part : $winterPart | Winter Off : $winterOff" +
+            "\nSummer None : $summerNone | Winter None : $winterNone"
 }

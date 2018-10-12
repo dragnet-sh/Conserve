@@ -166,8 +166,7 @@ class PreRinseSpray(private val computable: Computable<*>, utilityRateGas: Utili
             .put("data.flow_rate", flowRate)
             .toString()
 
-    private fun isGas() = waterHeater == "Gas"
-    private fun isElectric() = waterHeater == "Electric"
+    override fun isGas() = waterHeater == "Gas"
 
     /**
      * State if the Equipment has a Post UsageHours Hours (Specific) ie. A separate set of

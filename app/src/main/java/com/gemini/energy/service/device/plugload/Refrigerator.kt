@@ -68,6 +68,7 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
         var hourlyEnergy = 0.0
 
         try {
+            //ToDo: Check how this is being impacted within the current code base !!
             val postDailyEnergyUsed = element.asJsonObject.get("daily_energy_use").asDouble
             hourlyEnergy = postDailyEnergyUsed / 24
         } catch (e: Exception) {

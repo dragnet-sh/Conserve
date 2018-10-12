@@ -8,11 +8,15 @@ import com.gemini.energy.service.DataHolder
 import com.gemini.energy.service.IComputable
 import com.gemini.energy.service.OutgoingRows
 import com.gemini.energy.service.device.EBase
+import com.gemini.energy.service.device.Hvac
 import com.gemini.energy.service.type.UsageHours
 import com.gemini.energy.service.type.UsageSimple
 import com.gemini.energy.service.type.UtilityRate
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import io.reactivex.Observable
+import io.reactivex.Single
 import org.json.JSONObject
 import timber.log.Timber
 
@@ -33,7 +37,12 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
     private var peakHours = 0
     private var partPeakHours = 0
     private var offPeakHours = 0
-    private var usageHours: UsageSimple? = null
+    private var usageHoursPre: UsageSimple? = null
+
+    private var suggestedPeakHours = 0
+    private var suggestedPartPeakHours = 0
+    private var suggestedOffPeakHours = 0
+    private var usageHoursPost: UsageSimple? = null
 
     private var waterConsumption = 0.0
     private var numberOfRacks = 0
@@ -49,7 +58,14 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
         peakHours = featureData["Peak Hours"]!! as Int
         partPeakHours = featureData["Part Peak Hours"]!! as Int
         offPeakHours = featureData["Off Peak Hours"]!! as Int
-        usageHours = UsageSimple(peakHours, partPeakHours, offPeakHours)
+        usageHoursPre = UsageSimple(peakHours, partPeakHours, offPeakHours)
+
+        suggestedPeakHours = featureData["Suggested Peak Hours"]!! as Int
+        suggestedPartPeakHours = featureData["Suggested Part Peak Hours"]!! as Int
+        suggestedOffPeakHours = featureData["Suggested Off Peak Hours"]!! as Int
+        usageHoursPost = UsageSimple(suggestedPeakHours, suggestedPartPeakHours, suggestedOffPeakHours)
+        Timber.d("## Suggested Time ##")
+        Timber.d(usageHoursPost.toString())
 
         waterConsumption = featureData["Water Consumption"]!! as Double
         numberOfRacks = featureData["Number of Racks"]!! as Int
@@ -70,13 +86,15 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
         val thermsUsedGas = hourlyEnergyUsagePre()[1]
 
         val costElectricity: Double
-        costElectricity = costElectricity(powerUsedElectric, usageHours!!, electricityRate)
+        costElectricity = costElectricity(powerUsedElectric, usageHoursPre!!, electricityRate)
 
         val costGas: Double
         costGas = costGas(thermsUsedGas)
 
-        val cost = if (isGas()) costGas else costElectricity
-        return cost
+        Timber.d("---- THERMS USED :: $thermsUsedGas ----")
+        Timber.d("---- COST GAS :: $costGas ----")
+
+        return if (isGas()) costGas else costElectricity
     }
 
     /**
@@ -87,13 +105,33 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
         val thermsUsedGas = hourlyEnergyUsagePost(element)[1]
 
         val costElectricity: Double
-        costElectricity = costElectricity(powerUsedElectric, usageHours!!, electricityRate)
+        costElectricity = costElectricity(powerUsedElectric, usageHoursPre!!, electricityRate)
 
         val costGas: Double
         costGas = costGas(thermsUsedGas)
 
-        val cost = if (isGas()) costGas else costElectricity
-        return cost
+        return if (isGas()) costGas else costElectricity
+    }
+
+    /**
+     * Manually Builds the Post State Response from the Suggested Alternative
+     * */
+    override fun buildPostState(): Single<JsonObject> {
+        val element = JsonObject()
+        val data = JsonObject()
+        data.addProperty("water_consumption", waterConsumption)
+        data.addProperty("idle_energy_rate", idleEnergyRate)
+
+        element.add("data", data)
+        element.addProperty("type", "dishwashers")
+
+        val response = JsonArray()
+        response.add(element)
+
+        val wrapper = JsonObject()
+        wrapper.add("results", response)
+
+        return Single.just(wrapper)
     }
 
     /**
@@ -106,7 +144,7 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
         try {
             val annualHours = usageHoursPre()
             val alpha = (waterConsumption * numberOfRacks * cyclesPerDay * daysUsed * annualHours * 8.34 * waterTemperature)
-            annualEnergyGas = (alpha / (99976.1 * efficiency)) + (idleEnergyRate * 3412.14 * annualHours / 99976.1)
+            annualEnergyGas = ((alpha / efficiency) + (idleEnergyRate * 3412.14 * annualHours)) / 99976.1
             annualEnergyElectric = (alpha / (efficiency * 3412.14)) + (idleEnergyRate * annualHours)
 
         } catch (e: Exception) {
@@ -135,7 +173,7 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
 
             val alpha = (waterConsumptionPost * numberOfRacksPost * cyclesPerDayPost * daysUsedPost *
                     annualHoursPost * 8.34 * waterTemperaturePost)
-            annualEnergyGas = (alpha / (99976.1 * efficiencyPost)) + (idleEnergyRatePost * 3412.14 * annualHoursPost / 99976.1)
+            annualEnergyGas = ((alpha / efficiencyPost) + (idleEnergyRatePost * 3412.14 * annualHoursPost)) / 99976.1
             annualEnergyElectric = (alpha / (efficiencyPost * 3412.14)) + (idleEnergyRatePost * annualHoursPost)
 
         } catch (e: Exception) {
@@ -147,25 +185,24 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
 
     /**
      * PowerTimeChange >> Yearly Usage Hours - [Pre | Post]
-     * Pre and Post are the same for Refrigerator - 24 hrs
+     * Pre - TOU Section
+     * Post - Suggested Time
      * */
-    //ToDo - @Johnny Verify this
-    // Usage Hours Pre is the TOU
-    // Usage Hours Post is the Suggested TOU
-    override fun usageHoursPre(): Double = usageHours!!.yearly()
-    override fun usageHoursPost(): Double = usageHours!!.yearly()
+    override fun usageHoursPre(): Double = usageHoursPre!!.yearly()
+    override fun usageHoursPost(): Double = usageHoursPost!!.yearly()
 
     /**
      * PowerTimeChange >> Energy Efficiency Calculations
+     * ToDo -- Change this into Energy - It is not power !!
      * */
     override fun energyPowerChange(): Double {
-        val prePower = hourlyEnergyUsagePre()[0]
+        val prePower = if (isGas()) hourlyEnergyUsagePre()[1] else hourlyEnergyUsagePre()[0]
         var postPower: Double
         var delta = 0.0
 
         computable.efficientAlternative?.let {
-            postPower = hourlyEnergyUsagePost(it)[0]
-            delta = usageHoursPre() * (prePower - postPower)
+            postPower = if (isGas()) hourlyEnergyUsagePost(it)[1] else hourlyEnergyUsagePost(it)[0]
+            delta = prePower - postPower
         }
 
         return delta
@@ -179,18 +216,32 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
      * */
     override fun efficientLookup() = true
     override fun queryEfficientFilter() = JSONObject()
-            .put("data.idle_energy_rate", idleEnergyRate)
-            .put("data.water_consumption", waterConsumption)
+            .put("data.idle_energy_rate", queryAdjustment(idleEnergyRate))
+            .put("data.water_consumption", queryAdjustment(waterConsumption))
             .toString()
 
-    private fun isGas() =  waterHeater == "Gas"
-    private fun isElectric() = waterHeater == "Electric"
+    override fun isGas() =  waterHeater == "Gas"
+
+    /**
+     * Adjusting the Query Filter Range by 10%
+     * ToDo - Move this to the Base Class
+     * */
+    private fun queryAdjustment(value: Double) = JSONObject()
+            .put("\$gte", value * 0.9)
+            .put("\$lte", value * 1.1)
 
     /**
      * State if the Equipment has a Post UsageHours Hours (Specific) ie. A separate set of
      * Weekly UsageHours Hours apart from the PreAudit
      * */
     override fun usageHoursSpecific() = false
+
+    /**
+     * Additional Costs
+     * */
+    override fun materialCost(): Double = 50.0
+    override fun laborCost(): Double = 0.0
+    override fun incentives(): Double = 0.0
 
     /**
      * Define all the fields here - These would be used to Generate the Outgoing Rows or perform the Energy Calculation

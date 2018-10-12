@@ -114,7 +114,7 @@
         },
         {
           "index": 113,
-          "hint": "",
+          "hint": "days/year",
           "dataType": "introw",
           "defaultValues": "",
           "param": "Days Used",
@@ -167,7 +167,7 @@
           "hint": "",
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Peak Hours",
+          "param": "Suggested Peak Hours",
           "validation": "optional",
           "id": "31"
         },
@@ -176,7 +176,7 @@
           "hint": "",
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Part Peak Hours",
+          "param": "Suggested Part Peak Hours",
           "validation": "optional",
           "id": "32"
         },
@@ -185,7 +185,7 @@
           "hint": "",
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Off Peak Hours",
+          "param": "Suggested Off Peak Hours",
           "validation": "optional",
           "id": "33"
         }

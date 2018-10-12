@@ -73,6 +73,7 @@ class Griddle(private val computable: Computable<*>, utilityRateGas: UtilityRate
 
         cost = if (isElectric())
             costElectricity(powerUsed, usageHours!!, electricityRate) else
+            //ToDo : Covert this power into Therms !!
             costGas(powerUsed)
 
         return cost
@@ -177,7 +178,7 @@ class Griddle(private val computable: Computable<*>, utilityRateGas: UtilityRate
             .put("data.production_capacity", productionCapacity)
             .toString()
 
-    private fun isGas() = fuelType == "Gas"
+    override fun isGas() = fuelType == "Gas"
     private fun isElectric() = fuelType == "Electric"
 
     /**
