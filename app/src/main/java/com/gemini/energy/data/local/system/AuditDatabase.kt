@@ -6,10 +6,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.arch.persistence.room.TypeConverters
 import android.content.Context
 import com.gemini.energy.data.local.dao.*
-import com.gemini.energy.data.local.model.AuditLocalModel
-import com.gemini.energy.data.local.model.FeatureLocalModel
-import com.gemini.energy.data.local.model.TypeLocalModel
-import com.gemini.energy.data.local.model.ZoneLocalModel
+import com.gemini.energy.data.local.model.*
 import com.gemini.energy.data.local.util.Converters
 
 
@@ -19,11 +16,12 @@ import com.gemini.energy.data.local.util.Converters
             AuditLocalModel::class,
             ZoneLocalModel::class,
             TypeLocalModel::class,
-            FeatureLocalModel::class
+            FeatureLocalModel::class,
+            GraveLocalModel::class
 
         ],
 
-        version = 14, exportSchema = false)
+        version = 15, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class AuditDatabase : RoomDatabase() {
@@ -33,6 +31,7 @@ abstract class AuditDatabase : RoomDatabase() {
     abstract fun auditScopeDao(): TypeDao
     abstract fun featureDao(): FeatureDao
     abstract fun computableDao(): ComputableDao
+    abstract fun gravesDao(): GravesDao
 
     companion object {
         fun newInstance(context: Context): AuditDatabase {

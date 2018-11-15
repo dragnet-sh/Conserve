@@ -14,7 +14,6 @@ import com.gemini.energy.presentation.audit.list.model.AuditModel
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import timber.log.Timber
-import java.time.Instant
 import java.util.*
 
 class AuditCreateViewModel(context: Context,
@@ -38,6 +37,7 @@ class AuditCreateViewModel(context: Context,
         auditGetUseCase.execute(auditModel.id)
                 .subscribe {
                     it.name = auditTag
+                    it.updatedAt = Date()
                     update(it)
                 }
     }
@@ -56,7 +56,14 @@ class AuditCreateViewModel(context: Context,
                                 context.getString(R.string.unknown_error)
                     }
 
-                    override fun onComplete() {}
+                    override fun onComplete() {
+
+                        Timber.d("*** YOHO YOHO YOHO YOHO YOHO ***")
+                        Timber.d("<< AUDIT CREATE - ON COMPLETE >>")
+
+                        //ToDo -- Update the Collection from here
+
+                    }
                 })
     }
 
@@ -68,7 +75,14 @@ class AuditCreateViewModel(context: Context,
                         result.value = true
                     }
                     override fun onError(e: Throwable) { e.printStackTrace() }
-                    override fun onComplete() {}
+                    override fun onComplete() {
+
+                        Timber.d("*** YOHO YOHO YOHO YOHO YOHO ***")
+                        Timber.d("<< AUDIT UPDATE - ON COMPLETE >>")
+
+                        //ToDo -- Update the Collection from here
+
+                    }
                 })
     }
 

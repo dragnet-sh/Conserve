@@ -26,6 +26,7 @@ import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.type.TypeActivity
 import dagger.android.support.DaggerFragment
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 class ZoneListFragment : DaggerFragment(),
@@ -127,7 +128,7 @@ class ZoneListFragment : DaggerFragment(),
         val position = arguments?.getInt("position")
 
         auditId?.let {
-            setAuditModel(AuditModel(auditId, "n/a"))
+            setAuditModel(AuditModel(auditId, "n/a", Date(), Date()))
         }
 
         position?.let { this.position = it }

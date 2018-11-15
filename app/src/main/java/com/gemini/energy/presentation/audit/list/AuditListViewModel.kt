@@ -7,6 +7,7 @@ import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import android.widget.Toast
 import com.gemini.energy.R
+import com.gemini.energy.data.local.model.GraveLocalModel
 import com.gemini.energy.domain.entity.Audit
 import com.gemini.energy.domain.entity.Feature
 import com.gemini.energy.domain.interactor.*
@@ -20,7 +21,6 @@ import io.reactivex.rxkotlin.merge
 import timber.log.Timber
 
 class AuditListViewModel(context: Context,
-
                          private val auditGetAllUseCase: AuditGetAllUseCase,
                          private val zoneTypeGetAllByAuditUseCase: ZoneTypeGetAllByAuditUseCase,
                          private val featureGetAllByTypeUseCase: FeatureGetAllByTypeUseCase,
@@ -28,7 +28,8 @@ class AuditListViewModel(context: Context,
                          private val featureDeleteUseCase: FeatureDeleteUseCase,
                          private val typeDeleteByAuditUseCase: ZoneTypeDeleteByAuditUseCase,
                          private val zoneDeleteByAuditUseCase: ZoneDeleteByAuditUseCase,
-                         private val auditDeleteUseCase: AuditDeleteUseCase) :
+                         private val auditDeleteUseCase: AuditDeleteUseCase,
+                         private val gravesSaveUseCase: GravesSaveUseCase) :
 
         BaseAndroidViewModel(context.applicationContext as Application) {
 
@@ -103,6 +104,8 @@ class AuditListViewModel(context: Context,
                     override fun onComplete() {
                         Timber.d("!! ON COMPLETE !!")
                         Toast.makeText(context, "Audit Delete Completed.", Toast.LENGTH_SHORT).show()
+                        gravesSaveUseCase.execute(GraveLocalModel(-1, audit.id, 0))
+                                .subscribe { Timber.d("Audit to Graves") }
                     }
 
                     override fun onNext(t: Unit) {

@@ -278,6 +278,11 @@ internal abstract class HomeModule {
             return FeatureDeleteByZoneUseCase(schedulers, auditGateway)
         }
 
+        @HomeScope
+        @Provides
+        @JvmStatic
+        internal fun provideGravesSaveUseCase(schedulers: Schedulers, auditGateway: AuditGateway) =
+                GravesSaveUseCase(schedulers, auditGateway)
 
         //**** Energy Services **** //
 
@@ -348,7 +353,9 @@ internal abstract class HomeModule {
                 featureGetAllUseCase: FeatureGetAllUseCase,
                 featureGetAllByTypeUseCase: FeatureGetAllByTypeUseCase,
                 featureDeleteUseCase: FeatureDeleteUseCase,
-                featureDeleteByZoneUseCase: FeatureDeleteByZoneUseCase
+                featureDeleteByZoneUseCase: FeatureDeleteByZoneUseCase,
+
+                gravesSaveUseCase: GravesSaveUseCase
 
 
         ): ViewModelProvider.Factory {
@@ -360,7 +367,8 @@ internal abstract class HomeModule {
                         modelClass.isAssignableFrom(AuditListViewModel::class.java) ->
                             AuditListViewModel(context, auditGetAllUseCase, zoneTypeGetAllByAuditUseCase,
                                     featureGetAllByTypeUseCase, featureGetAllUseCase, featureDeleteUseCase,
-                                    zoneTypeDeleteByAuditUseCase, zoneDeleteByAuditUseCase, auditDeleteUseCase) as T
+                                    zoneTypeDeleteByAuditUseCase, zoneDeleteByAuditUseCase, auditDeleteUseCase,
+                                    gravesSaveUseCase) as T
 
                         modelClass.isAssignableFrom(AuditCreateViewModel::class.java) ->
                             AuditCreateViewModel(context, auditSaveUseCase, auditGetUseCase, auditUpdateUseCase) as T

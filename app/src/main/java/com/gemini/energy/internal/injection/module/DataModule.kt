@@ -48,6 +48,10 @@ internal class DataModule {
     @Singleton
     internal fun provideComputableDao(auditDatabase: AuditDatabase): ComputableDao = auditDatabase.computableDao()
 
+    @Provides
+    @Singleton
+    internal fun provideGravesDao(auditDatabase: AuditDatabase): GravesDao = auditDatabase.gravesDao()
+
     /*End of DAO*/
 
 
@@ -131,6 +135,12 @@ internal class DataModule {
     internal fun provideComputableLocalDataSource(computableDao: ComputableDao) =
             ComputableLocalDataSource(computableDao)
 
+
+    @Provides
+    @Singleton
+    internal fun provideGravesLocalDataSource(gravesDao: GravesDao) =
+            GravesLocalDataSource(gravesDao)
+
     /*End of Local Data Source*/
 
 
@@ -174,6 +184,11 @@ internal class DataModule {
     internal fun provideComputableRepository(computableLocalDataSource: ComputableLocalDataSource) =
             ComputableRepository(computableLocalDataSource)
 
+    @Provides
+    @Singleton
+    internal fun provideGravesRepository(gravesLocalDataSource: GravesLocalDataSource) =
+            GravesRepository(gravesLocalDataSource)
+
     /*End of Repository*/
 
 
@@ -184,12 +199,14 @@ internal class DataModule {
             zoneRepository: ZoneRepository,
             auditTypeRepository: TypeRepository,
             featureRepository: FeatureRepository,
-            computableRepository: ComputableRepository): AuditGateway {
+            computableRepository: ComputableRepository,
+            gravesRepository: GravesRepository): AuditGateway {
         return AuditGatewayImpl(
                 auditRepository,
                 zoneRepository,
                 auditTypeRepository,
                 featureRepository,
-                computableRepository)
+                computableRepository,
+                gravesRepository)
     }
 }

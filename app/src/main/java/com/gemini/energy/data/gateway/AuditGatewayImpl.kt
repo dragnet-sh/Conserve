@@ -1,6 +1,7 @@
 package com.gemini.energy.data.gateway
 
 import com.gemini.energy.data.gateway.mapper.SystemMapper
+import com.gemini.energy.data.local.model.GraveLocalModel
 import com.gemini.energy.data.repository.*
 import com.gemini.energy.domain.entity.*
 import com.gemini.energy.domain.gateway.AuditGateway
@@ -11,7 +12,8 @@ class AuditGatewayImpl(
         private val zoneRepository: ZoneRepository,
         private val typeRepository: TypeRepository,
         private val featureRepository: FeatureRepository,
-        private val computableRepository: ComputableRepository) : AuditGateway {
+        private val computableRepository: ComputableRepository,
+        private val gravesRepository: GravesRepository) : AuditGateway {
 
     private val mapper = SystemMapper()
 
@@ -81,5 +83,10 @@ class AuditGatewayImpl(
     override fun getComputable(): Observable<List<Computable<*>>> =
         computableRepository.getAllComputable()
                 .map { it.map { mapper.toEntity(it) } }
+
+    /*Graves*/
+    override fun saveGraves(grave: GraveLocalModel) = gravesRepository.save(grave)
+    override fun updateGraves(oid: Int, usn: Int) = gravesRepository.update(oid, usn)
+    override fun deleteGraves(oid: Int) = gravesRepository.delete(oid)
 
 }

@@ -1,5 +1,6 @@
 package com.gemini.energy.domain.gateway
 
+import com.gemini.energy.data.local.model.GraveLocalModel
 import com.gemini.energy.domain.entity.*
 import io.reactivex.Observable
 
@@ -37,4 +38,9 @@ interface AuditGateway {
     fun deleteFeatureByZoneId(id: Int): Observable<Unit> // ToDo - Remove
 
     fun getComputable(): Observable<List<Computable<*>>>
+
+    fun saveGraves(grave: GraveLocalModel): Observable<Unit>
+    fun updateGraves(oid: Int, usn: Int): Observable<Unit>
+    fun deleteGraves(oid: Int): Observable<Unit>
+
 }
