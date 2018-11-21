@@ -11,7 +11,7 @@ class SystemMapper {
     fun toEntity(type: AuditLocalModel) = Audit(
             type.auditId,
             type.name,
-
+            type.usn,
             type.createdAt,
             type.updatedAt
     )

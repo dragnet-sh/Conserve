@@ -1,5 +1,8 @@
 package com.gemini.energy.service.sync
 
+import android.content.Context
+import com.gemini.energy.App
+import com.gemini.energy.presentation.audit.list.AuditListFragment
 import com.gemini.energy.service.ParseAPI
 
 class Connection {
@@ -8,26 +11,14 @@ class Connection {
      * Parse API Service Call
      * */
     private val parseAPIService by lazy { ParseAPI.create() }
+    private var context: Context? = null
 
-    interface TaskListener {
-        fun onPreExecute()
-        fun onProgressUpdate(vararg values: Any)
-        fun onPostExecute(data: Payload)
-        fun onDisconnected()
+    init { this.context = App.instance }
+
+    fun sync(fragment: AuditListFragment) {
+        val col = Collection.create()
+        val syncer = Syncer(parseAPIService, col)
+        syncer.sync(fragment)
     }
-
-    companion object Payload {
-        var taskType: Int = 0
-        var data: Array<Any> = arrayOf()
-        var result: Any? = null
-        var success: Boolean = true
-        var returnType: Int = 0
-        var exception: Exception? = null
-        var message: String = ""
-        var col: Collection? = null
-    }
-
-
-
 
 }

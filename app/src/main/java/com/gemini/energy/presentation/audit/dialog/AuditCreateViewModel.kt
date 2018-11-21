@@ -30,7 +30,7 @@ class AuditCreateViewModel(context: Context,
 
     fun createAudit(tag: String) {
         val date = Date()
-        addDisposable(save(Audit(date.time.toInt(), tag, date, date)))
+        addDisposable(save(Audit(date.time.toInt(), tag, -1, date, date)))
     }
 
     fun updateAudit(auditModel: AuditModel, auditTag: String) {
@@ -38,6 +38,7 @@ class AuditCreateViewModel(context: Context,
                 .subscribe {
                     it.name = auditTag
                     it.updatedAt = Date()
+                    it.usn = -1
                     update(it)
                 }
     }

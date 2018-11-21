@@ -1,5 +1,11 @@
 package com.gemini.energy.service.sync
 
+import com.gemini.energy.App
+import com.gemini.energy.data.local.dao.AuditDao
+import com.gemini.energy.data.local.model.AuditLocalModel
+import com.gemini.energy.data.local.system.AuditDatabase
+import timber.log.Timber
+
 /**
  * Read all the Data from the Local DB and Build the Collection
  * -- This happens only once during the start
@@ -8,19 +14,35 @@ package com.gemini.energy.service.sync
  * */
 class Collection {
 
-    var feature: Feature? = null
+    var db: AuditDatabase? = null
+    var audit: List<AuditLocalModel>? = listOf()
 
-    fun audit() {}
+    private var auditDAO: AuditDao? = null
+
+    private fun audit() {
+        val observable = auditDAO?.getAllWithUsn(-1)?.toObservable()
+        observable?.subscribe { audit = it }
+    }
+
     fun zone() {}
     fun type() {}
     fun meta() {}
 
-    fun sync() {}
+    init {
+
+        Timber.d("Collection :: INIT")
+        db = AuditDatabase.newInstance(App.instance)
+        auditDAO = db?.auditDao()
+
+        audit()
+
+    }
+
+    companion object {
+        fun create(): Collection {
+            Timber.d("Collection :: CREATE")
+            return Collection()
+        }
+    }
 
 }
-
-
-class Feature {}
-class Audit {}
-class Zone {}
-class Type {}

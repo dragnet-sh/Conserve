@@ -11,8 +11,11 @@ interface AuditDao {
     @Query("SELECT * FROM Audit")
     fun getAll(): Maybe<List<AuditLocalModel>>
 
-    @Query("SELECT * FROM Audit where id = :id")
+    @Query("SELECT * FROM Audit WHERE id = :id")
     fun get(id: Int): Maybe<AuditLocalModel>
+
+    @Query("SELECT * FROM Audit WHERE usn = :usn")
+    fun getAllWithUsn(usn: Int): Maybe<List<AuditLocalModel>>
 
     @Insert(onConflict = REPLACE)
     fun insert(audit: AuditLocalModel)

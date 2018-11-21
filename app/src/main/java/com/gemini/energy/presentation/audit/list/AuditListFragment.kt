@@ -88,6 +88,7 @@ class AuditListFragment : DaggerFragment(),
         auditListViewModel.loadAuditList()
     }
 
+    fun refresh() { refreshViewModel() }
 
     /*
     * Listeners | Observers

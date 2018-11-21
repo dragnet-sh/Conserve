@@ -11,6 +11,7 @@ data class AuditLocalModel(
         @ColumnInfo(name = "id")
         var auditId: Int,
         var name: String,
+        var usn: Int,
 
         @ColumnInfo(name = "created_at")
         var createdAt: Date,

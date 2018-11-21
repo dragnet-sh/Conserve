@@ -21,6 +21,8 @@ import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.Navigator
 import com.gemini.energy.service.EnergyService
 import com.gemini.energy.service.OutgoingRows
+import com.gemini.energy.service.sync.Collection
+import com.gemini.energy.service.sync.Connection
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -39,6 +41,7 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     lateinit var energyService: EnergyService
 
     private lateinit var sharedViewModel: SharedViewModel
+    private lateinit var auditListFragment: AuditListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,7 +79,7 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
                 Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
             })
         }
-        R.id.menu_debug -> consume { writeLog() }
+        R.id.menu_sync -> consume { sync() }
         else -> super.onOptionsItemSelected(item)
     }
 
@@ -105,7 +108,8 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     *
     * */
     private fun setupAuditList() {
-        var auditListFragment = AuditListFragment.newInstance()
+        val auditListFragment = AuditListFragment.newInstance()
+        this.auditListFragment = auditListFragment
 
         supportFragmentManager
                 .beginTransaction()
@@ -183,6 +187,8 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
 
         return null
     }
+
+    private fun sync() = Connection().sync(auditListFragment)
 
     private fun writeLog() {
         val writer = OutgoingRows(applicationContext)

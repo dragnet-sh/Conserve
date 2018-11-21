@@ -6,7 +6,7 @@ import com.gemini.energy.domain.entity.Audit
 class AuditMapper {
 
     fun toLocal(audit: Audit): AuditLocalModel {
-        return AuditLocalModel(audit?.id, audit.name, audit.createdAt, audit.updatedAt)
+        return AuditLocalModel(audit.id, audit.name, audit.usn, audit.createdAt, audit.updatedAt)
     }
 
 }

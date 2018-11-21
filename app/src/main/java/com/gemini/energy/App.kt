@@ -32,9 +32,11 @@ class App : DaggerApplication() {
         MultiDex.install(this)
     }
 
-    /*
-        * Type Counter for Parent - Child
-        * */
+    // TODO: Maybe we would want to initialize Collection here
+
+    /**
+     * Type Counter for Parent - Child
+     * */
     private var counter: ArrayList<TypeModel> = arrayListOf<TypeModel>()
 
     fun getCount() = counter.size
