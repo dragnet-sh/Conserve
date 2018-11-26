@@ -1,7 +1,6 @@
 package com.gemini.energy.service.sync
 
 import com.gemini.energy.data.local.model.AuditLocalModel
-import com.gemini.energy.presentation.audit.list.AuditListFragment
 import com.gemini.energy.service.ParseAPI
 import com.google.gson.JsonObject
 import io.reactivex.Observable
@@ -13,15 +12,13 @@ import timber.log.Timber
 import java.util.*
 
 class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
-             private val col: Collection) {
+             private val col: Collection,
+             private val mListener: Listener? = null) {
 
     private val taskHolder: MutableList<Observable<Unit>> = mutableListOf()
     private val auditList: MutableList<AuditLocalModel> = mutableListOf()
-    private lateinit var fragment: AuditListFragment
 
-    fun sync(fragment: AuditListFragment) {
-
-        this.fragment = fragment
+    fun sync() {
 
         Timber.d("<< SYNC >>")
         Timber.d(col.audit.toString())
@@ -74,7 +71,13 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                         }
                     }
 
-                }, { it.printStackTrace() }, { Timber.d("-- DOWNLOAD COMPLETE --"); fragment.refresh() })
+                }, { it.printStackTrace() }, {
+                    Timber.d("-- DOWNLOAD COMPLETE --"); mListener?.onPostExecute() })
+    }
+
+    interface Listener {
+        fun onPreExecute()
+        fun onPostExecute()
     }
 
 }
@@ -89,6 +92,3 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
  * 5. Update the Local Database with the Remote Result - Done
  * 6. Trigger a Column Refresh once this is done so that the results are visible - Done
  * */
-
-
-// ToDo -- Figure out a way to elegantly Refresh the Data !!

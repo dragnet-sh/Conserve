@@ -21,8 +21,8 @@ import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.Navigator
 import com.gemini.energy.service.EnergyService
 import com.gemini.energy.service.OutgoingRows
-import com.gemini.energy.service.sync.Collection
 import com.gemini.energy.service.sync.Connection
+import com.gemini.energy.service.sync.Syncer
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableObserver
@@ -82,6 +82,8 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
         R.id.menu_sync -> consume { sync() }
         else -> super.onOptionsItemSelected(item)
     }
+
+
 
     private inline fun consume(f: () -> Unit): Boolean {
         f()
@@ -188,7 +190,11 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
         return null
     }
 
-    private fun sync() = Connection().sync(auditListFragment)
+    private fun sync() = Connection().sync(mListener)
+    private val mListener: Syncer.Listener = object: Syncer.Listener {
+        override fun onPreExecute() {}
+        override fun onPostExecute() { auditListFragment.refresh() }
+    }
 
     private fun writeLog() {
         val writer = OutgoingRows(applicationContext)

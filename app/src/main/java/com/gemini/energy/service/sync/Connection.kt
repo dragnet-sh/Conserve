@@ -15,10 +15,10 @@ class Connection {
 
     init { this.context = App.instance }
 
-    fun sync(fragment: AuditListFragment) {
+    fun sync(mListener: Syncer.Listener? = null) {
         val col = Collection.create()
-        val syncer = Syncer(parseAPIService, col)
-        syncer.sync(fragment)
+        val syncer = Syncer(parseAPIService, col, mListener)
+        syncer.sync()
     }
 
 }
