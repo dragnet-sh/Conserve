@@ -25,16 +25,8 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
         val audit = col.audit
 
-        audit?.forEach { local ->
-            val outgoing = JsonObject()
-            outgoing.addProperty("auditId", local.auditId.toString())
-            outgoing.addProperty("name", local.name)
-            outgoing.addProperty("usn", ++local.usn)
-            outgoing.addProperty("mod", Date().time.toString())
-
-            Timber.d("PARSE API :: AUDIT - SAVE (POST)")
-            Timber.d(outgoing.toString())
-
+        audit.forEach { local ->
+            val outgoing = buildAudit(local)
             auditList.add(local)
             taskHolder.add(
                     parseAPIService.saveAudit(outgoing)
@@ -74,6 +66,25 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                 }, { it.printStackTrace() }, {
                     Timber.d("-- DOWNLOAD COMPLETE --"); mListener?.onPostExecute() })
     }
+
+    private fun buildAudit(local: AuditLocalModel): JsonObject {
+        val outgoing = JsonObject()
+        outgoing.addProperty("auditId", local.auditId.toString())
+        outgoing.addProperty("name", local.name)
+        outgoing.addProperty("usn", ++local.usn)
+        outgoing.addProperty("mod", Date().time.toString())
+
+        outgoing.add("zone", buildZone())
+        outgoing.add("type", buildType())
+
+        Timber.d("PARSE API :: AUDIT - SAVE (POST)")
+        Timber.d(outgoing.toString())
+
+        return outgoing
+    }
+
+    private fun buildZone(): JsonObject = JsonObject()
+    private fun buildType(): JsonObject = JsonObject()
 
     interface Listener {
         fun onPreExecute()

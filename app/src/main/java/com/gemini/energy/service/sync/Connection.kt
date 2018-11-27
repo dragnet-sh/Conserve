@@ -17,8 +17,8 @@ class Connection {
 
     fun sync(mListener: Syncer.Listener? = null) {
         val col = Collection.create()
-        val syncer = Syncer(parseAPIService, col, mListener)
-        syncer.sync()
+//        val syncer = Syncer(parseAPIService, col, mListener)
+//        syncer.sync()
     }
 
 }

@@ -28,6 +28,9 @@ class ParseAPI {
         @POST("classes/rAudit")
         fun saveAudit(@Body body: JsonObject): Single<JsonObject>
 
+        @PUT("classes/rAudit")
+        fun updateAudit(): Single<JsonObject>
+
         @GET("classes/rAudit")
         fun fetchAudit(@Query("where") where: String): Single<JsonObject>
     }
