@@ -2,7 +2,6 @@ package com.gemini.energy.service.sync
 
 import android.content.Context
 import com.gemini.energy.App
-import com.gemini.energy.presentation.audit.list.AuditListFragment
 import com.gemini.energy.service.ParseAPI
 
 class Connection {
@@ -15,10 +14,18 @@ class Connection {
 
     init { this.context = App.instance }
 
-    fun sync(mListener: Syncer.Listener? = null) {
-        val col = Collection.create()
-//        val syncer = Syncer(parseAPIService, col, mListener)
-//        syncer.sync()
+    fun sync(mSyncListener: Syncer.Listener? = null) {
+        val mColListener: Collection.Listener = object: Collection.Listener {
+            override fun onPreExecute() {}
+            override fun onPostExecute(col: Collection?) {
+                col?.let {
+                    val syncer = Syncer(parseAPIService, it, mSyncListener)
+                    syncer.sync()
+                }
+            }
+        }
+
+        Collection.create(mColListener)
     }
 
 }

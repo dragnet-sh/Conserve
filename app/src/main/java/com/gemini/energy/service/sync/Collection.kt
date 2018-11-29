@@ -2,9 +2,11 @@ package com.gemini.energy.service.sync
 
 import com.gemini.energy.App
 import com.gemini.energy.data.local.dao.AuditDao
+import com.gemini.energy.data.local.dao.FeatureDao
 import com.gemini.energy.data.local.dao.TypeDao
 import com.gemini.energy.data.local.dao.ZoneDao
 import com.gemini.energy.data.local.model.AuditLocalModel
+import com.gemini.energy.data.local.model.FeatureLocalModel
 import com.gemini.energy.data.local.model.TypeLocalModel
 import com.gemini.energy.data.local.model.ZoneLocalModel
 import com.gemini.energy.data.local.system.AuditDatabase
@@ -20,21 +22,29 @@ import timber.log.Timber
  * -- This class is to be shared amongst all the others
  * -- At any instance this class shows the State of the Local Database
  * */
-class Collection {
+class Collection(private val mListener: Listener?) {
 
     var db: AuditDatabase? = null
+
     var audit: List<AuditLocalModel> = listOf()
     var zone: HashMap<Int, List<ZoneLocalModel>> = hashMapOf()
     var type: HashMap<Int, List<TypeLocalModel>> = hashMapOf()
 
+    var featureAudit: HashMap<Int, List<FeatureLocalModel>> = hashMapOf()
+    var featureType: HashMap<Int, List<FeatureLocalModel>> = hashMapOf()
+
+    private var typeIds: MutableList<Int?> = mutableListOf()
+    var typeIdsByAudit: MutableMap<Int, List<Int?>> = hashMapOf()
+
     private var auditDAO: AuditDao? = null
     private var zoneDao: ZoneDao? = null
     private var typeDao: TypeDao? = null
+    private var featureDao: FeatureDao? = null
 
     private fun load() = audit()?.subscribe({ audit = it }, { it.printStackTrace() }, { zone() })
 
-    fun audit() = auditDAO?.getAll()?.toObservable()
-    fun zone() {
+    private fun audit() = auditDAO?.getAll()?.toObservable()
+    private fun zone() {
         val taskHolder: MutableList<Observable<List<ZoneLocalModel>>> = mutableListOf()
         audit.forEach {
             zoneDao?.getAllByAudit(it.auditId)?.let {
@@ -54,7 +64,7 @@ class Collection {
 
     }
 
-    fun type() {
+    private fun type() {
         val taskHolder: MutableList<Observable<List<TypeLocalModel>>> = mutableListOf()
         audit.forEach {
             typeDao?.getAllTypeByAudit(it.auditId)?.let {
@@ -66,23 +76,53 @@ class Collection {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    val tmp = it.groupBy { it.zoneId!! }
-                    for ((zoneId, localType) in tmp) {
-                            type[zoneId] = localType
+                    if (it.isNotEmpty()) {
+                        val auditId = it[0].auditId!!
+                        type[auditId] = it
                     }
 
-                }, { it.printStackTrace() }, {
+                    it.forEach { typeIds.add(it.auditParentId) }
+                    for ((auditId, type) in it.groupBy { it.auditId }) {
+                        auditId?.let { typeIdsByAudit[it] = type.map { it.auditParentId } }
+                    }
 
-                    Timber.d("## LOAD - COMPLETE ##")
-                    Timber.d("AUDIT -- $audit")
-                    Timber.d("ZONE -- $zone")
-                    Timber.d("TYPE -- $type")
-
-                })
-
+                }, { it.printStackTrace() }, { feature() })
     }
 
-    fun meta() {}
+    private fun feature() {
+        val taskHolder: MutableList<Observable<List<FeatureLocalModel>>> = mutableListOf()
+        typeIds.forEach {
+            if (it != null) {
+                featureDao?.getAllByType(it)?.let {
+                    taskHolder.add(it.toObservable())
+                }
+            }
+        }
+
+        taskHolder.merge()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+
+                    if (it.isNotEmpty()) {
+                        it[0].typeId?.let { id ->
+                            featureType[id] = it
+                        }
+                    }
+
+                }, { it.printStackTrace() }, { complete() })
+    }
+
+    private fun complete() {
+        mListener?.onPostExecute(this)
+    }
+
+    override fun toString(): String {
+        return "Audit -- $audit" +
+                "\nZone -- $zone" +
+                "\nType -- $type" +
+                "\nFeatureType -- $featureType"
+    }
 
     init {
 
@@ -91,15 +131,21 @@ class Collection {
         auditDAO = db?.auditDao()
         zoneDao = db?.zoneDao()
         typeDao = db?.auditScopeDao()
+        featureDao = db?.featureDao()
 
         load()
     }
 
     companion object {
-        fun create(): Collection {
+        fun create(mListener: Listener? = null): Collection {
             Timber.d("Collection :: CREATE")
-            return Collection()
+            return Collection(mListener)
         }
+    }
+
+    interface Listener {
+        fun onPreExecute()
+        fun onPostExecute(col: Collection?)
     }
 
 }
