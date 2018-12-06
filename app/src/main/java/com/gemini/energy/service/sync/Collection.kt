@@ -90,27 +90,54 @@ class Collection(private val mListener: Listener?) {
     }
 
     private fun feature() {
-        val taskHolder: MutableList<Observable<List<FeatureLocalModel>>> = mutableListOf()
+        val taskHolderTypeFeature: MutableList<Observable<List<FeatureLocalModel>>> = mutableListOf()
         typeIds.forEach {
             if (it != null) {
                 featureDao?.getAllByType(it)?.let {
-                    taskHolder.add(it.toObservable())
+                    taskHolderTypeFeature.add(it.toObservable())
                 }
             }
         }
 
-        taskHolder.merge()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
+        val taskHolderAuditFeature: MutableList<Observable<List<FeatureLocalModel>>> = mutableListOf()
+        audit.forEach {
+            featureDao?.getAllByAudit(it.auditId)?.let {
+                taskHolderAuditFeature.add(it.toObservable())
+            }
+        }
 
-                    if (it.isNotEmpty()) {
-                        it[0].typeId?.let { id ->
-                            featureType[id] = it
+        fun auditFeatureExec() {
+            taskHolderAuditFeature.merge()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+
+                        if (it.isNotEmpty()) {
+                            it[0].auditId?.let { id ->
+                                featureAudit[id] = it
+                            }
                         }
-                    }
 
-                }, { it.printStackTrace() }, { complete() })
+                    }, { it.printStackTrace() }, { complete() })
+        }
+
+        fun typeFeatureExec() {
+            taskHolderTypeFeature.merge()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+
+                        if (it.isNotEmpty()) {
+                            it[0].typeId?.let { id ->
+                                featureType[id] = it
+                            }
+                        }
+
+                    }, { it.printStackTrace() }, { auditFeatureExec() })
+        }
+
+        typeFeatureExec()
+
     }
 
     private fun complete() {
