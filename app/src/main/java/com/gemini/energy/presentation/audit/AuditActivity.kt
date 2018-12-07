@@ -21,6 +21,7 @@ import com.gemini.energy.presentation.base.BaseActivity
 import com.gemini.energy.presentation.util.Navigator
 import com.gemini.energy.service.EnergyService
 import com.gemini.energy.service.OutgoingRows
+import com.gemini.energy.service.sync.Collection
 import com.gemini.energy.service.sync.Connection
 import com.gemini.energy.service.sync.Syncer
 import io.reactivex.Observable
@@ -191,9 +192,25 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
     }
 
     private fun sync() = Connection().sync(mListener)
+
     private val mListener: Syncer.Listener = object: Syncer.Listener {
-        override fun onPreExecute() {}
-        override fun onPostExecute() { auditListFragment.refresh() }
+        override fun onPreExecute() { linlaHeaderProgress.visibility = View.VISIBLE }
+        override fun onPostDownload(sync: Syncer) {
+
+            val mColListenerUpload: Collection.Listener = object: Collection.Listener {
+                override fun onPreExecute() {}
+                override fun onPostExecute(col: Collection?) {
+                    col?.let {
+                        sync.refreshCollection(it)
+                        sync.gUpload()
+                    }
+                }
+            }
+
+            Collection.create(mColListenerUpload)
+
+        }
+        override fun onPostExecute() { auditListFragment.refresh(); linlaHeaderProgress.visibility = View.GONE }
     }
 
     private fun writeLog() {

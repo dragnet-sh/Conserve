@@ -15,17 +15,20 @@ class Connection {
     init { this.context = App.instance }
 
     fun sync(mSyncListener: Syncer.Listener? = null) {
-        val mColListener: Collection.Listener = object: Collection.Listener {
+
+        val mColListenerDownload: Collection.Listener = object: Collection.Listener {
             override fun onPreExecute() {}
             override fun onPostExecute(col: Collection?) {
                 col?.let {
                     val syncer = Syncer(parseAPIService, it, mSyncListener)
-                    syncer.sync()
+                    syncer.gDownload()
+
                 }
             }
         }
 
-        Collection.create(mColListener)
+        Collection.create(mColListenerDownload)
+
     }
 
 }

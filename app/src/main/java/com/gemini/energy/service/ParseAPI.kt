@@ -37,6 +37,9 @@ class ParseAPI {
         @GET("classes/rAudit")
         fun fetchAudit(@Query("where") where: String): Single<JsonObject>
 
+        @GET("classes/rAudit")
+        fun fetchAudit(): Single<JsonObject>
+
         @POST("classes/rFeature")
         fun saveFeature(@Body body: JsonObject): Single<JsonObject>
 
@@ -45,6 +48,10 @@ class ParseAPI {
 
         @GET("classes/rFeature")
         fun fetchFeature(@Query("where") where: String): Single<JsonObject>
+
+        @GET("classes/rFeature")
+        fun fetchFeature(): Single<JsonObject>
+
     }
 
     companion object {

@@ -17,7 +17,7 @@ import java.lang.StringBuilder
 import java.util.*
 
 class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
-             private val col: Collection,
+             private var col: Collection,
              private val mListener: Listener? = null) {
 
     private val auditTaskHolder: MutableList<Observable<JsonObject>> = mutableListOf()
@@ -27,26 +27,36 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
     private val zoneList: MutableList<ZoneLocalModel> = mutableListOf()
     private val typeList: MutableList<TypeLocalModel> = mutableListOf()
 
-    fun sync() {
+    fun refreshCollection(col: Collection) {
+        this.col = col
+    }
 
-        fun prepare() {
-            val audit = col.audit
-            audit.forEach {
-                auditList.add(it)
-                buildFeature(it.auditId).forEach {
-                    featureTaskHolder.add(parseAPIService.saveFeature(it).toObservable())
-                }
-
-                auditTaskHolder.add(parseAPIService.saveAudit(buildAudit(it)).toObservable())
+    private fun prepare() {
+        val audit = col.audit
+        audit.forEach {
+            auditList.add(it)
+            buildFeature(it.auditId).forEach {
+                featureTaskHolder.add(parseAPIService.saveFeature(it).toObservable())
             }
+
+            auditTaskHolder.add(parseAPIService.saveAudit(buildAudit(it)).toObservable())
         }
+    }
 
-        Timber.d("<< SYNC >>")
-        Timber.d(col.audit.toString())
+    /**
+     * DOWNLOAD - MAIN
+     * */
+    fun gDownload() {
+        mListener?.onPreExecute()
+        download()
+    }
 
+    /**
+     * UPLOAD - MAIN
+     * */
+    fun gUpload() {
         prepare()
-        uploadFeature()
-
+        uploadAudit()
     }
 
     private fun download() {
@@ -56,197 +66,213 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
             return fields.split("\\x1f".toRegex())
         }
 
-        parseAPIService.fetchFeature(query.toString()).toObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    val rFeature = it.getAsJsonArray("results")
-                    val models: MutableList<FeatureLocalModel> = mutableListOf()
+        fun taskFeature() {
 
-                    rFeature.forEach {
+            parseAPIService.fetchFeature().toObservable()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        val rFeature = it.getAsJsonArray("results")
+                        val models: MutableList<FeatureLocalModel> = mutableListOf()
 
-                        val auditId = it.asJsonObject.get("auditId").asString
-                        val zoneId = it.asJsonObject.get("zoneId").asString
-                        val typeId = it.asJsonObject.get("typeId").asString
-                        val belongsTo = it.asJsonObject.get("belongsTo").asString
+                        rFeature.forEach {
 
-                        val usn = it.asJsonObject.get("usn").asInt
-                        val mod = it.asJsonObject.get("mod").asString
+                            val auditId = it.asJsonObject.get("auditId").asString
+                            val zoneId = it.asJsonObject.get("zoneId").asString
+                            val typeId = it.asJsonObject.get("typeId").asString
+                            val belongsTo = it.asJsonObject.get("belongsTo").asString
 
-                        val values = splitFields(it.asJsonObject.get("values").asString)
-                        val dataTypes = splitFields(it.asJsonObject.get("dataType").asString)
-                        val fields = splitFields(it.asJsonObject.get("fields").asString)
-                        val formIds = splitFields(it.asJsonObject.get("formId").asString)
-                        val id = splitFields(it.asJsonObject.get("id").asString)
+                            val usn = it.asJsonObject.get("usn").asInt
+                            val mod = it.asJsonObject.get("mod").asString
 
-                        val _auditId = auditId.toLong()
+                            val values = splitFields(it.asJsonObject.get("values").asString)
+                            val dataTypes = splitFields(it.asJsonObject.get("dataType").asString)
+                            val fields = splitFields(it.asJsonObject.get("fields").asString)
+                            val formIds = splitFields(it.asJsonObject.get("formId").asString)
+                            val id = splitFields(it.asJsonObject.get("id").asString)
 
-                        // *** Load Feature by Type to the Local DB
-                        if (typeId != "null") {
-                            if (col.featureType.containsKey(typeId.toInt())) {
-                                val localFeature = col.featureType[typeId.toInt()]
-                                val lMod = localFeature?.map { it.updatedAt.time }?.max()
+                            val _auditId = auditId.toLong()
 
-                                Timber.d("Local Updated At (Feature - Type)")
-                                Timber.d(lMod.toString())
+                            // *** Load Feature by Type to the Local DB
+                            if (typeId != "null") {
+                                if (col.featureType.containsKey(typeId.toInt())) {
+                                    val localFeature = col.featureType[typeId.toInt()]
+                                    val lMod = localFeature?.map { it.updatedAt.time }?.max()
 
-                                Timber.d("Remote Last Modified At (Feature - Type)")
-                                Timber.d(mod)
+                                    Timber.d("Local Updated At (Feature - Type)")
+                                    Timber.d(lMod.toString())
 
-                            } else {
-                                Timber.d("---------- Feature Type Fresh Entry -----------")
-                                for (i in 0 until formIds.count() - 1) {
-                                    val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
-                                            dataTypes[i], usn,null, zoneId.toInt(), typeId.toInt(), fields[i],
-                                            values[i], null, null, Date(), Date())
-                                    models.add(feature)
-                                }
-                            }
-                        }
+                                    Timber.d("Remote Last Modified At (Feature - Type)")
+                                    Timber.d(mod)
 
-                        if (typeId == "null") {
-                            if (col.featureAudit.containsKey(_auditId)) {
-                                val localFeature = col.featureAudit[_auditId]
-                                val lMod = localFeature?.map { it.updatedAt.time }?.max()
-
-                                Timber.d("Local Updated At (Feature - Audit)")
-                                Timber.d(lMod.toString())
-
-                                Timber.d("Remote Last Modified At (Feature - Audit)")
-                                Timber.d(mod)
-
-                            } else {
-                                Timber.d("---------- Feature Audit Fresh Entry -----------")
-                                for (i in 0 until formIds.count() - 1) {
-                                    val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
-                                            dataTypes[i], usn, _auditId, null, null, fields[i],
-                                            values[i], null, null, Date(), Date())
-                                    models.add(feature)
-                                }
-                            }
-                        }
-                    }
-
-                    col.db?.featureDao()?.insert(models)
-
-                }, { it.printStackTrace() }, { Timber.d("-- Feature Fetch Complete --"); mListener?.onPostExecute()})
-
-
-        parseAPIService.fetchAudit(query.toString()).toObservable()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-
-                    val rAudit = it.getAsJsonArray("results")
-                    rAudit.forEach {
-
-                        var auditId = ""
-                        var name = ""
-                        var usn = -99
-                        var objectId = ""
-                        var zone: JsonObject? = null
-                        var type: JsonObject? = null
-
-                        try {
-                            auditId = it.asJsonObject.get("auditId").asString
-                            name = it.asJsonObject.get("name").asString
-                            usn = it.asJsonObject.get("usn").asInt
-                            objectId = it.asJsonObject.get("objectId").asString
-
-                            zone = it.asJsonObject.get("zone").asJsonObject
-                            type = it.asJsonObject.get("type").asJsonObject
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-
-                        Timber.d(zone.toString())
-                        Timber.d(type.toString())
-
-                        val _auditId = auditId.toLong()
-
-                        // 1. Audit Entry - To local DB
-                        Timber.d("<<<< AUDIT >>>>")
-                        val localAuditId = auditList.map { it.auditId }
-                        if (!localAuditId.contains(_auditId)) {
-                            val model = AuditLocalModel(_auditId, name, usn, objectId, Date(), Date())
-                            col.db?.auditDao()?.insert(model)
-                        }
-
-                        // 2. Zone Entry - To local DB
-                        Timber.d("<<<< ZONE >>>>")
-                        zone?.keySet()?.forEach {
-                            val inner = zone.get(it).asJsonObject
-                            val iUsn = inner.get("usn").asInt
-                            val iName = inner.get("name").asString
-                            val iMod = inner.get("mod").asString
-                            val iId = inner.get("id").asInt
-
-                            if (col.zone.containsKey(_auditId)) {
-                                val zones = col.zone[_auditId]
-                                zones?.let {
-                                    val ids = it.map { it.zoneId }
-                                    if (ids.contains(iId)) {
-                                        val localZone = it[ids.indexOf(iId)]
-
-                                        Timber.d("Local Updated At")
-                                        Timber.d(localZone.updatedAt.time.toString())
-
-                                        Timber.d("Remote Last Modified At")
-                                        Timber.d(iMod)
-                                    } else {
-                                        Timber.d("-------- Zone Fresh Entry ----------")
-                                        val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
-                                        col.db?.zoneDao()?.insert(model)
+                                } else {
+                                    Timber.d("---------- Feature Type Fresh Entry -----------")
+                                    for (i in 0 until formIds.count() - 1) {
+                                        val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
+                                                dataTypes[i], usn, null, zoneId.toInt(), typeId.toInt(), fields[i],
+                                                values[i], null, null, Date(), Date())
+                                        models.add(feature)
                                     }
                                 }
-                            } else {
-                                Timber.d("-------- Zone Fresh Entry ----------")
-                                val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
-                                col.db?.zoneDao()?.insert(model)
                             }
-                        }
 
-                        // 3. Type Entry - To Local DB
-                        Timber.d("<<<< TYPE >>>>")
-                        type?.keySet()?.forEach {
-                            val inner = type.get(it).asJsonObject
-                            val iUsn = inner.get("usn").asInt
-                            val iName = inner.get("name").asString
-                            val iType = inner.get("type").asString
-                            val iSubType = inner.get("subtype").asString
-                            val iMod = inner.get("mod").asString
-                            val iId = inner.get("id").asInt
-                            val iZoneId = inner.get("zoneId").asInt
+                            if (typeId == "null") {
+                                if (col.featureAudit.containsKey(_auditId)) {
+                                    val localFeature = col.featureAudit[_auditId]
+                                    val lMod = localFeature?.map { it.updatedAt.time }?.max()
 
-                            if (col.type.containsKey(_auditId)) {
-                                val types = col.type[_auditId]
-                                types?.let {
-                                    val ids = it.map { it.auditParentId }
-                                    if (ids.contains(iId)) {
-                                        val localType = it[ids.indexOf(iId)]
+                                    Timber.d("Local Updated At (Feature - Audit)")
+                                    Timber.d(lMod.toString())
 
-                                        Timber.d("Local Updated At")
-                                        Timber.d(localType.updatedAt?.time.toString())
+                                    Timber.d("Remote Last Modified At (Feature - Audit)")
+                                    Timber.d(mod)
 
-                                        Timber.d("Remote Last Modified At")
-                                        Timber.d(iMod)
-                                    } else {
-                                        Timber.d("------------ Type Fresh Entry --------------------")
-                                        val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
-                                        col.db?.auditScopeDao()?.insert(model)
+                                } else {
+                                    Timber.d("---------- Feature Audit Fresh Entry -----------")
+                                    for (i in 0 until formIds.count() - 1) {
+                                        val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
+                                                dataTypes[i], usn, _auditId, null, null, fields[i],
+                                                values[i], null, null, Date(), Date())
+                                        models.add(feature)
                                     }
                                 }
-                            } else {
-                                Timber.d("------------ Type Fresh Entry --------------------")
-                                val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
-                                col.db?.auditScopeDao()?.insert(model)
                             }
                         }
 
-                    }
+                        col.db?.featureDao()?.insert(models)
 
-                }, { it.printStackTrace() }, {
-                    Timber.d("-- AUDIT DOWNLOAD COMPLETE --"); mListener?.onPostExecute() })
+                    }, { it.printStackTrace() }, {
+
+                        Timber.d("-- Feature Fetch Complete --")
+                        mListener?.onPostDownload(this)
+
+                    })
+        }
+
+        fun taskAudit() {
+
+            parseAPIService.fetchAudit().toObservable()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+
+                        val rAudit = it.getAsJsonArray("results")
+                        rAudit.forEach {
+
+                            var auditId = ""
+                            var name = ""
+                            var usn = -99
+                            var objectId = ""
+                            var zone: JsonObject? = null
+                            var type: JsonObject? = null
+
+                            try {
+                                auditId = it.asJsonObject.get("auditId").asString
+                                name = it.asJsonObject.get("name").asString
+                                usn = it.asJsonObject.get("usn").asInt
+                                objectId = it.asJsonObject.get("objectId").asString
+
+                                zone = it.asJsonObject.get("zone").asJsonObject
+                                type = it.asJsonObject.get("type").asJsonObject
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+
+                            Timber.d(zone.toString())
+                            Timber.d(type.toString())
+
+                            val _auditId = auditId.toLong()
+
+                            // 1. Audit Entry - To local DB
+                            Timber.d("<<<< AUDIT >>>>")
+                            val localAuditId = auditList.map { it.auditId }
+                            if (!localAuditId.contains(_auditId)) {
+                                val model = AuditLocalModel(_auditId, name, usn, objectId, Date(), Date())
+                                col.db?.auditDao()?.insert(model)
+                            }
+
+                            // 2. Zone Entry - To local DB
+                            Timber.d("<<<< ZONE >>>>")
+                            zone?.keySet()?.forEach {
+                                val inner = zone.get(it).asJsonObject
+                                val iUsn = inner.get("usn").asInt
+                                val iName = inner.get("name").asString
+                                val iMod = inner.get("mod").asString
+                                val iId = inner.get("id").asInt
+
+                                if (col.zone.containsKey(_auditId)) {
+                                    val zones = col.zone[_auditId]
+                                    zones?.let {
+                                        val ids = it.map { it.zoneId }
+                                        if (ids.contains(iId)) {
+                                            val localZone = it[ids.indexOf(iId)]
+
+                                            Timber.d("Local Updated At")
+                                            Timber.d(localZone.updatedAt.time.toString())
+
+                                            Timber.d("Remote Last Modified At")
+                                            Timber.d(iMod)
+                                        } else {
+                                            Timber.d("-------- Zone Fresh Entry ----------")
+                                            val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
+                                            col.db?.zoneDao()?.insert(model)
+                                        }
+                                    }
+                                } else {
+                                    Timber.d("-------- Zone Fresh Entry ----------")
+                                    val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
+                                    col.db?.zoneDao()?.insert(model)
+                                }
+                            }
+
+                            // 3. Type Entry - To Local DB
+                            Timber.d("<<<< TYPE >>>>")
+                            type?.keySet()?.forEach {
+                                val inner = type.get(it).asJsonObject
+                                val iUsn = inner.get("usn").asInt
+                                val iName = inner.get("name").asString
+                                val iType = inner.get("type").asString
+                                val iSubType = inner.get("subtype").asString
+                                val iMod = inner.get("mod").asString
+                                val iId = inner.get("id").asInt
+                                val iZoneId = inner.get("zoneId").asInt
+
+                                if (col.type.containsKey(_auditId)) {
+                                    val types = col.type[_auditId]
+                                    types?.let {
+                                        val ids = it.map { it.auditParentId }
+                                        if (ids.contains(iId)) {
+                                            val localType = it[ids.indexOf(iId)]
+
+                                            Timber.d("Local Updated At")
+                                            Timber.d(localType.updatedAt?.time.toString())
+
+                                            Timber.d("Remote Last Modified At")
+                                            Timber.d(iMod)
+                                        } else {
+                                            Timber.d("------------ Type Fresh Entry --------------------")
+                                            val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
+                                            col.db?.auditScopeDao()?.insert(model)
+                                        }
+                                    }
+                                } else {
+                                    Timber.d("------------ Type Fresh Entry --------------------")
+                                    val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
+                                    col.db?.auditScopeDao()?.insert(model)
+                                }
+                            }
+
+                        }
+
+                    }, { it.printStackTrace() }, {
+
+                        Timber.d("-- AUDIT DOWNLOAD COMPLETE --")
+                        taskFeature()
+
+                    })
+        }
+
+        taskAudit()
 
     }
 
@@ -285,7 +311,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                 }, { it.printStackTrace() }, {
 
-                    Timber.d("Complete - Audit Upload")
+                    Timber.d("Complete - Audit Upload"); uploadFeature()
                     auditList.forEach {
                         val query = JSONObject().put("auditId", it.auditId.toString())
                         parseAPIService.fetchAudit(query.toString()).toObservable()
@@ -318,8 +344,6 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                                 }, { it.printStackTrace() }, {})
                     }
-
-
                 })
     }
 
@@ -341,7 +365,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ Timber.d(it.toString()) }, { it.printStackTrace() },
-                        { Timber.d("Complete - Feature Upload") })
+                        { Timber.d("Complete - Feature Upload"); mListener?.onPostExecute() })
 
         }
 
@@ -523,6 +547,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
     interface Listener {
         fun onPreExecute()
         fun onPostExecute()
+        fun onPostDownload(sync: Syncer)
     }
 
 }
