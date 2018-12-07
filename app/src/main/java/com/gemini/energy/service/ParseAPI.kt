@@ -40,6 +40,9 @@ class ParseAPI {
         @POST("classes/rFeature")
         fun saveFeature(@Body body: JsonObject): Single<JsonObject>
 
+        @DELETE("classes/rFeature/{objectId}")
+        fun deleteFeature(@Path("objectId") objectId: String): Single<JsonObject>
+
         @GET("classes/rFeature")
         fun fetchFeature(@Query("where") where: String): Single<JsonObject>
     }

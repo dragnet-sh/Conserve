@@ -39,7 +39,7 @@ class AuditCreateViewModel(context: Context,
                 .subscribe {
                     it.name = auditTag
                     it.updatedAt = Date()
-                    it.usn = -1
+                    // it.usn = -1 ToDo - Need to implement this later
                     update(it)
                 }
     }

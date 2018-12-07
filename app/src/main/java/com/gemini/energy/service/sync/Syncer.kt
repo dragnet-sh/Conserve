@@ -45,7 +45,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
         Timber.d(col.audit.toString())
 
         prepare()
-        uploadAudit()
+        uploadFeature()
 
     }
 
@@ -295,7 +295,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                                     val rAudit = it.getAsJsonArray("results")
 
-                                    Timber.d("<<< Clean Up - Audit [{${rAudit.count()}}]>>")
+                                    Timber.d("<<< Clean Up - Audit [${rAudit.count()}]>>")
                                     Timber.d(rAudit.toString())
 
                                     if (rAudit.count() > 1) {
@@ -322,12 +322,51 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                 })
     }
+
     private fun uploadFeature() {
-        featureTaskHolder.merge()
+
+        val objectIds: MutableList<String> = mutableListOf()
+        fun extract(item: JsonObject) {
+            val rFeature = item.getAsJsonArray("results")
+            rFeature.forEach {
+                objectIds.add(it.asJsonObject.get("objectId").asString)
+            }
+        }
+
+        val collectObjectIds: MutableList<Observable<JsonObject>> = mutableListOf()
+        val deletions: MutableList<Observable<JsonObject>> = mutableListOf()
+
+        fun upload() {
+            featureTaskHolder.merge()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ Timber.d(it.toString()) }, { it.printStackTrace() },
                         { Timber.d("Complete - Feature Upload") })
+
+        }
+
+        fun clean() {
+            deletions.merge()
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ Timber.d(it.toString()) }, { it.printStackTrace() }, {
+                        Timber.d("Complete - Feature CleanUp ")
+                        upload()
+                    })
+        }
+
+        auditList.forEach {
+            val query = JSONObject().put("auditId", it.auditId.toString())
+            collectObjectIds.add(parseAPIService.fetchFeature(query.toString()).toObservable())
+        }
+
+        collectObjectIds.merge()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ extract(it) }, { it.printStackTrace() }, {
+                    objectIds.forEach { deletions.add(parseAPIService.deleteFeature(it).toObservable()) }
+                    clean()
+                })
     }
 
     /**
