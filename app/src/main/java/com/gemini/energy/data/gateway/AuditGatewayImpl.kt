@@ -18,7 +18,7 @@ class AuditGatewayImpl(
     private val mapper = SystemMapper()
 
     /*Audit*/
-    override fun getAudit(auditId: Int): Observable<Audit> = auditRepository.get(auditId).map { mapper.toEntity(it) }
+    override fun getAudit(auditId: Long): Observable<Audit> = auditRepository.get(auditId).map { mapper.toEntity(it) }
     override fun getAuditList(): Observable<List<Audit>> =
             auditRepository.getAll()
                     .doOnError { println("Audit Get Error") }
@@ -26,18 +26,18 @@ class AuditGatewayImpl(
 
     override fun saveAudit(audit: Audit): Observable<Unit> = auditRepository.save(audit)
     override fun updateAudit(audit: Audit): Observable<Unit> = auditRepository.update(audit)
-    override fun deleteAudit(auditId: Int): Observable<Unit> = auditRepository.delete(auditId)
+    override fun deleteAudit(auditId: Long): Observable<Unit> = auditRepository.delete(auditId)
 
     /*Zone*/
     override fun getZone(zoneId: Int): Observable<Zone> = zoneRepository.get(zoneId).map { mapper.toEntity(it) }
-    override fun getZoneList(auditId: Int): Observable<List<Zone>> =
+    override fun getZoneList(auditId: Long): Observable<List<Zone>> =
             zoneRepository.getAllByAudit(auditId)
                     .map { it.map { mapper.toEntity(it) } }
 
     override fun saveZone(zone: Zone): Observable<Unit> = zoneRepository.save(zone)
     override fun updateZone(zone: Zone): Observable<Unit> = zoneRepository.update(zone)
     override fun deleteZone(zoneId: Int): Observable<Unit> = zoneRepository.delete(zoneId)
-    override fun deleteZoneByAuditId(id: Int): Observable<Unit> = zoneRepository.deleteByAuditId(id)
+    override fun deleteZoneByAuditId(id: Long): Observable<Unit> = zoneRepository.deleteByAuditId(id)
 
     /*Audit Zone Type*/
     override fun getAuditScope(id: Int): Observable<Type> =
@@ -47,7 +47,7 @@ class AuditGatewayImpl(
             typeRepository.getAllTypeByZone(zoneId, type)
                     .map { it.map { mapper.toEntity(it) } }
 
-    override fun getAuditScopeByAudit(auditId: Int): Observable<List<Type>> =
+    override fun getAuditScopeByAudit(auditId: Long): Observable<List<Type>> =
         typeRepository.getAllTypeByAudit(auditId)
                 .map { it.map { mapper.toEntity(it) } }
 
@@ -55,10 +55,10 @@ class AuditGatewayImpl(
     override fun updateAuditScope(auditScope: Type): Observable<Unit> = typeRepository.update(auditScope)
     override fun deleteAuditScope(id: Int): Observable<Unit> = typeRepository.delete(id)
     override fun deleteAuditScopeByZoneId(id: Int): Observable<Unit> = typeRepository.deleteByZoneId(id)
-    override fun deleteAuditScopeByAuditId(id: Int): Observable<Unit> = typeRepository.deleteByAuditId(id)
+    override fun deleteAuditScopeByAuditId(id: Long): Observable<Unit> = typeRepository.deleteByAuditId(id)
 
     /*Feature Data*/
-    override fun getFeature(auditId: Int): Observable<List<Feature>> =
+    override fun getFeature(auditId: Long): Observable<List<Feature>> =
             featureRepository.getAllByAudit(auditId)
                     .map { it.map { mapper.toEntity(it) } }
 
@@ -66,7 +66,7 @@ class AuditGatewayImpl(
             featureRepository.getAllByType(zoneId)
                     .map { it.map { mapper.toEntity(it) } }
 
-    override fun getFeatureByAudit(auditId: Int): Observable<List<Feature>> =
+    override fun getFeatureByAudit(auditId: Long): Observable<List<Feature>> =
             featureRepository.getAllByAudit(auditId)
                     .map { it.map { mapper.toEntity(it) } }
 
@@ -76,7 +76,7 @@ class AuditGatewayImpl(
             featureRepository.delete(feature)
 
     override fun deleteFeatureByTypeId(id: Int): Observable<Unit> = featureRepository.deleteByTypeId(id)
-    override fun deleteFeatureByAuditId(id: Int): Observable<Unit> = featureRepository.deleteByAuditId(id)
+    override fun deleteFeatureByAuditId(id: Long): Observable<Unit> = featureRepository.deleteByAuditId(id)
     override fun deleteFeatureByZoneId(id: Int): Observable<Unit> = featureRepository.deleteByZoneId(id)
 
     /*Computable*/

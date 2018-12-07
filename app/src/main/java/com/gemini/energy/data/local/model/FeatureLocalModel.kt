@@ -25,7 +25,7 @@ data class FeatureLocalModel(
 
 
         @ColumnInfo(name = "audit_id")
-        var auditId: Int?,
+        var auditId: Long?,
         @ColumnInfo(name = "zone_id")
         var zoneId: Int?,
         @ColumnInfo(name = "type_id")

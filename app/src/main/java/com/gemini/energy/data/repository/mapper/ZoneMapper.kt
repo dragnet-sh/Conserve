@@ -10,6 +10,7 @@ class ZoneMapper {
                 zone.id,
                 zone.name,
                 zone.type,
+                zone.usn,
                 zone.auditId,
                 zone.createdAt,
                 zone.updatedAt

@@ -12,7 +12,7 @@ class FeatureRepository(
         private val featureRemoteDataSource: FeatureRemoteDataSource,
         private val featureMapper: FeatureMapper) {
 
-    fun getAllByAudit(id: Int): Observable<List<FeatureLocalModel>> {
+    fun getAllByAudit(id: Long): Observable<List<FeatureLocalModel>> {
         return featureLocalDataSource.getAllByAudit(id)
     }
 
@@ -32,7 +32,7 @@ class FeatureRepository(
         return featureLocalDataSource.deleteByTypeId(id)
     }
 
-    fun deleteByAuditId(id: Int): Observable<Unit> {
+    fun deleteByAuditId(id: Long): Observable<Unit> {
         return featureLocalDataSource.deleteByAuditId(id)
     }
 

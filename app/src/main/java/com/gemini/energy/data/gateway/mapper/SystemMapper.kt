@@ -20,6 +20,7 @@ class SystemMapper {
             zone.zoneId,
             zone.name,
             zone.type,
+            zone.usn,
 
             zone.auditId,
 

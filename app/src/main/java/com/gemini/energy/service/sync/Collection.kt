@@ -27,14 +27,14 @@ class Collection(private val mListener: Listener?) {
     var db: AuditDatabase? = null
 
     var audit: List<AuditLocalModel> = listOf()
-    var zone: HashMap<Int, List<ZoneLocalModel>> = hashMapOf()
-    var type: HashMap<Int, List<TypeLocalModel>> = hashMapOf()
+    var zone: HashMap<Long, List<ZoneLocalModel>> = hashMapOf()
+    var type: HashMap<Long, List<TypeLocalModel>> = hashMapOf()
 
-    var featureAudit: HashMap<Int, List<FeatureLocalModel>> = hashMapOf()
+    var featureAudit: HashMap<Long, List<FeatureLocalModel>> = hashMapOf()
     var featureType: HashMap<Int, List<FeatureLocalModel>> = hashMapOf()
 
     private var typeIds: MutableList<Int?> = mutableListOf()
-    var typeIdsByAudit: MutableMap<Int, List<Int?>> = hashMapOf()
+    var typeIdsByAudit: MutableMap<Long, List<Int?>> = hashMapOf()
 
     private var auditDAO: AuditDao? = null
     private var zoneDao: ZoneDao? = null

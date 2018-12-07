@@ -12,7 +12,7 @@ interface AuditDao {
     fun getAll(): Maybe<List<AuditLocalModel>>
 
     @Query("SELECT * FROM Audit WHERE id = :id")
-    fun get(id: Int): Maybe<AuditLocalModel>
+    fun get(id: Long): Maybe<AuditLocalModel>
 
     @Query("SELECT * FROM Audit WHERE usn = :usn")
     fun getAllWithUsn(usn: Int): Maybe<List<AuditLocalModel>>
@@ -24,6 +24,6 @@ interface AuditDao {
     fun update(audit: AuditLocalModel)
 
     @Query("DELETE FROM Audit WHERE id = :id")
-    fun delete(id: Int)
+    fun delete(id: Long)
 
 }

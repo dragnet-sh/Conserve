@@ -11,7 +11,7 @@ interface ZoneDao {
     fun get(id: Int): Maybe<ZoneLocalModel>
 
     @Query("SELECT * FROM Zone WHERE audit_id = :id")
-    fun getAllByAudit(id: Int): Maybe<List<ZoneLocalModel>>
+    fun getAllByAudit(id: Long): Maybe<List<ZoneLocalModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(zone: ZoneLocalModel)
@@ -23,6 +23,6 @@ interface ZoneDao {
     fun delete(id: Int)
 
     @Query("DELETE FROM Zone WHERE audit_id = :id")
-    fun deleteByAuditId(id: Int)
+    fun deleteByAuditId(id: Long)
 
 }

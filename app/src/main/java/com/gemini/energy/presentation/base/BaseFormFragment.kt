@@ -112,7 +112,7 @@ abstract class BaseFormFragment : DaggerFragment() {
     private fun getGFormElements() = getFormMapper().mapIdToElements(getModel())
 
     abstract fun resourceId(): Int?
-    abstract fun getAuditId(): Int?
+    abstract fun getAuditId(): Long?
     abstract fun getZoneId(): Int?
 
     abstract fun buildFeature(gElement: GElements, gFormElement: BaseFormElement<*>): Feature?

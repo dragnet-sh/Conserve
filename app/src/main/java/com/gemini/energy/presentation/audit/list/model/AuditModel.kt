@@ -6,7 +6,7 @@ import java.util.*
 
 @Parcelize
 data class AuditModel(
-        val id: Int,
+        val id: Long,
         val name: String,
         val createdAt: Date,
         val updateAt: Date

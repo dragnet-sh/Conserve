@@ -32,7 +32,7 @@ class ZoneListViewModel(context: Context,
     val empty = ObservableBoolean()
     val error = ObservableField<String>()
 
-    fun loadZoneList(auditId: Int) = addDisposable(getAll(auditId))
+    fun loadZoneList(auditId: Long) = addDisposable(getAll(auditId))
     fun deleteZone(zone: ZoneModel) = addDisposable(
             featureDeleteByZoneUseCase.execute(zone.id)
                     .subscribe {
@@ -40,7 +40,7 @@ class ZoneListViewModel(context: Context,
                                 .subscribe { delete(zone) }
                     })
 
-    private fun getAll(auditId: Int): Disposable {
+    private fun getAll(auditId: Long): Disposable {
         return zoneGetAllUseCase.execute(auditId)
                 .subscribeWith(object : DisposableObserver<List<Zone>>() {
 

@@ -12,7 +12,7 @@ data class Computable<SubType>(
         /**
          * Audit Section
          * */
-        var auditId: Int,
+        var auditId: Long,
         var auditName: String,
 
         /**
@@ -55,12 +55,12 @@ data class Computable<SubType>(
         var outgoingRows: OutgoingRows?) {
 
     constructor(): this(
-            NONE, EMPTY, NONE, EMPTY, NONE, EMPTY, null,
+            NONE.toLong(), EMPTY, NONE, EMPTY, NONE, EMPTY, null,
             null, null, null, false,
             null, mutableListOf(), mutableListOf(), null,
             0.0, null, null)
 
-    constructor(auditScopeSubType: SubType) : this(NONE, EMPTY, NONE, EMPTY, NONE, EMPTY,
+    constructor(auditScopeSubType: SubType) : this(NONE.toLong(), EMPTY, NONE, EMPTY, NONE, EMPTY,
             null, auditScopeSubType, null, null,
             false, null, mutableListOf(), mutableListOf(),
             null, 0.0, null, null)

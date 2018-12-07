@@ -17,9 +17,10 @@ data class ZoneLocalModel(
         var zoneId: Int?,
         var name: String,
         var type: String,
+        var usn: Int,
 
         @ColumnInfo(name = "audit_id")
-        var auditId: Int,
+        var auditId: Long,
 
         @ColumnInfo(name = "created_at")
         var createdAt: Date,

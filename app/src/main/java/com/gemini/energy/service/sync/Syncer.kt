@@ -76,6 +76,8 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                         val formIds = splitFields(it.asJsonObject.get("formId").asString)
                         val id = splitFields(it.asJsonObject.get("id").asString)
 
+                        val _auditId = auditId.toLong()
+
                         // *** Load Feature by Type to the Local DB
                         if (typeId != "null") {
                             if (col.featureType.containsKey(typeId.toInt())) {
@@ -91,17 +93,17 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                             } else {
                                 Timber.d("---------- Feature Type Fresh Entry -----------")
                                 for (i in 0 until formIds.count() - 1) {
-                                    val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo, dataTypes[i],
-                                            null, zoneId.toInt(), typeId.toInt(), fields[i], values[i], null, null,
-                                            Date(), Date())
+                                    val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
+                                            dataTypes[i], null, zoneId.toInt(), typeId.toInt(), fields[i],
+                                            values[i], null, null, Date(), Date())
                                     models.add(feature)
                                 }
                             }
                         }
 
                         if (typeId == "null") {
-                            if (col.featureAudit.containsKey(auditId.toInt())) {
-                                val localFeature = col.featureAudit[auditId.toInt()]
+                            if (col.featureAudit.containsKey(_auditId)) {
+                                val localFeature = col.featureAudit[_auditId]
                                 val lMod = localFeature?.map { it.updatedAt.time }?.max()
 
                                 Timber.d("Local Updated At (Feature - Audit)")
@@ -113,9 +115,9 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                             } else {
                                 Timber.d("---------- Feature Audit Fresh Entry -----------")
                                 for (i in 0 until formIds.count() - 1) {
-                                    val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo, dataTypes[i],
-                                        auditId.toInt(), null, null, fields[i], values[i], null, null,
-                                        Date(), Date())
+                                    val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
+                                            dataTypes[i], _auditId, null, null, fields[i],
+                                            values[i], null, null, Date(), Date())
                                     models.add(feature)
                                 }
                             }
@@ -155,11 +157,13 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                         Timber.d(zone.toString())
                         Timber.d(type.toString())
 
+                        val _auditId = auditId.toLong()
+
                         // 1. Audit Entry - To local DB
                         Timber.d("<<<< AUDIT >>>>")
                         val localAuditId = auditList.map { it.auditId }
-                        if (!localAuditId.contains(auditId.toInt())) {
-                            val model = AuditLocalModel(auditId.toInt(), name, usn, Date(), Date())
+                        if (!localAuditId.contains(_auditId)) {
+                            val model = AuditLocalModel(_auditId, name, usn, Date(), Date())
                             col.db?.auditDao()?.insert(model)
                         }
 
@@ -172,8 +176,8 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                             val iMod = inner.get("mod").asString
                             val iId = inner.get("id").asInt
 
-                            if (col.zone.containsKey(auditId.toInt())) {
-                                val zones = col.zone[auditId.toInt()]
+                            if (col.zone.containsKey(_auditId)) {
+                                val zones = col.zone[_auditId]
                                 zones?.let {
                                     val ids = it.map { it.zoneId }
                                     if (ids.contains(iId)) {
@@ -186,13 +190,13 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                                         Timber.d(iMod)
                                     } else {
                                         Timber.d("-------- Zone Fresh Entry ----------")
-                                        val model = ZoneLocalModel(iId, iName, "Sample Zone", auditId.toInt(), Date(), Date())
+                                        val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
                                         col.db?.zoneDao()?.insert(model)
                                     }
                                 }
                             } else {
                                 Timber.d("-------- Zone Fresh Entry ----------")
-                                val model = ZoneLocalModel(iId, iName, "Sample Zone", auditId.toInt(), Date(), Date())
+                                val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
                                 col.db?.zoneDao()?.insert(model)
                             }
                         }
@@ -209,8 +213,8 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                             val iId = inner.get("id").asInt
                             val iZoneId = inner.get("zoneId").asInt
 
-                            if (col.type.containsKey(auditId.toInt())) {
-                                val types = col.type[auditId.toInt()]
+                            if (col.type.containsKey(_auditId)) {
+                                val types = col.type[_auditId]
                                 types?.let {
                                     val ids = it.map { it.auditParentId }
                                     if (ids.contains(iId)) {
@@ -223,13 +227,13 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                                         Timber.d(iMod)
                                     } else {
                                         Timber.d("------------ Type Fresh Entry --------------------")
-                                        val model = TypeLocalModel(iId, iName, iType, iSubType, iZoneId, auditId.toInt(), Date(), Date())
+                                        val model = TypeLocalModel(iId, iName, iType, iSubType, iZoneId, _auditId, Date(), Date())
                                         col.db?.auditScopeDao()?.insert(model)
                                     }
                                 }
                             } else {
                                 Timber.d("------------ Type Fresh Entry --------------------")
-                                val model = TypeLocalModel(iId, iName, iType, iSubType, iZoneId, auditId.toInt(), Date(), Date())
+                                val model = TypeLocalModel(iId, iName, iType, iSubType, iZoneId, _auditId, Date(), Date())
                                 col.db?.auditScopeDao()?.insert(model)
                             }
                         }
@@ -281,7 +285,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
     /**
      * 2. Zone
      * */
-    private fun buildZone(auditId: Int): JsonObject {
+    private fun buildZone(auditId: Long): JsonObject {
 
         fun associatedTypes(zoneId: Int?): JsonArray {
             val outgoing = JsonArray()
@@ -320,7 +324,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
     /**
      * 3. Type
      * */
-    private fun buildType(auditId: Int): JsonObject {
+    private fun buildType(auditId: Long): JsonObject {
         val outgoing = JsonObject()
         if (col.type.containsKey(auditId)) {
             val type = col.type[auditId]
@@ -347,7 +351,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
     /**
      * 4. Feature
      * */
-    private fun buildFeature(auditId: Int): List<JsonObject> {
+    private fun buildFeature(auditId: Long): List<JsonObject> {
 
         fun joinFields(fields: List<String?>): String {
             val result = StringBuilder(128)
@@ -360,7 +364,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
             return result.toString()
         }
 
-        fun create(auditId: Int, model: List<FeatureLocalModel>): JsonObject {
+        fun create(auditId: Long, model: List<FeatureLocalModel>): JsonObject {
             val inner = JsonObject()
             inner.addProperty("usn", 0)
             inner.addProperty("auditId", auditId.toString())

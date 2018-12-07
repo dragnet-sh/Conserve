@@ -12,7 +12,7 @@ class AuditRepository(
         private val auditRemoteDataSource: AuditRemoteDataSource,
         private val auditMapper: AuditMapper) {
 
-    fun get(auditId: Int): Observable<AuditLocalModel> = auditLocalDataSource.get(auditId)
+    fun get(auditId: Long): Observable<AuditLocalModel> = auditLocalDataSource.get(auditId)
     fun getAll(): Observable<List<AuditLocalModel>> {
         return auditLocalDataSource.getAll()
                 .filter { !it.isEmpty() }
@@ -22,6 +22,6 @@ class AuditRepository(
     fun save(audit: Audit): Observable<Unit> = auditLocalDataSource.save(auditMapper.toLocal(audit))
     fun update(audit: Audit): Observable<Unit> = auditLocalDataSource.update(auditMapper.toLocal(audit))
 
-    fun delete(auditId: Int): Observable<Unit> = auditLocalDataSource.delete(auditId)
+    fun delete(auditId: Long): Observable<Unit> = auditLocalDataSource.delete(auditId)
 
 }

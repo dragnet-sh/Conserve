@@ -35,7 +35,7 @@ class PreAuditFragment : BaseFormFragment() {
         return R.raw.preaudit
     }
 
-    override fun getAuditId(): Int? {
+    override fun getAuditId(): Long? {
         return auditModel?.id
     }
 

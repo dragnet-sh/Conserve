@@ -13,7 +13,7 @@ class ZoneRepository(
         private val zoneMapper: ZoneMapper) {
 
     fun get(id: Int): Observable<ZoneLocalModel> = zoneLocalDataSource.get(id)
-    fun getAllByAudit(id: Int): Observable<List<ZoneLocalModel>> {
+    fun getAllByAudit(id: Long): Observable<List<ZoneLocalModel>> {
         return zoneLocalDataSource.getAllByAudit(id)
     }
 
@@ -21,6 +21,6 @@ class ZoneRepository(
     fun update(zone: Zone): Observable<Unit> = zoneLocalDataSource.update(zoneMapper.toLocal(zone))
 
     fun delete(id: Int): Observable<Unit> = zoneLocalDataSource.delete(id)
-    fun deleteByAuditId(id: Int): Observable<Unit> = zoneLocalDataSource.deleteByAuditId(id)
+    fun deleteByAuditId(id: Long): Observable<Unit> = zoneLocalDataSource.deleteByAuditId(id)
 
 }

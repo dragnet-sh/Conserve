@@ -27,15 +27,17 @@ class ZoneCreateViewModel(context: Context,
     private val _error = SingleLiveData<String>()
     val error = _error
 
-    fun createZone(auditId: Int, zoneTag: String) {
+    fun createZone(auditId: Long, zoneTag: String) {
         val date = Date()
-        addDisposable(save(Zone(null, zoneTag, "Sample Zone", auditId, date, date)))
+        addDisposable(save(Zone(null, zoneTag, "Sample Zone", -1, auditId, date, date)))
     }
 
     fun updateZone(zoneModel: ZoneModel, zoneTag: String) = addDisposable(
         zoneGetUseCase.execute(zoneModel.id)
                 .subscribe {
                     it.name = zoneTag
+                    it.usn = -1
+                    it.updatedAt = Date()
                     update(it)
                 })
 

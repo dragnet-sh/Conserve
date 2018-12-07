@@ -9,7 +9,7 @@ import java.util.*
 data class AuditLocalModel(
         @PrimaryKey
         @ColumnInfo(name = "id")
-        var auditId: Int,
+        var auditId: Long,
         var name: String,
         var usn: Int,
 

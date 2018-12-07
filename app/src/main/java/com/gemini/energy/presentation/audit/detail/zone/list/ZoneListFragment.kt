@@ -124,7 +124,7 @@ class ZoneListFragment : DaggerFragment(),
     }
 
     private fun setupArguments() {
-        val auditId = arguments?.getInt("auditId")
+        val auditId = arguments?.getLong("auditId")
         val position = arguments?.getInt("position")
 
         auditId?.let {
@@ -218,11 +218,11 @@ class ZoneListFragment : DaggerFragment(),
     * Static Content
     * */
     companion object {
-        fun newInstance(auditId: Int? = null, auditTag: String? = null, position: Int? = null): ZoneListFragment {
+        fun newInstance(auditId: Long? = null, auditTag: String? = null, position: Int? = null): ZoneListFragment {
             val fragment = ZoneListFragment()
 
             fragment.arguments = Bundle().apply {
-                auditId?.let {this.putInt("auditId", it)}
+                auditId?.let {this.putLong("auditId", it)}
                 auditTag?.let {this.putString("auditTag", it)}
                 position?.let { this.putInt("position", it) }
             }

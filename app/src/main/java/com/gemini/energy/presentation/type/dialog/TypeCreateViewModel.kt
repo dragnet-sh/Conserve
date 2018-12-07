@@ -31,7 +31,7 @@ class TypeCreateViewModel(context: Context,
     val error = _error
 
 
-    fun createZoneType(zoneId: Int, zoneType: String, zoneSubType: String?, zoneTypeTag: String, auditId: Int) {
+    fun createZoneType(zoneId: Int, zoneType: String, zoneSubType: String?, zoneTypeTag: String, auditId: Long) {
         val date = Date()
         addDisposable(save(Type(null, zoneTypeTag, zoneType, zoneSubType, zoneId, auditId, date, date)))
     }

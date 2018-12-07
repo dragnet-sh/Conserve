@@ -23,7 +23,7 @@ data class TypeLocalModel(
         var zoneId: Int?,
 
         @ColumnInfo(name = "audit_id")
-        var auditId: Int?,
+        var auditId: Long?,
 
         @ColumnInfo(name = "created_at")
         var createdAt: Date?,

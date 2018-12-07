@@ -6,9 +6,10 @@ data class Zone(
     val id: Int?,
     var name: String,
     val type: String,
+    var usn: Int,
 
-    val auditId: Int,
+    val auditId: Long,
 
     val createdAt: Date,
-    val updatedAt: Date
+    var updatedAt: Date
 )

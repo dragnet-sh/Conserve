@@ -21,9 +21,9 @@ class PreAuditGetViewModel(context: Context, private val featureGetAllUseCase: F
     val empty = ObservableBoolean()
     val error = ObservableField<String>()
 
-    fun loadFeature(auditId: Int) = addDisposable(getAll(auditId))
+    fun loadFeature(auditId: Long) = addDisposable(getAll(auditId))
 
-    private fun getAll(auditId: Int): Disposable {
+    private fun getAll(auditId: Long): Disposable {
         return featureGetAllUseCase.execute(auditId)
                 .subscribeWith(object : DisposableObserver<List<Feature>>() {
 

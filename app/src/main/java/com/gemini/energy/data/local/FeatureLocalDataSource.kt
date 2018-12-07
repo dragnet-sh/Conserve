@@ -6,7 +6,7 @@ import io.reactivex.Observable
 
 class FeatureLocalDataSource(private val featureDao: FeatureDao) {
 
-    fun getAllByAudit(id: Int): Observable<List<FeatureLocalModel>> = featureDao.getAllByAudit(id).toObservable()
+    fun getAllByAudit(id: Long): Observable<List<FeatureLocalModel>> = featureDao.getAllByAudit(id).toObservable()
     fun getAllByType(id: Int): Observable<List<FeatureLocalModel>> = featureDao.getAllByType(id).toObservable()
 
     fun save(feature: List<FeatureLocalModel>): Observable<Unit> = Observable.fromCallable {
@@ -21,7 +21,7 @@ class FeatureLocalDataSource(private val featureDao: FeatureDao) {
         featureDao.deleteByTypeId(id)
     }
 
-    fun deleteByAuditId(id: Int): Observable<Unit> = Observable.fromCallable {
+    fun deleteByAuditId(id: Long): Observable<Unit> = Observable.fromCallable {
         featureDao.deleteByAuditId(id)
     }
 

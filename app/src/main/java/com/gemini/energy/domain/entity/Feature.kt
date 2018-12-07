@@ -8,7 +8,7 @@ data class Feature (
         val belongsTo: String?,
         val dataType: String?,
 
-        val auditId: Int?,
+        val auditId: Long?,
         val zoneId: Int?,
         val typeId: Int?,
 

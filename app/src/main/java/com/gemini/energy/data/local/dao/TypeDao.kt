@@ -15,7 +15,7 @@ interface TypeDao {
     fun getAllTypeByZone(id: Int, type: String): Maybe<List<TypeLocalModel>>
 
     @Query("SELECT * FROM AuditZoneType WHERE audit_id = :id")
-    fun getAllTypeByAudit(id: Int): Maybe<List<TypeLocalModel>>
+    fun getAllTypeByAudit(id: Long): Maybe<List<TypeLocalModel>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(auditScope: TypeLocalModel)
@@ -30,6 +30,6 @@ interface TypeDao {
     fun deleteByZoneId(id: Int)
 
     @Query("DELETE FROM AuditZoneType WHERE audit_id = :id")
-    fun deleteByAuditId(id: Int)
+    fun deleteByAuditId(id: Long)
 
 }

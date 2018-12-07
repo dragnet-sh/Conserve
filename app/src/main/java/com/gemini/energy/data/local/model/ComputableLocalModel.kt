@@ -1,7 +1,7 @@
 package com.gemini.energy.data.local.model
 
 data class ComputableLocalModel(
-        var auditId: Int,
+        var auditId: Long,
         var auditName: String,
         var zoneId: Int,
         var zoneName: String,

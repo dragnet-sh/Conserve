@@ -13,7 +13,7 @@ class TypeLocalDataSource(
     fun getAllTypeByZone(id: Int, type: String): Observable<List<TypeLocalModel>> =
             auditZoneTypeDao.getAllTypeByZone(id, type).toObservable()
 
-    fun getAllTypeByAudit(id: Int): Observable<List<TypeLocalModel>> =
+    fun getAllTypeByAudit(id: Long): Observable<List<TypeLocalModel>> =
             auditZoneTypeDao.getAllTypeByAudit(id).toObservable()
 
     fun save(auditZoneType: TypeLocalModel): Observable<Unit> = Observable.fromCallable {
@@ -32,7 +32,7 @@ class TypeLocalDataSource(
         auditZoneTypeDao.deleteByZoneId(id)
     }
 
-    fun deleteByAuditId(id: Int): Observable<Unit> = Observable.fromCallable {
+    fun deleteByAuditId(id: Long): Observable<Unit> = Observable.fromCallable {
         auditZoneTypeDao.deleteByAuditId(id)
     }
 

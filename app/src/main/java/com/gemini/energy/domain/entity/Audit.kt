@@ -2,7 +2,7 @@ package com.gemini.energy.domain.entity
 import java.util.*
 
 data class Audit(
-        val id: Int,
+        val id: Long,
         var name: String,
         var usn: Int,
         var createdAt: Date,

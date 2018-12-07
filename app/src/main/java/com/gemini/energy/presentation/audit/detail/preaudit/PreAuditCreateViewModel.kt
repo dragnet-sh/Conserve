@@ -25,7 +25,7 @@ class PreAuditCreateViewModel(context: Context,
     private val _error = SingleLiveData<String>()
     val error = _error
 
-    fun createFeature(feature: List<Feature>, auditId: Int) {
+    fun createFeature(feature: List<Feature>, auditId: Long) {
         addDisposable(
                 featureListUseCase.execute(auditId)
                         .subscribe {

@@ -85,7 +85,7 @@ class FeatureDataFragment : BaseFormFragment() {
         private const val belongsTo = "type"
     }
 
-    override fun getAuditId(): Int? {
+    override fun getAuditId(): Long? {
         return null
     }
 
