@@ -14,6 +14,7 @@ class FeatureMapper {
                     it.formId,
                     it.belongsTo,
                     it.dataType,
+                    it.usn,
 
                     it.auditId,
                     it.zoneId,

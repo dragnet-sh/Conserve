@@ -23,6 +23,7 @@ data class FeatureLocalModel(
         @ColumnInfo(name = "data_type")
         var dataType: String?,
 
+        var usn: Int,
 
         @ColumnInfo(name = "audit_id")
         var auditId: Long?,

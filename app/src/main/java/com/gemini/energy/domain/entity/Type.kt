@@ -7,10 +7,11 @@ data class Type(
     var name: String?,
     val type: String?,
     var subType: String?,
+    var usn: Int,
 
     val zoneId: Int?,
     val auditId: Long?,
 
     val createdAt: Date?,
-    val updatedAt: Date?
+    var updatedAt: Date?
 )

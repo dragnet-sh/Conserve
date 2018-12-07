@@ -72,7 +72,7 @@ class PreAuditFragment : BaseFormFragment() {
         var feature: Feature? = null
         val date = Date()
         auditModel?.let {
-            feature = Feature(null, gElement.id, BELONGS_TO, gElement.dataType,
+            feature = Feature(null, gElement.id, BELONGS_TO, gElement.dataType, -1,
                     it.id, null, null, gElement.param, gFormElement.valueAsString,
                     null, null, date, date)
         }

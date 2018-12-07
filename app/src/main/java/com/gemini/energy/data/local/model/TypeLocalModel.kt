@@ -18,6 +18,7 @@ data class TypeLocalModel(
         var name: String?,
         var type: String?,
         var subType: String?,
+        var usn: Int,
 
         @ColumnInfo(name="zone_id")
         var zoneId: Int?,

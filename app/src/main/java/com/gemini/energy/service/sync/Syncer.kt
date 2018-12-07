@@ -94,7 +94,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                                 Timber.d("---------- Feature Type Fresh Entry -----------")
                                 for (i in 0 until formIds.count() - 1) {
                                     val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
-                                            dataTypes[i], null, zoneId.toInt(), typeId.toInt(), fields[i],
+                                            dataTypes[i], usn,null, zoneId.toInt(), typeId.toInt(), fields[i],
                                             values[i], null, null, Date(), Date())
                                     models.add(feature)
                                 }
@@ -116,7 +116,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                                 Timber.d("---------- Feature Audit Fresh Entry -----------")
                                 for (i in 0 until formIds.count() - 1) {
                                     val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
-                                            dataTypes[i], _auditId, null, null, fields[i],
+                                            dataTypes[i], usn, _auditId, null, null, fields[i],
                                             values[i], null, null, Date(), Date())
                                     models.add(feature)
                                 }
@@ -227,13 +227,13 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                                         Timber.d(iMod)
                                     } else {
                                         Timber.d("------------ Type Fresh Entry --------------------")
-                                        val model = TypeLocalModel(iId, iName, iType, iSubType, iZoneId, _auditId, Date(), Date())
+                                        val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
                                         col.db?.auditScopeDao()?.insert(model)
                                     }
                                 }
                             } else {
                                 Timber.d("------------ Type Fresh Entry --------------------")
-                                val model = TypeLocalModel(iId, iName, iType, iSubType, iZoneId, _auditId, Date(), Date())
+                                val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
                                 col.db?.auditScopeDao()?.insert(model)
                             }
                         }

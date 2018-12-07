@@ -33,13 +33,15 @@ class TypeCreateViewModel(context: Context,
 
     fun createZoneType(zoneId: Int, zoneType: String, zoneSubType: String?, zoneTypeTag: String, auditId: Long) {
         val date = Date()
-        addDisposable(save(Type(null, zoneTypeTag, zoneType, zoneSubType, zoneId, auditId, date, date)))
+        addDisposable(save(Type(null, zoneTypeTag, zoneType, zoneSubType, -1, zoneId, auditId, date, date)))
     }
 
     fun updateZoneType(type: TypeModel, scopeName: String) = addDisposable(
             zoneTypeGetUseCase.execute(type.id)
                     .subscribe{
                         it.name = scopeName
+                        it.usn = -1
+                        it.updatedAt = Date()
                         update(it)
                     }
     )

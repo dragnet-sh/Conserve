@@ -33,6 +33,7 @@ class SystemMapper {
             auditScopeParent.name,
             auditScopeParent.type,
             auditScopeParent.subType,
+            auditScopeParent.usn,
 
             auditScopeParent.zoneId,
             auditScopeParent.auditId,
@@ -50,6 +51,7 @@ class SystemMapper {
                 feature.formId,
                 feature.belongsTo,
                 feature.dataType,
+                feature.usn,
 
                 feature.auditId,
                 feature.zoneId,

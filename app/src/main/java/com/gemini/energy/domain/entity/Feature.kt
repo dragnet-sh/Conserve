@@ -7,6 +7,7 @@ data class Feature (
         val formId: Int?,
         val belongsTo: String?,
         val dataType: String?,
+        var usn: Int,
 
         val auditId: Long?,
         val zoneId: Int?,

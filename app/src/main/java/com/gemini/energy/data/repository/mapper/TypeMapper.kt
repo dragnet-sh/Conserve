@@ -11,6 +11,7 @@ class TypeMapper {
                 auditScope.name,
                 auditScope.type,
                 auditScope.subType,
+                auditScope.usn,
 
                 auditScope.zoneId,
                 auditScope.auditId,
