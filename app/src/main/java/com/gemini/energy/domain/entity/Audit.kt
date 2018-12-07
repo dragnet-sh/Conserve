@@ -5,6 +5,7 @@ data class Audit(
         val id: Long,
         var name: String,
         var usn: Int,
+        var objectId: String,
         var createdAt: Date,
         var updatedAt: Date
 )

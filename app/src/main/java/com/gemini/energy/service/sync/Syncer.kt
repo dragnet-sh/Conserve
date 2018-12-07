@@ -24,6 +24,8 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
     private val featureTaskHolder: MutableList<Observable<JsonObject>> = mutableListOf()
 
     private val auditList: MutableList<AuditLocalModel> = mutableListOf()
+    private val zoneList: MutableList<ZoneLocalModel> = mutableListOf()
+    private val typeList: MutableList<TypeLocalModel> = mutableListOf()
 
     fun sync() {
 
@@ -42,7 +44,8 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
         Timber.d("<< SYNC >>")
         Timber.d(col.audit.toString())
 
-        download()
+        prepare()
+        uploadAudit()
 
     }
 
@@ -140,6 +143,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                         var auditId = ""
                         var name = ""
                         var usn = -99
+                        var objectId = ""
                         var zone: JsonObject? = null
                         var type: JsonObject? = null
 
@@ -147,6 +151,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                             auditId = it.asJsonObject.get("auditId").asString
                             name = it.asJsonObject.get("name").asString
                             usn = it.asJsonObject.get("usn").asInt
+                            objectId = it.asJsonObject.get("objectId").asString
 
                             zone = it.asJsonObject.get("zone").asJsonObject
                             type = it.asJsonObject.get("type").asJsonObject
@@ -163,7 +168,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                         Timber.d("<<<< AUDIT >>>>")
                         val localAuditId = auditList.map { it.auditId }
                         if (!localAuditId.contains(_auditId)) {
-                            val model = AuditLocalModel(_auditId, name, usn, Date(), Date())
+                            val model = AuditLocalModel(_auditId, name, usn, objectId, Date(), Date())
                             col.db?.auditDao()?.insert(model)
                         }
 
@@ -250,11 +255,72 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
+                    val objectId = it.get("objectId").asString
+                    val query = JSONObject().put("objectId", objectId)
+                    parseAPIService.fetchAudit(query.toString()).toObservable()
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({
 
-                    Timber.d(it.toString())
+                                val rAudit = it.getAsJsonArray("results")
+                                rAudit.forEach {
+                                    val auditId = it.asJsonObject.get("auditId").asString
+                                    val usn = it.asJsonObject.get("usn").asInt
+
+                                    Timber.d("OBJECT ID -- $objectId")
+                                    Timber.d("AUDIT ID -- $auditId")
+                                    Timber.d("USN -- $usn")
+
+                                    auditList.forEach {
+                                        if (it.auditId == auditId.toLong()) {
+                                            it.objectId = objectId
+                                            it.usn = usn
+                                            col.db?.auditDao()?.update(it)
+                                        }
+                                    }
+                                }
+
+                            }, { it.printStackTrace() }, {})
 
 
-                }, { it.printStackTrace() }, { Timber.d("Complete - Audit Upload") })
+                }, { it.printStackTrace() }, {
+
+                    Timber.d("Complete - Audit Upload")
+                    auditList.forEach {
+                        val query = JSONObject().put("auditId", it.auditId.toString())
+                        parseAPIService.fetchAudit(query.toString()).toObservable()
+                                .subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe({
+
+                                    val rAudit = it.getAsJsonArray("results")
+
+                                    Timber.d("<<< Clean Up - Audit [{${rAudit.count()}}]>>")
+                                    Timber.d(rAudit.toString())
+
+                                    if (rAudit.count() > 1) {
+
+                                        val maxUSN = rAudit.map {
+                                            it.asJsonObject.get("usn").asInt
+                                        }.max()
+
+                                        val clean = rAudit.filter { maxUSN != it.asJsonObject.get("usn").asInt }
+                                        clean.forEach {
+                                            val objectId = it.asJsonObject.get("objectId").asString
+                                            Timber.d("Clean - [$objectId]")
+                                            parseAPIService.deleteAudit(objectId).toObservable()
+                                                    .subscribeOn(Schedulers.io())
+                                                    .observeOn(AndroidSchedulers.mainThread())
+                                                    .subscribe({ Timber.d(it.toString()) }, { it.printStackTrace() }, {})
+                                        }
+
+                                    }
+
+                                }, { it.printStackTrace() }, {})
+                    }
+
+
+                })
     }
     private fun uploadFeature() {
         featureTaskHolder.merge()
@@ -306,8 +372,10 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
             zone?.let {
                 it.forEach {
 
+                    zoneList.add(it)
+
                     val inner = JsonObject()
-                    inner.addProperty("usn", 0)
+                    inner.addProperty("usn", ++it.usn)
                     inner.addProperty("name", it.name)
                     inner.add("typeId", associatedTypes(it.zoneId))
                     inner.addProperty("mod", Date().time)
@@ -331,8 +399,10 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
             type?.let {
                 it.forEach {
 
+                    typeList.add(it)
+
                     val inner = JsonObject()
-                    inner.addProperty("usn", 0)
+                    inner.addProperty("usn", ++it.usn)
                     inner.addProperty("name", it.name)
                     inner.addProperty("type", it.type)
                     inner.addProperty("subtype", it.subType)

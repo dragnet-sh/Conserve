@@ -12,6 +12,7 @@ class SystemMapper {
             type.auditId,
             type.name,
             type.usn,
+            type.objectId,
             type.createdAt,
             type.updatedAt
     )

@@ -31,6 +31,9 @@ class ParseAPI {
         @PUT("classes/rAudit")
         fun updateAudit(): Single<JsonObject>
 
+        @DELETE("classes/rAudit/{objectId}")
+        fun deleteAudit(@Path("objectId") objectId: String): Single<JsonObject>
+
         @GET("classes/rAudit")
         fun fetchAudit(@Query("where") where: String): Single<JsonObject>
 
