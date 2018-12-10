@@ -6,14 +6,13 @@ import android.databinding.ObservableArrayList
 import android.databinding.ObservableBoolean
 import android.databinding.ObservableField
 import com.gemini.energy.R
+import com.gemini.energy.data.local.model.GraveLocalModel
 import com.gemini.energy.domain.entity.Zone
-import com.gemini.energy.domain.interactor.FeatureDeleteByZoneUseCase
-import com.gemini.energy.domain.interactor.ZoneDeleteUseCase
-import com.gemini.energy.domain.interactor.ZoneGetAllUseCase
-import com.gemini.energy.domain.interactor.ZoneTypeDeleteByZoneUseCase
+import com.gemini.energy.domain.interactor.*
 import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.presentation.audit.detail.zone.list.mapper.ZoneMapper
 import com.gemini.energy.presentation.audit.detail.zone.list.model.ZoneModel
+import com.gemini.energy.presentation.util.Utils
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import timber.log.Timber
@@ -22,7 +21,8 @@ class ZoneListViewModel(context: Context,
                         private val zoneGetAllUseCase: ZoneGetAllUseCase,
                         private val zoneDeleteUseCase: ZoneDeleteUseCase,
                         private val zoneTypeDeleteByZoneUseCase: ZoneTypeDeleteByZoneUseCase,
-                        private val featureDeleteByZoneUseCase: FeatureDeleteByZoneUseCase) :
+                        private val featureDeleteByZoneUseCase: FeatureDeleteByZoneUseCase,
+                        private val gravesSaveUseCase: GravesSaveUseCase) :
         BaseAndroidViewModel(context.applicationContext as Application) {
 
     private val mapper = ZoneMapper(context)
@@ -70,12 +70,18 @@ class ZoneListViewModel(context: Context,
     private fun delete(zone: ZoneModel): Disposable {
         return zoneDeleteUseCase.execute(zone.id!!)
                 .subscribeWith(object : DisposableObserver<Unit>() {
-                    override fun onComplete() { Timber.d("!! ON COMPLETE !!")}
+                    override fun onComplete() {
+                        Timber.d("!! ON COMPLETE !!")
+                        gravesSaveUseCase.execute(GraveLocalModel(Utils.intNow(), -1, zone.id.toLong(),1))
+                                .subscribe { Timber.d("Zone to Graves") }
+                    }
+
                     override fun onNext(t: Unit) {
                         Timber.d("[[ ON NEXT :: ZONE DELETE ]]")
                         Timber.d("<< REFRESHING LIST -- NOW >>")
                         getAll(zone.auditId)
                     }
+
                     override fun onError(e: Throwable) {
                         e.printStackTrace()
                     }

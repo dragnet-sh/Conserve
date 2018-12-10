@@ -21,7 +21,7 @@ import com.gemini.energy.data.local.util.Converters
 
         ],
 
-        version = 20, exportSchema = false)
+        version = 23, exportSchema = false)
 @TypeConverters(Converters::class)
 
 abstract class AuditDatabase : RoomDatabase() {

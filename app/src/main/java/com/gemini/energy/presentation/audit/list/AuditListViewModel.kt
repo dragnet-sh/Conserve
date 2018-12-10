@@ -14,6 +14,7 @@ import com.gemini.energy.domain.interactor.*
 import com.gemini.energy.internal.util.BaseAndroidViewModel
 import com.gemini.energy.presentation.audit.list.mapper.AuditMapper
 import com.gemini.energy.presentation.audit.list.model.AuditModel
+import com.gemini.energy.presentation.util.Utils
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
@@ -104,7 +105,7 @@ class AuditListViewModel(context: Context,
                     override fun onComplete() {
                         Timber.d("!! ON COMPLETE !!")
                         Toast.makeText(context, "Audit Delete Completed.", Toast.LENGTH_SHORT).show()
-                        gravesSaveUseCase.execute(GraveLocalModel(-1, audit.id, 0))
+                        gravesSaveUseCase.execute(GraveLocalModel(Utils.intNow(),-1, audit.id, 0))
                                 .subscribe { Timber.d("Audit to Graves") }
                     }
 

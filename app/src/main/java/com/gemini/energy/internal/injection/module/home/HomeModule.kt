@@ -375,14 +375,16 @@ internal abstract class HomeModule {
 
                         modelClass.isAssignableFrom(ZoneListViewModel::class.java) ->
                             ZoneListViewModel(context, zoneGetAllUseCase, zoneDeleteUseCase,
-                                    zoneTypeDeleteByZoneUseCase, featureDeleteByZoneUseCase) as T
+                                    zoneTypeDeleteByZoneUseCase, featureDeleteByZoneUseCase,
+                                    gravesSaveUseCase) as T
 
                         modelClass.isAssignableFrom(ZoneCreateViewModel::class.java) ->
                             ZoneCreateViewModel(context, zoneSaveUseCase, zoneGetUseCase, zoneUpdateUseCase) as T
 
                         modelClass.isAssignableFrom(TypeListViewModel::class.java) ->
                             TypeListViewModel(context, zoneTypeGetAllUseCase,
-                                    featureGetAllByTypeUseCase, featureDeleteUseCase, zoneTypeDeleteUseCase) as T
+                                    featureGetAllByTypeUseCase, featureDeleteUseCase, zoneTypeDeleteUseCase,
+                                    gravesSaveUseCase) as T
 
                         modelClass.isAssignableFrom(TypeCreateViewModel::class.java) ->
                             TypeCreateViewModel(context, zoneTypeSaveUseCase,
