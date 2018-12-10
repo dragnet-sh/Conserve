@@ -1,14 +1,8 @@
 package com.gemini.energy.service.sync
 
 import com.gemini.energy.App
-import com.gemini.energy.data.local.dao.AuditDao
-import com.gemini.energy.data.local.dao.FeatureDao
-import com.gemini.energy.data.local.dao.TypeDao
-import com.gemini.energy.data.local.dao.ZoneDao
-import com.gemini.energy.data.local.model.AuditLocalModel
-import com.gemini.energy.data.local.model.FeatureLocalModel
-import com.gemini.energy.data.local.model.TypeLocalModel
-import com.gemini.energy.data.local.model.ZoneLocalModel
+import com.gemini.energy.data.local.dao.*
+import com.gemini.energy.data.local.model.*
 import com.gemini.energy.data.local.system.AuditDatabase
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -36,10 +30,15 @@ class Collection(private val mListener: Listener?) {
     private var typeIds: MutableList<Int?> = mutableListOf()
     var typeIdsByAudit: MutableMap<Long, List<Int?>> = hashMapOf()
 
+    var graveAudit: MutableList<GraveLocalModel> = mutableListOf()
+    var graveZone: MutableList<GraveLocalModel> = mutableListOf()
+    var graveType: MutableList<GraveLocalModel> = mutableListOf()
+
     private var auditDAO: AuditDao? = null
     private var zoneDao: ZoneDao? = null
     private var typeDao: TypeDao? = null
     private var featureDao: FeatureDao? = null
+    private var gravesDao: GravesDao? = null
 
     private fun load() = audit()?.subscribe({ audit = it }, { it.printStackTrace() }, { zone() })
 
@@ -141,7 +140,25 @@ class Collection(private val mListener: Listener?) {
     }
 
     private fun complete() {
-        mListener?.onPostExecute(this)
+
+        val grave = gravesDao?.getAll()?.toObservable()
+        grave?.subscribe({
+
+            it.forEach {
+                when {
+                    it.type == 0 -> graveAudit.add(it)
+                    it.type == 1 -> graveZone.add(it)
+                    it.type == 2 -> graveType.add(it)
+                }
+            }
+
+        }, { it.printStackTrace() }, {
+
+            mListener?.onPostExecute(this)
+
+        })
+
+
     }
 
     override fun toString(): String {
@@ -159,6 +176,7 @@ class Collection(private val mListener: Listener?) {
         zoneDao = db?.zoneDao()
         typeDao = db?.auditScopeDao()
         featureDao = db?.featureDao()
+        gravesDao = db?.gravesDao()
 
         load()
     }

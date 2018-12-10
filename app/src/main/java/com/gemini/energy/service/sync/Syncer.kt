@@ -43,6 +43,10 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
         }
     }
 
+    private fun updateGraves() {
+        //ToDo - Update the Graves Table so that all the items have +1
+    }
+
     /**
      * DOWNLOAD - MAIN
      * */
@@ -60,7 +64,10 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
     }
 
     private fun download() {
-        val query = JSONObject().put("usn", 1)
+
+        val toDeleteAudit: List<Long> = col.graveAudit.map { it.oid }
+        val toDeleteZone: List<Int> = col.graveZone.map { it.oid.toInt() }
+        val toDeleteType: List<Int> = col.graveType.map { it.oid.toInt() }
 
         fun splitFields(fields: String): List<String> {
             return fields.split("\\x1f".toRegex())
@@ -107,11 +114,14 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                                 } else {
                                     Timber.d("---------- Feature Type Fresh Entry -----------")
-                                    for (i in 0 until formIds.count() - 1) {
-                                        val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
-                                                dataTypes[i], usn, null, zoneId.toInt(), typeId.toInt(), fields[i],
-                                                values[i], null, null, Date(), Date())
-                                        models.add(feature)
+                                    if (toDeleteType.contains(typeId.toInt())) { /*DO NOTHING*/ }
+                                    else {
+                                        for (i in 0 until formIds.count() - 1) {
+                                            val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
+                                                    dataTypes[i], usn, null, zoneId.toInt(), typeId.toInt(), fields[i],
+                                                    values[i], null, null, Date(), Date())
+                                            models.add(feature)
+                                        }
                                     }
                                 }
                             }
@@ -129,11 +139,14 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                                 } else {
                                     Timber.d("---------- Feature Audit Fresh Entry -----------")
-                                    for (i in 0 until formIds.count() - 1) {
-                                        val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
-                                                dataTypes[i], usn, _auditId, null, null, fields[i],
-                                                values[i], null, null, Date(), Date())
-                                        models.add(feature)
+                                    if (toDeleteAudit.contains(_auditId)) { /*DO NOTHING*/ }
+                                    else {
+                                        for (i in 0 until formIds.count() - 1) {
+                                            val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
+                                                    dataTypes[i], usn, _auditId, null, null, fields[i],
+                                                    values[i], null, null, Date(), Date())
+                                            models.add(feature)
+                                        }
                                     }
                                 }
                             }
@@ -188,7 +201,8 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                             val localAuditId = auditList.map { it.auditId }
                             if (!localAuditId.contains(_auditId)) {
                                 val model = AuditLocalModel(_auditId, name, usn, objectId, Date(), Date())
-                                col.db?.auditDao()?.insert(model)
+                                if (toDeleteAudit.contains(_auditId)) { /*DO NOTHING*/ }
+                                else { col.db?.auditDao()?.insert(model) }
                             }
 
                             // 2. Zone Entry - To local DB
@@ -215,13 +229,15 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                                         } else {
                                             Timber.d("-------- Zone Fresh Entry ----------")
                                             val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
-                                            col.db?.zoneDao()?.insert(model)
+                                            if (toDeleteZone.contains(iId)) { /*DO NOTHING*/ }
+                                            else {col.db?.zoneDao()?.insert(model) }
                                         }
                                     }
                                 } else {
                                     Timber.d("-------- Zone Fresh Entry ----------")
                                     val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
-                                    col.db?.zoneDao()?.insert(model)
+                                    if (toDeleteZone.contains(iId)) { /*DO NOTHING*/ }
+                                    else {col.db?.zoneDao()?.insert(model) }
                                 }
                             }
 
@@ -252,13 +268,15 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                                         } else {
                                             Timber.d("------------ Type Fresh Entry --------------------")
                                             val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
-                                            col.db?.auditScopeDao()?.insert(model)
+                                            if (toDeleteType.contains(iId)) { /*DO NOTHING*/ }
+                                            else {col.db?.auditScopeDao()?.insert(model)}
                                         }
                                     }
                                 } else {
                                     Timber.d("------------ Type Fresh Entry --------------------")
                                     val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
-                                    col.db?.auditScopeDao()?.insert(model)
+                                    if (toDeleteType.contains(iId)) { /*DO NOTHING*/ }
+                                    else {col.db?.auditScopeDao()?.insert(model)}
                                 }
                             }
 
@@ -365,7 +383,7 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ Timber.d(it.toString()) }, { it.printStackTrace() },
-                        { Timber.d("Complete - Feature Upload"); mListener?.onPostExecute() })
+                        { Timber.d("Complete - Feature Upload"); mListener?.onPostExecute(); updateGraves() })
 
         }
 

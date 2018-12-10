@@ -11,11 +11,11 @@ class GravesLocalDataSource(private val gravesDao: GravesDao) {
     }
 
     fun update(oid: Int, usn: Int): Observable<Unit> = Observable.fromCallable {
-        gravesDao.update(oid, usn)
+        gravesDao.update(oid.toLong(), usn)
     }
 
     fun delete(oid: Int): Observable<Unit> = Observable.fromCallable {
-        gravesDao.delete(oid)
+        gravesDao.delete(oid.toLong())
     }
 
 }

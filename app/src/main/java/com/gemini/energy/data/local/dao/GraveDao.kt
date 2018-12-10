@@ -16,10 +16,13 @@ interface GravesDao {
     @Query("SELECT * FROM Graves WHERE type = :type")
     fun get(type: Int): Maybe<GraveLocalModel>
 
-    @Query("DELETE FROM Graves WHERE oid = :oid")
-    fun delete(oid: Int)
+    @Query("SELECT * FROM Graves WHERE usn = -1")
+    fun getAll(): Maybe<List<GraveLocalModel>>
 
-    @Query("UPDATE Graves SET usn = :usn WHERE oid = :oid")
-    fun update(oid: Int, usn: Int)
+    @Query("DELETE FROM Graves WHERE id = :id")
+    fun delete(id: Long)
+
+    @Query("UPDATE Graves SET usn = :usn WHERE id = :id")
+    fun update(id: Long, usn: Int)
 
 }
