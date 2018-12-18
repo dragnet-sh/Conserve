@@ -62,7 +62,7 @@ class LinearFluorescent(private val computable: Computable<*>, utilityRateGas: U
 
             alternateActualWatts = featureData["Alternate Actual Watts"]!! as Double
             alternateNumberOfFixtures = featureData["Alternate Number of Fixtures"]!! as Int
-            alternateLampsPerFixture = featureData["Alternate Lamps Per Fixtures"]!! as Int
+            alternateLampsPerFixture = featureData["Alternate Lamps Per Fixture"]!! as Int
             alternateLifeHours = featureData["Alternate Life Hours"]!! as Int
 
         } catch (e: Exception) {

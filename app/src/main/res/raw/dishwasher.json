@@ -131,7 +131,7 @@
         {
           "index": 21,
           "hint": "",
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Peak Hours",
           "validation": "optional",
@@ -140,7 +140,7 @@
         {
           "index": 22,
           "hint": "",
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Part Peak Hours",
           "validation": "optional",
@@ -149,7 +149,7 @@
         {
           "index": 23,
           "hint": "",
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Off Peak Hours",
           "validation": "mandatory",
@@ -165,7 +165,7 @@
         {
           "index": 31,
           "hint": "",
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Suggested Peak Hours",
           "validation": "optional",
@@ -174,7 +174,7 @@
         {
           "index": 32,
           "hint": "",
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Suggested Part Peak Hours",
           "validation": "optional",
@@ -183,7 +183,7 @@
         {
           "index": 33,
           "hint": "",
-          "dataType": "introw",
+          "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Suggested Off Peak Hours",
           "validation": "optional",

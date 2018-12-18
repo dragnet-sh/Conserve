@@ -9,15 +9,15 @@
           "dataType": "introw",
           "defaultValues": "",
           "param": "Measured Lux",
-          "validation": "",
+          "validation": "mandatory",
           "id": "11"
         },
         {
           "index": 12,
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Area",
-          "validation": "",
+          "param": "Area (Sq. Ft.)",
+          "validation": "mandatory",
           "id": "12"
         },
         {
@@ -25,7 +25,7 @@
           "dataType": "pickerinputrow",
           "defaultValues": "1:LED,2:flourescent,3:halogen,4:high pressure sodium,5:incandescent,6:pulse start metal halide,7:metal halide,8:mercury vapor,9:compact fluorescent,10:halogen incandescent,11:EXIT (Compact Flourescent),12:EXIT (Incandescent),13:EXIT (LED)",
           "param": "Lamp type",
-          "validation": "",
+          "validation": "mandatory",
           "id": "13"
         },
         {
@@ -37,19 +37,11 @@
           "id": "14"
         },
         {
-          "index": 15,
-          "dataType": "introw",
-          "defaultValues": "",
-          "param": "Lamps Per Fixture",
-          "validation": "",
-          "id": "15"
-        },
-        {
           "index": 16,
           "dataType": "introw",
           "defaultValues": "",
           "param": "Number of Fixtures",
-          "validation": "",
+          "validation": "mandatory",
           "id": "16"
         },
         {
@@ -57,7 +49,7 @@
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Make",
-          "validation": "",
+          "validation": "mandatory",
           "id": "17"
         },
         {
@@ -65,7 +57,7 @@
           "dataType": "textrow",
           "defaultValues": "",
           "param": "Model Number",
-          "validation": "",
+          "validation": "mandatory",
           "id": "18"
         }
       ],
@@ -80,7 +72,7 @@
           "dataType": "pickerinputrow",
           "defaultValues": "1:Yes,2:No",
           "param": "Controls",
-          "validation": "",
+          "validation": "mandatory",
           "id": "21"
         },
         {
@@ -111,7 +103,7 @@
           "dataType": "decimalrow",
           "defaultValues": "",
           "param": "Nominal Watts",
-          "validation": "",
+          "validation": "mandatory",
           "id": "31"
         },
         {
@@ -181,150 +173,121 @@
           "dataType": "introw",
           "defaultValues": "",
           "param": "Off Peak Hours",
-          "validation": "",
+          "validation": "mandatory",
           "id": "53"
-        },
-        {
-          "index": 54,
-          "dataType": "pickerinputrow",
-          "defaultValues": "1:Yes,2:No",
-          "param": "Security Use",
-          "validation": "",
-          "id": "54"
-        },
-        {
-          "index": 55,
-          "dataType": "pickerinputrow",
-          "defaultValues": "1:Yes,2:No",
-          "param": "Used During Peak",
-          "validation": "",
-          "id": "55"
         }
       ],
       "id": "5"
     },
     {
       "index": 6,
-      "section": "Operating Hours",
+      "section": "Suggested Alternative",
       "elements": [
         {
           "index": 61,
+          "hint": "",
           "dataType": "textrow",
           "defaultValues": "",
-          "param": "Monday Operating Hours",
-          "validation": "",
+          "param": "Alternate Lamp Type",
+          "validation": "optional",
           "id": "61"
         },
         {
           "index": 62,
-          "dataType": "textrow",
+          "hint": "",
+          "dataType": "introw",
           "defaultValues": "",
-          "param": "Tuesday Operating Hours",
-          "validation": "",
+          "param": "Alternate Lamps Per Fixture",
+          "validation": "optional",
           "id": "62"
         },
         {
           "index": 63,
-          "dataType": "textrow",
+          "hint": "",
+          "dataType": "introw",
           "defaultValues": "",
-          "param": "Wednesday Operating Hours",
-          "validation": "",
+          "param": "Alternate Ballasts Per Fixture",
+          "validation": "optional",
           "id": "63"
         },
         {
           "index": 64,
-          "dataType": "textrow",
+          "hint": "",
+          "dataType": "introw",
           "defaultValues": "",
-          "param": "Thursday Operating Hours",
-          "validation": "",
+          "param": "Alternate Number of Fixtures",
+          "validation": "optional",
           "id": "64"
         },
         {
           "index": 65,
+          "hint": "",
           "dataType": "textrow",
           "defaultValues": "",
-          "param": "Friday Operating Hours",
-          "validation": "",
+          "param": "Alternate Make",
+          "validation": "optional",
           "id": "65"
         },
         {
           "index": 66,
+          "hint": "",
           "dataType": "textrow",
           "defaultValues": "",
-          "param": "Saturday Operating Hours",
-          "validation": "",
+          "param": "Alternate Model Number",
+          "validation": "optional",
           "id": "66"
         },
         {
           "index": 67,
-          "dataType": "textrow",
+          "hint": "",
+          "dataType": "decimalrow",
           "defaultValues": "",
-          "param": "Sunday Operating Hours",
-          "validation": "",
+          "param": "Alternate Actual Watts",
+          "validation": "optional",
           "id": "67"
+        },
+        {
+          "index": 68,
+          "hint": "",
+          "dataType": "introw",
+          "defaultValues": "",
+          "param": "Alternate Life Hours",
+          "validation": "optional",
+          "id": "68"
         }
       ],
       "id": "6"
     },
     {
       "index": 7,
-      "section": "Suggested Alternative",
+      "section": "Suggested Time",
       "elements": [
         {
           "index": 71,
-          "dataType": "textrow",
+          "hint": "",
+          "dataType": "introw",
           "defaultValues": "",
-          "param": "Alternate Lamp Type",
-          "validation": "",
+          "param": "Suggested Peak Hours",
+          "validation": "optional",
           "id": "71"
         },
         {
           "index": 72,
+          "hint": "",
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Alternate Lamps Per Fixtures",
-          "validation": "",
+          "param": "Suggested Part Peak Hours",
+          "validation": "optional",
           "id": "72"
         },
         {
           "index": 73,
+          "hint": "",
           "dataType": "introw",
           "defaultValues": "",
-          "param": "Alternate Number of Fixtures",
-          "validation": "",
+          "param": "Suggested Off Peak Hours",
+          "validation": "optional",
           "id": "73"
-        },
-        {
-          "index": 74,
-          "dataType": "textrow",
-          "defaultValues": "",
-          "param": "Alternate Make",
-          "validation": "",
-          "id": "74"
-        },
-        {
-          "index": 75,
-          "dataType": "textrow",
-          "defaultValues": "",
-          "param": "Alternate Model",
-          "validation": "",
-          "id": "75"
-        },
-        {
-          "index": 76,
-          "dataType": "decimalrow",
-          "defaultValues": "",
-          "param": "Alternate Actual Watts",
-          "validation": "",
-          "id": "76"
-        },
-        {
-          "index": 77,
-          "dataType": "introw",
-          "defaultValues": "",
-          "param": "Alternate Life Hours",
-          "validation": "",
-          "id": "77"
         }
       ],
       "id": "7"
