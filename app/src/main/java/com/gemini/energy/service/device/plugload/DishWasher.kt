@@ -34,14 +34,14 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
     /**
      * Usage Hours
      * */
-    private var peakHours = 0
-    private var partPeakHours = 0
-    private var offPeakHours = 0
+    private var peakHours = 0.0
+    private var partPeakHours = 0.0
+    private var offPeakHours = 0.0
     private var usageHoursPre: UsageSimple? = null
 
-    private var suggestedPeakHours = 0
-    private var suggestedPartPeakHours = 0
-    private var suggestedOffPeakHours = 0
+    private var suggestedPeakHours = 0.0
+    private var suggestedPartPeakHours = 0.0
+    private var suggestedOffPeakHours = 0.0
     private var usageHoursPost: UsageSimple? = null
 
     private var waterConsumption = 0.0
@@ -55,14 +55,14 @@ class DishWasher(private val computable: Computable<*>, utilityRateGas: UtilityR
 
     override fun setup() {
 
-        peakHours = featureData["Peak Hours"]!! as Int
-        partPeakHours = featureData["Part Peak Hours"]!! as Int
-        offPeakHours = featureData["Off Peak Hours"]!! as Int
+        peakHours = featureData["Peak Hours"]!! as Double
+        partPeakHours = featureData["Part Peak Hours"]!! as Double
+        offPeakHours = featureData["Off Peak Hours"]!! as Double
         usageHoursPre = UsageSimple(peakHours, partPeakHours, offPeakHours)
 
-        suggestedPeakHours = featureData["Suggested Peak Hours"]!! as Int
-        suggestedPartPeakHours = featureData["Suggested Part Peak Hours"]!! as Int
-        suggestedOffPeakHours = featureData["Suggested Off Peak Hours"]!! as Int
+        suggestedPeakHours = featureData["Suggested Peak Hours"]!! as Double
+        suggestedPartPeakHours = featureData["Suggested Part Peak Hours"]!! as Double
+        suggestedOffPeakHours = featureData["Suggested Off Peak Hours"]!! as Double
         usageHoursPost = UsageSimple(suggestedPeakHours, suggestedPartPeakHours, suggestedOffPeakHours)
         Timber.d("## Suggested Time ##")
         Timber.d(usageHoursPost.toString())

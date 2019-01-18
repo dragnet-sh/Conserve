@@ -26,6 +26,13 @@
     <string name="zone_save">Save</string>
     <string name="zone_cancel">Cancel</string>
 
+    <!-- Preferences -->
+    <string name="title_first_section">Configure DropBox</string>
+    <string name="drop_box_auth">dropBoxAuth</string>
+
+    <!-- DropBox -->
+    <string name="app_key">o1peu8t9r6jrl12</string>
+
     <string name="navigation_drawer_header_title">Gemini Energy</string>
 
 </resources>

@@ -69,7 +69,9 @@ ext {
             "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion",
             "com.squareup.retrofit2:converter-gson:$retrofitVersion",
 
-            'com.android.support:multidex:1.0.3'
+            'com.android.support:multidex:1.0.3',
+            'com.takisoft.fix:preference-v7:25.3.0.0',
+            'com.dropbox.core:dropbox-core-sdk:3.0.10'
 
     ]
 

@@ -126,7 +126,7 @@
           "hint": "",
           "dataType": "decimalrow",
           "defaultValues": "",
-          "param": "Pre-Fan Energy Rate",
+          "param": "Pre Fan Energy Rate",
           "validation": "",
           "id": "114"
         },

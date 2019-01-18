@@ -1,7 +1,7 @@
 package com.gemini.energy.service.type
 
-class UsageSimple(private val peakHours: Int,
-                  private val partPeakHours: Int, private val offPeakHours: Int) : UsageHours() {
+class UsageSimple(private val peakHours: Double,
+                  private val partPeakHours: Double, private val offPeakHours: Double) : UsageHours() {
 
     private var summerOn = 0.0
     private var summerPart = 0.0

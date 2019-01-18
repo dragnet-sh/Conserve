@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.multidex.MultiDex
 import com.crashlytics.android.Crashlytics
 import com.gemini.energy.internal.injection.DaggerApplication
+import com.gemini.energy.presentation.audit.DropBox
 import com.gemini.energy.presentation.util.EAction
 import com.gemini.energy.presentation.type.list.model.TypeModel
 import io.fabric.sdk.android.Fabric
@@ -25,6 +26,8 @@ class App : DaggerApplication() {
         Fabric.with(this, Crashlytics())
         Timber.plant(Timber.DebugTree())
         RxJavaPlugins.setErrorHandler({Timber.e(it)})
+
+        if (DropBox.hasToken()) DropBox.captureAuthToken()
     }
 
     override fun attachBaseContext(base: Context?) {

@@ -138,9 +138,9 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
     /**
      * Usage Hours
      * */
-    private var peakHours = 0
-    private var partPeakHours = 0
-    private var offPeakHours = 0
+    private var peakHours = 0.0
+    private var partPeakHours = 0.0
+    private var offPeakHours = 0.0
 
     override fun setup() {
         try {
@@ -154,9 +154,9 @@ class Hvac(private val computable: Computable<*>, utilityRateGas: UtilityRate, u
             city = featureData["City"]!! as String
             state = featureData["State"]!! as String
 
-            peakHours = featureData["Peak Hours"]!! as Int
-            partPeakHours = featureData["Part Peak Hours"]!! as Int
-            offPeakHours = featureData["Off Peak Hours"]!! as Int
+            peakHours = featureData["Peak Hours"]!! as Double
+            partPeakHours = featureData["Part Peak Hours"]!! as Double
+            offPeakHours = featureData["Off Peak Hours"]!! as Double
 
             alternateSeer = featureData["Alternate SEER"]!! as Double
             alternateEer = featureData["Alternate EER"]!! as Double

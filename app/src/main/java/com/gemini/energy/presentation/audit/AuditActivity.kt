@@ -2,6 +2,7 @@ package com.gemini.energy.presentation.audit
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -81,10 +82,11 @@ class AuditActivity : BaseActivity(), AuditListFragment.OnAuditSelectedListener 
             })
         }
         R.id.menu_sync -> consume { sync() }
+        R.id.menu_preference -> consume {
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
         else -> super.onOptionsItemSelected(item)
     }
-
-
 
     private inline fun consume(f: () -> Unit): Boolean {
         f()

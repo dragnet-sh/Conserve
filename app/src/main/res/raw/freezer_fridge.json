@@ -62,7 +62,7 @@
         },
         {
           "index": 18,
-          "param": "Daily Energy Used (kWh)",
+          "param": "Daily Energy Used",
           "dataType": "decimalrow",
           "validation": "",
           "defaultValues": "",

@@ -57,7 +57,6 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
     private var nrs = 0
     private var hp = 0.0
     private var efficiency = 0.0
-    private var hourPercentage = 0.0
 
     /**
      * Suggested Alternative
@@ -76,7 +75,6 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
             nrs = featureData["Nameplate Rotational Speed (NRS)"]!! as Int
             hp = featureData["Horsepower (HP)"]!! as Double
             efficiency = featureData["Efficiency"]!! as Double
-            hourPercentage = featureData["Hours (%)"]!! as Double
 
             alternateHp = featureData["Alternate Horsepower (HP)"]!! as Double
             alternateEfficiency = featureData["Alternate Efficiency"]!! as Double
@@ -96,7 +94,8 @@ class Motors (private val computable: Computable<*>, utilityRateGas: UtilityRate
 
         val percentageLoad = (srs - mrs) / (srs - nrs)
         val powerUsed = hp * KW_CONVERSION * percentageLoad / efficiency
-        val nemaPremium = extractNemaPremium(elements)
+//        val nemaPremium = extractNemaPremium(elements)
+        val nemaPremium = 0.0
 
         Timber.d("*** Nema Premium :: ($nemaPremium) ***")
 

@@ -379,7 +379,7 @@ abstract class EBase(private val computable: Computable<*>,
         val result = when (computable.auditScopeType) {
             EZoneType.HVAC          -> switcherHVAC()
             EZoneType.Plugload      -> switcherPlugload()
-            else                    -> Single.just(JsonObject())
+            else                    -> buildPostState() // This gives an empty JSON !!
         }
 
         return result.map { it.getAsJsonArray("results") }.toObservable()

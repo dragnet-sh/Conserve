@@ -3,7 +3,11 @@ package com.gemini.energy.service
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import com.dropbox.core.v2.files.FileMetadata
 import com.gemini.energy.domain.entity.Computable
+import com.gemini.energy.presentation.audit.DropBox
+import com.gemini.energy.presentation.audit.UploadFileTask
+import timber.log.Timber
 import java.io.BufferedOutputStream
 import java.io.ByteArrayInputStream
 import java.io.File
@@ -61,7 +65,7 @@ class OutgoingRows(private val context: Context) {
         // Step 2: Extract out the individual components
         // Step 3: Feed those components to the data method
         // Step 4: Collect those data string in a list
-        // Step 5: Concatenate the list and write that to the file
+        // Step 5: Concatenate the list and writeToLocal that to the file
 
         Log.d(TAG, "Data Holder Count - [${dataHolder.count()}] - (${thread()})")
 
@@ -84,15 +88,40 @@ class OutgoingRows(private val context: Context) {
                 outgoing.append(data(header, rows))
                 val file = getFile(eachData.path, eachData.fileName)
                 val data = outgoing.toString()
+                val path = "/Gemini/Energy/${eachData.path}${eachData.fileName}"
 
-                write(data, file)
+                writeToLocal(data, file)
+                writeToDropBox(data, path)
             }
 
         }
     }
 
     @Synchronized
-    private fun write(data: String, file: File) {
+    private fun writeToDropBox(data: String, path: String) {
+
+        try {
+            if (DropBox.hasToken()) {
+                val uploadTask = UploadFileTask(DropBox.getClient(), object: UploadFileTask.Callback {
+                    override fun onUploadComplete(result: FileMetadata) {
+                        Timber.d("DropBox - File Upload Complete")
+                    }
+                    override fun onError(e: Exception?) {
+                        Timber.d("Error - DropBox")
+                        e?.printStackTrace()
+                    }
+                })
+
+                uploadTask.execute(data, path)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    @Synchronized
+    private fun writeToLocal(data: String, file: File) {
         try {
             val inputStream = ByteArrayInputStream(data.toByteArray())
             val outputStream = BufferedOutputStream(FileOutputStream(file))

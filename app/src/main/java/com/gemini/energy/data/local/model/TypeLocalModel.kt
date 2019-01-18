@@ -6,11 +6,7 @@ import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = "AuditZoneType", foreignKeys = [(ForeignKey(
-        entity = ZoneLocalModel::class,
-        parentColumns = ["id"],
-        childColumns = ["zone_id"]))])
-
+@Entity(tableName = "AuditZoneType")
 data class TypeLocalModel(
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "id")

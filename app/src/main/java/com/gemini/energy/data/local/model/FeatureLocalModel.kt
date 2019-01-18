@@ -6,10 +6,7 @@ import android.arch.persistence.room.ForeignKey
 import android.arch.persistence.room.PrimaryKey
 import java.util.*
 
-@Entity(tableName = "Feature", foreignKeys = [
-    ForeignKey(entity = AuditLocalModel::class, parentColumns = ["id"], childColumns = ["audit_id"]),
-    ForeignKey(entity = TypeLocalModel::class, parentColumns = ["id"], childColumns = ["type_id"])
-])
+@Entity(tableName = "Feature")
 data class FeatureLocalModel(
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "id")

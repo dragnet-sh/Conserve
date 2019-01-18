@@ -74,7 +74,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
     /**
      * To be used for Efficient Query Filter
      * */
-    private var steamPanSize = -99.99
+    private var steamPanSize = -99
 
     /**
      * Computes the Combination Oven Cost
@@ -186,7 +186,7 @@ class CombinationOven(private val computable: Computable<*>, utilityRateGas: Uti
             waterUseConvection = featureData["Convection Water Usage Rate"]!! as Double
             waterUseSteam = featureData["Steam Water Usage Rate"]!! as Double
 
-            steamPanSize = featureData["Size (Steam Pans)"]!! as Double
+            steamPanSize = featureData["Size (Steam Pans)"]!! as Int
 
         } catch (e: Exception) {
             e.printStackTrace()

@@ -30,9 +30,9 @@ class Griddle(private val computable: Computable<*>, utilityRateGas: UtilityRate
     /**
      * Usage Hours
      * */
-    private var peakHours = 0
-    private var partPeakHours = 0
-    private var offPeakHours = 0
+    private var peakHours = 0.0
+    private var partPeakHours = 0.0
+    private var offPeakHours = 0.0
     private var usageHours: UsageSimple? = null
 
     private var idleEnergy = 0
@@ -46,9 +46,9 @@ class Griddle(private val computable: Computable<*>, utilityRateGas: UtilityRate
 
     override fun setup() {
 
-        peakHours = featureData["Peak Hours"]!! as Int
-        partPeakHours = featureData["Part Peak Hours"]!! as Int
-        offPeakHours = featureData["Off Peak Hours"]!! as Int
+        peakHours = featureData["Peak Hours"]!! as Double
+        partPeakHours = featureData["Part Peak Hours"]!! as Double
+        offPeakHours = featureData["Off Peak Hours"]!! as Double
 
         idleEnergy = featureData["Idle Energy"]!! as Int
         preHeatEnergy = featureData["Preheat Energy"]!! as Int

@@ -31,9 +31,9 @@ class ConveyorBroiler(private val computable: Computable<*>, utilityRateGas: Uti
     /**
      * Usage Hours
      * */
-    private var peakHours = 0
-    private var partPeakHours = 0
-    private var offPeakHours = 0
+    private var peakHours = 0.0
+    private var partPeakHours = 0.0
+    private var offPeakHours = 0.0
     private var usageHours: UsageSimple? = null
 
     private var energyInputRate = 0.0
@@ -44,9 +44,9 @@ class ConveyorBroiler(private val computable: Computable<*>, utilityRateGas: Uti
 
     override fun setup() {
 
-        peakHours = featureData["Peak Hours"]!! as Int
-        partPeakHours = featureData["Part Peak Hours"]!! as Int
-        offPeakHours = featureData["Off Peak Hours"]!! as Int
+        peakHours = featureData["Peak Hours"]!! as Double
+        partPeakHours = featureData["Part Peak Hours"]!! as Double
+        offPeakHours = featureData["Off Peak Hours"]!! as Double
         usageHours = UsageSimple(peakHours, partPeakHours, offPeakHours)
 
         energyInputRate = featureData["Energy Input Rate"]!! as Double

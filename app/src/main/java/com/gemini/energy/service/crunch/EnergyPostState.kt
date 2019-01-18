@@ -17,6 +17,8 @@ class EnergyPostState {
 
         override fun apply(response: JsonArray): DataHolder {
 
+            Timber.d("**********************************************************************")
+
             Timber.d("##### Post-State Energy Calculation - (${thread()}) #####")
             Timber.d("### Efficient Alternate Count - [${response.count()}] - ###")
             Timber.d("$response")

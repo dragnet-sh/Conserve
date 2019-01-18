@@ -25,31 +25,31 @@ class ParseAPI {
         @GET("classes/Motors")
         fun fetchMotors(@Query("where") where: String): Single<JsonObject>
 
-        @POST("classes/rAudit")
+        @POST("classes/AuditSyncTest")
         fun saveAudit(@Body body: JsonObject): Single<JsonObject>
 
-        @PUT("classes/rAudit")
+        @PUT("classes/AuditSyncTest")
         fun updateAudit(): Single<JsonObject>
 
-        @DELETE("classes/rAudit/{objectId}")
+        @DELETE("classes/AuditSyncTest/{objectId}")
         fun deleteAudit(@Path("objectId") objectId: String): Single<JsonObject>
 
-        @GET("classes/rAudit")
+        @GET("classes/AuditSyncTest")
         fun fetchAudit(@Query("where") where: String): Single<JsonObject>
 
-        @GET("classes/rAudit")
+        @GET("classes/AuditSyncTest")
         fun fetchAudit(): Single<JsonObject>
 
-        @POST("classes/rFeature")
+        @POST("classes/FeatureSyncTest")
         fun saveFeature(@Body body: JsonObject): Single<JsonObject>
 
-        @DELETE("classes/rFeature/{objectId}")
+        @DELETE("classes/FeatureSyncTest/{objectId}")
         fun deleteFeature(@Path("objectId") objectId: String): Single<JsonObject>
 
-        @GET("classes/rFeature")
+        @GET("classes/FeatureSyncTest")
         fun fetchFeature(@Query("where") where: String): Single<JsonObject>
 
-        @GET("classes/rFeature")
+        @GET("classes/FeatureSyncTest")
         fun fetchFeature(): Single<JsonObject>
 
     }

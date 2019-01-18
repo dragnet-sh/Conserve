@@ -52,7 +52,7 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
         var hourlyEnergy = 0.0
 
         try {
-            val dailyEnergyUsed = featureData["Daily Energy Used (kWh)"]!! as Double
+            val dailyEnergyUsed = featureData["Daily Energy Used"]!! as Double
             hourlyEnergy = dailyEnergyUsed / 24
         } catch (e: Exception) {
             e.printStackTrace()
@@ -126,7 +126,7 @@ class Refrigerator(private val computable: Computable<*>, utilityRateGas: Utilit
      * */
     override fun preAuditFields() = mutableListOf("Number of Vacation days")
     override fun featureDataFields() = mutableListOf("Company", "Model Number", "Fridge Capacity", "Age", "Control",
-            "Daily Energy Used (kWh)", "Product Type", "Total Volume")
+            "Daily Energy Used", "Product Type", "Total Volume")
 
     override fun preStateFields() = mutableListOf("Daily Energy Used (kWh)")
     override fun postStateFields() = mutableListOf("company", "model_number", "style_type",
