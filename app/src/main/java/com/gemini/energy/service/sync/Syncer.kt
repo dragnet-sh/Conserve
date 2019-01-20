@@ -178,11 +178,13 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                             var objectId = ""
                             var zone: JsonObject? = null
                             var type: JsonObject? = null
+                            var mod = ""
 
                             try {
                                 auditId = it.asJsonObject.get("auditId").asString
                                 name = it.asJsonObject.get("name").asString
                                 usn = it.asJsonObject.get("usn").asInt
+                                mod = it.asJsonObject.get("mod").asString
                                 objectId = it.asJsonObject.get("objectId").asString
 
                                 zone = it.asJsonObject.get("zone").asJsonObject
@@ -198,11 +200,26 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                             // 1. Audit Entry - To local DB
                             Timber.d("<<<< AUDIT >>>>")
-                            val localAuditId = auditList.map { it.auditId }
-                            if (!localAuditId.contains(_auditId)) {
+                            val localAuditId = col.audit.associateBy { it.auditId }
+                            if (!localAuditId.containsKey(_auditId)) {
                                 val model = AuditLocalModel(_auditId, name, usn, objectId, Date(), Date())
                                 if (toDeleteAudit.contains(_auditId)) { /*DO NOTHING*/ }
                                 else { col.db?.auditDao()?.insert(model) }
+                            } else {
+                                val local = localAuditId[_auditId]
+                                Timber.d("Local Updated At")
+                                Timber.d(local?.updatedAt?.time.toString())
+
+                                Timber.d("Remote Updated At")
+                                Timber.d(mod.toLong().toString())
+
+                                local?.let {
+                                    if (it.updatedAt.time > mod.toLong()) { /*DO NOTHING*/ }
+                                    else {
+                                        val model = AuditLocalModel(_auditId, name, usn, objectId, Date(), Date())
+                                        col.db?.auditDao()?.insert(model)
+                                    }
+                                }
                             }
 
                             // 2. Zone Entry - To local DB
@@ -226,6 +243,15 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                                             Timber.d("Remote Last Modified At")
                                             Timber.d(iMod)
+
+                                            if (localZone.updatedAt.time > iMod.toLong()) { /*DO NOTHING*/ }
+                                            else {
+                                                Timber.d("-------- Zone Fresh Entry ----------")
+                                                val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
+                                                if (toDeleteZone.contains(iId)) { /*DO NOTHING*/ }
+                                                else {col.db?.zoneDao()?.insert(model) }
+                                            }
+
                                         } else {
                                             Timber.d("-------- Zone Fresh Entry ----------")
                                             val model = ZoneLocalModel(iId, iName, "Sample Zone", iUsn, _auditId, Date(), Date())
@@ -569,14 +595,3 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
     }
 
 }
-
-
-/**
- * 1. Batch Subscribe - Done
- * 2. Update the USN Locally - Done
- * 3. Query Audit with USN :: -1 - Done
- *
- * 4. Write Parse API to query rAudit - Done
- * 5. Update the Local Database with the Remote Result - Done
- * 6. Trigger a Column Refresh once this is done so that the results are visible - Done
- * */
