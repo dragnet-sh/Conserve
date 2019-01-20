@@ -1,6 +1,7 @@
 package com.gemini.energy.service
 
 import android.content.Context
+import com.gemini.energy.App
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.presentation.util.EApplianceType
 import com.gemini.energy.presentation.util.ELightingType
@@ -27,21 +28,27 @@ abstract class ComputableFactory {
                                  usageHours: UsageHours, outgoingRows: OutgoingRows,
                                  context: Context): ComputableFactory {
             this.computable = computable
+
+            // This is to ensure every computable gets it's own copy of Utility Rate
+            // Not sure how to create these instances from Dagger
+            val _utilityRateGas = UtilityRate(App.instance)
+            val _utilityRateElectricity = UtilityRate(App.instance)
+
             return when (computable.auditScopeType as EZoneType) {
 
-                EZoneType.Plugload                  -> PlugloadFactory(utilityRateGas,
-                        utilityRateElectricity, usageHours, outgoingRows, context)
+                EZoneType.Plugload                  -> PlugloadFactory(_utilityRateGas,
+                        _utilityRateElectricity, usageHours, outgoingRows, context)
 
-                EZoneType.HVAC                      -> HvacFactory(utilityRateGas,
-                        utilityRateElectricity, usageHours, outgoingRows, context)
+                EZoneType.HVAC                      -> HvacFactory(_utilityRateGas,
+                        _utilityRateElectricity, usageHours, outgoingRows, context)
 
-                EZoneType.Lighting                  -> LightingFactory(utilityRateGas,
-                        utilityRateElectricity, usageHours, outgoingRows, context)
+                EZoneType.Lighting                  -> LightingFactory(_utilityRateGas,
+                        _utilityRateElectricity, usageHours, outgoingRows, context)
 
-                EZoneType.Motors                    -> MotorFactory(utilityRateGas,
-                        utilityRateElectricity, usageHours, outgoingRows, context)
+                EZoneType.Motors                    -> MotorFactory(_utilityRateGas,
+                        _utilityRateElectricity, usageHours, outgoingRows, context)
 
-                EZoneType.Others                    -> GeneralFactory()
+                EZoneType.Others                   -> GeneralFactory()
             }
        }
     }
