@@ -25,31 +25,31 @@ class ParseAPI {
         @GET("classes/Motors")
         fun fetchMotors(@Query("where") where: String): Single<JsonObject>
 
-        @POST("classes/AuditSyncTest")
+        @POST("classes/$SYNC_AUDIT")
         fun saveAudit(@Body body: JsonObject): Single<JsonObject>
 
-        @PUT("classes/AuditSyncTest")
+        @PUT("classes/$SYNC_AUDIT")
         fun updateAudit(): Single<JsonObject>
 
-        @DELETE("classes/AuditSyncTest/{objectId}")
+        @DELETE("classes/$SYNC_AUDIT/{objectId}")
         fun deleteAudit(@Path("objectId") objectId: String): Single<JsonObject>
 
-        @GET("classes/AuditSyncTest")
+        @GET("classes/$SYNC_AUDIT")
         fun fetchAudit(@Query("where") where: String): Single<JsonObject>
 
-        @GET("classes/AuditSyncTest")
+        @GET("classes/$SYNC_AUDIT")
         fun fetchAudit(): Single<JsonObject>
 
-        @POST("classes/FeatureSyncTest")
+        @POST("classes/$SYNC_FEATURE")
         fun saveFeature(@Body body: JsonObject): Single<JsonObject>
 
-        @DELETE("classes/FeatureSyncTest/{objectId}")
+        @DELETE("classes/$SYNC_FEATURE/{objectId}")
         fun deleteFeature(@Path("objectId") objectId: String): Single<JsonObject>
 
-        @GET("classes/FeatureSyncTest")
+        @GET("classes/$SYNC_FEATURE")
         fun fetchFeature(@Query("where") where: String): Single<JsonObject>
 
-        @GET("classes/FeatureSyncTest")
+        @GET("classes/$SYNC_FEATURE")
         fun fetchFeature(): Single<JsonObject>
 
     }
@@ -59,6 +59,9 @@ class ParseAPI {
         private const val masterKey = "NLI214vDqkoFTJSTtIE2xLqMme6Evd0kA1BbJ20S"
         private val loggingInterceptor = HttpLoggingInterceptor()
                 .setLevel(HttpLoggingInterceptor.Level.BODY)
+
+        private const val SYNC_AUDIT = "rAudit"
+        private const val SYNC_FEATURE = "rFeature"
 
         private val okHttpClient = OkHttpClient()
                 .newBuilder()
