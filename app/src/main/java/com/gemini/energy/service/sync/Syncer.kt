@@ -112,6 +112,18 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
                                     Timber.d("Remote Last Modified At (Feature - Type)")
                                     Timber.d(mod)
 
+                                    lMod?.let {
+                                        if (lMod > mod.toLong()) { /*DO NOTHING*/ }
+                                        else {
+                                            for (i in 0 until formIds.count() - 1) {
+                                                val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
+                                                        dataTypes[i], usn, null, zoneId.toInt(), typeId.toInt(), fields[i],
+                                                        values[i], null, null, Date(), Date())
+                                                models.add(feature)
+                                            }
+                                        }
+                                    }
+
                                 } else {
                                     Timber.d("---------- Feature Type Fresh Entry -----------")
                                     if (toDeleteType.contains(typeId.toInt())) { /*DO NOTHING*/ }
@@ -136,6 +148,18 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                                     Timber.d("Remote Last Modified At (Feature - Audit)")
                                     Timber.d(mod)
+
+                                    lMod?.let {
+                                        if (lMod > mod.toLong()) { /*DO NOTHING*/ }
+                                        else {
+                                            for (i in 0 until formIds.count() - 1) {
+                                                val feature = FeatureLocalModel(id[i].toInt(), formIds[i].toInt(), belongsTo,
+                                                        dataTypes[i], usn, _auditId, null, null, fields[i],
+                                                        values[i], null, null, Date(), Date())
+                                                models.add(feature)
+                                            }
+                                        }
+                                    }
 
                                 } else {
                                     Timber.d("---------- Feature Audit Fresh Entry -----------")
@@ -291,6 +315,16 @@ class Syncer(private val parseAPIService: ParseAPI.ParseAPIService,
 
                                             Timber.d("Remote Last Modified At")
                                             Timber.d(iMod)
+
+                                            localType.updatedAt?.let {
+                                                if (it.time > iMod.toLong()) { /*DO NOTHING*/}
+                                                else {
+                                                    Timber.d("------------ Type Fresh Entry --------------------")
+                                                    val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
+                                                    col.db?.auditScopeDao()?.insert(model)
+                                                }
+                                            }
+
                                         } else {
                                             Timber.d("------------ Type Fresh Entry --------------------")
                                             val model = TypeLocalModel(iId, iName, iType, iSubType, iUsn, iZoneId, _auditId, Date(), Date())
