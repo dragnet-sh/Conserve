@@ -46,13 +46,9 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
             ballastsPerFixtures = featureData["Ballasts Per Fixture"]!! as Int
             numberOfFixtures = featureData["Number of Fixtures"]!! as Int
 
-            val iPeakHours = featureData["Suggested Peak Hours"]!! as Int
-            val iPartPeakHours = featureData["Suggested Part Peak Hours"]!! as Int
-            val iOffPeakHours = featureData["Suggested Off Peak Hours"]!! as Int
-
-            peakHours = iPeakHours.toDouble()
-            partPeakHours = iPartPeakHours.toDouble()
-            offPeakHours = iOffPeakHours.toDouble()
+            peakHours = featureData["Peak Hours"]!! as Double
+            partPeakHours = featureData["Part Peak Hours"]!! as Double
+            offPeakHours = featureData["Off Peak Hours"]!! as Double
         } catch (e: Exception) {
             e.printStackTrace()
         }
