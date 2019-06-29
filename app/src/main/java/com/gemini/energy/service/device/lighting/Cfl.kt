@@ -45,9 +45,14 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
             actualWatts = featureData["Actual Watts"]!! as Double
             ballastsPerFixtures = featureData["Ballasts Per Fixture"]!! as Int
             numberOfFixtures = featureData["Number of Fixtures"]!! as Int
-            peakHours = featureData["Peak Hours"]!! as Double
-            partPeakHours = featureData["Part Peak Hours"]!! as Double
-            offPeakHours = featureData["Off Peak Hours"]!! as Double
+
+            val iPeakHours = featureData["Suggested Peak Hours"]!! as Int
+            val iPartPeakHours = featureData["Suggested Part Peak Hours"]!! as Int
+            val iOffPeakHours = featureData["Suggested Off Peak Hours"]!! as Int
+
+            peakHours = iPeakHours.toDouble()
+            partPeakHours = iPartPeakHours.toDouble()
+            offPeakHours = iOffPeakHours.toDouble()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -162,7 +167,7 @@ class Cfl (private val computable: Computable<*>, utilityRateGas: UtilityRate, u
 
     override fun computedFields() = mutableListOf("")
 
-    private fun getFormMapper() = FormMapper(context, R.raw.cfl)
+    private fun getFormMapper() = FormMapper(context, R.raw.lighting)
     private fun getModel() = getFormMapper().decodeJSON()
     private fun getGFormElements() = getFormMapper().mapIdToElements(getModel())
 
