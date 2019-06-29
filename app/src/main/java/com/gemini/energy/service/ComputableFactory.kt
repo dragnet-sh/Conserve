@@ -95,6 +95,10 @@ class PlugloadFactory(private val utilityRateGas: UtilityRate,
             EApplianceType.PreRinseSpray            -> PreRinseSpray(computable,
                     utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
 
+            //**Add this inside class PlugloadFactory**
+            EApplianceType.SampleAppliance          -> SampleAppliance(computable,
+                    utilityRateGas, utilityRateElectricity, usageHours, outgoingRows, context)
+
         }
     }
 

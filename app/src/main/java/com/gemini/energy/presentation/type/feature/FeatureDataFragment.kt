@@ -63,6 +63,9 @@ class FeatureDataFragment : BaseFormFragment() {
                 if (model.subType == EApplianceType.ConveyorBroiler.value) {rawId = R.raw.conveyor_broiler }
                 if (model.subType == EApplianceType.DishWasher.value) {rawId = R.raw.dishwasher }
                 if (model.subType == EApplianceType.PreRinseSpray.value) {rawId = R.raw.pre_rinse_spray }
+
+                //**Add this line under EZoneType.Plugload.value**
+                if (model.subType == EApplianceType.SampleAppliance.value) {rawId = R.raw.sample_appliance }
             }
             else if (model.type == EZoneType.HVAC.value) {rawId = R.raw.hvac}
             else if (model.type == EZoneType.Motors.value) {rawId = R.raw.motors}

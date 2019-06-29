@@ -52,7 +52,10 @@ enum class EApplianceType(val value: String) {
     HotFoodCabinet("Hot Food Cabinet"),
     ConveyorBroiler("Conveyor Broiler"),
     DishWasher("Dish Washer"),
-    PreRinseSpray("Pre Rinse Spray");
+    PreRinseSpray("Pre Rinse Spray"),
+
+    //**Add to enum class EApplianceType **//
+    SampleAppliance("Sample Appliance");
 
     companion object {
         private val map = EApplianceType.values()
