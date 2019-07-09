@@ -374,7 +374,7 @@ abstract class EBase(private val computable: Computable<*>,
         val query = queryEfficientFilter()
 
         fun switcherHVAC() = if (efficientLookup()) parseAPIService.fetchHVAC(query) else buildPostState()
-        fun switcherPlugload() = if (isEnergyStar) buildPostState() else parseAPIService.fetchPlugload(query)
+        fun switcherPlugload() = if (efficientLookup() && !isEnergyStar) parseAPIService.fetchPlugload(query) else buildPostState()
 
         val result = when (computable.auditScopeType) {
             EZoneType.HVAC          -> switcherHVAC()

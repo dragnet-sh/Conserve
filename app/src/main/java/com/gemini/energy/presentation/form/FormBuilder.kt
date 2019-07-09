@@ -18,6 +18,7 @@ class FormBuilder {
 
             // *** 1. Add Validation :: [Mandatory | Optional] *** //
             // *** 2. Add Hints :: Placeholder Text *** //
+            //ToDo: This is the place where you can implement other Types of Form Validation
             if (item.validation == MANDATORY) { row.setRequired(true) }
             row.setHint(item.hint)
 
