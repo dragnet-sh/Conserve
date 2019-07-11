@@ -36,6 +36,7 @@ class FormMapper(private val context: Context, private val rawId: Int?) {
     fun mapSectionIdsToElements(model: GEnergyFormModel?) = Mapper(model).mapSIdToGElements
     fun mapSectionIdsToName(model: GEnergyFormModel?) = Mapper(model).mapSIdToSName
     fun mapIdToElements(model: GEnergyFormModel?) = Mapper(model).mapEIdToGElements
+    fun mapElementIdToSectionName(model: GEnergyFormModel?) = Mapper(model).mapEIdToSName
     fun sortedElementIds(model: GEnergyFormModel?) = Sorter(Mapper(model).mapIndexSID).sortedIds
     fun sortedFormElementIds(model: GEnergyFormModel?) = Sorter(Mapper(model).mapIndexEID).sortedIds
 
@@ -57,6 +58,7 @@ class FormMapper(private val context: Context, private val rawId: Int?) {
         var mapSIdToSName: HashMap<Int, String> = hashMapOf()
         var mapSIdToGElements: HashMap<Int, List<GElements>> = hashMapOf()
         var mapEIdToGElements: HashMap<Int, GElements> = hashMapOf()
+        var mapEIdToSName: HashMap<Int, String> = hashMapOf()
 
         var mapIndexSID: HashMap<Int, Int> = hashMapOf()
         var mapIndexEID: HashMap<Int, Int> = hashMapOf()
@@ -90,6 +92,7 @@ class FormMapper(private val context: Context, private val rawId: Int?) {
                         if (elementId != null && index != null) {
                             this.mapEIdToGElements[elementId] = gElements
                             this.mapIndexEID[index] = elementId
+                            this.mapEIdToSName[elementId] = sectionName
                         }
                     }
                 }
