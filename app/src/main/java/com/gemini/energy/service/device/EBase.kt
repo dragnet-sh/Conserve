@@ -66,7 +66,10 @@ abstract class EBase(private val computable: Computable<*>,
      * */
     private fun setupUtility(base: EBase) {
         base.gasRate = utilityRateGas.initUtility(Gas()).build()
-        base.electricRateStructure = preAudit["Electric Rate Structure"] as String
+        //Others has been added to the Electric Rate Structure as a fix cause the Section Name
+        //is added to the Element Key
+        val fix = "Others"
+        base.electricRateStructure = preAudit["$fix Electric Rate Structure"] as String
 
         Timber.d("####### RATE STRUCTURE CHECKER #######")
         Timber.d(electricRateStructure)
@@ -152,6 +155,8 @@ abstract class EBase(private val computable: Computable<*>,
         val energyPreState = EnergyPreState()
         energyPreState.featureData = featureData
         energyPreState.featureDataFields = featureDataFields()
+        energyPreState.preAuditData = preAudit
+        energyPreState.preAuditDataFields = preAuditFields()
         energyPreState.computable = computable
 
         // ** Prepare a list of Observable - Extractor that is required by each of the Zone Type **
@@ -266,9 +271,7 @@ abstract class EBase(private val computable: Computable<*>,
         return Single.just(wrapper)
     }
 
-    //ToDo - Where is this used ?? Cleanup
     abstract fun preAuditFields(): MutableList<String>
-
     abstract fun featureDataFields(): MutableList<String>
 
     //ToDo - Where is this used ?? Cleanup
@@ -412,8 +415,10 @@ abstract class EBase(private val computable: Computable<*>,
         val usage = mutableListOf<String>()
 
         for (eDay in EDay.values()) {
-            if (preAudit.containsKey(eDay.value)) {
-                usage.add(preAudit[eDay.value] as String)
+            //This key is fixed as the Section Name is being appended to Element Key
+            val fixed = "Operation Hours " + eDay.value
+            if (preAudit.containsKey(fixed)) {
+                usage.add(preAudit[fixed] as String)
             } else {
                 usage.add("")
             }

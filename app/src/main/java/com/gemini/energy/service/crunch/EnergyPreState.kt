@@ -11,13 +11,16 @@ import java.util.*
 class EnergyPreState {
 
     lateinit var featureDataFields: MutableList<String>
+    lateinit var preAuditDataFields: MutableList<String>
     lateinit var featureData: Map<String, Any>
+    lateinit var preAuditData: Map<String, Any>
     lateinit var computable: Computable<*>
 
     private fun initDataHolder(): DataHolder {
         val dataHolderPreState = DataHolder()
 
         dataHolderPreState.header?.addAll(featureDataFields)
+        dataHolderPreState.header?.addAll(preAuditDataFields)
         dataHolderPreState.computable = computable
         dataHolderPreState.fileName = "${Date().time}_pre_state.csv"
 
@@ -49,6 +52,9 @@ class EnergyPreState {
             val preRow = mutableMapOf<String, String>()
             featureDataFields.forEach { field ->
                 preRow[field] = if (featureData.containsKey(field)) featureData[field].toString() else ""
+            }
+            preAuditDataFields.forEach { field ->
+                preRow[field] = if (preAuditData.containsKey(field)) preAuditData[field].toString() else ""
             }
 
             val costValue = cost(jsonElement)

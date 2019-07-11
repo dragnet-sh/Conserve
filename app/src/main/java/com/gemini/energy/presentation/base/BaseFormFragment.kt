@@ -72,7 +72,9 @@ abstract class BaseFormFragment : DaggerFragment() {
 
     private fun saveForm() {
         val formData: MutableList<Feature> = mutableListOf()
+        val sectionMap = getSectionMap()
         var isValid = true
+
         getFormIds().forEach { id ->
             val gElement = getGFormElements()[id] as GElements
             val eBaseRowType = BaseRowType.get(gElement.dataType!!)
@@ -89,6 +91,15 @@ abstract class BaseFormFragment : DaggerFragment() {
                 }
 
                 buildFeature(gElement, gFormElement)?.let {
+                    if (it.belongsTo == PREAUDIT) {
+                        //Extract the Section Id
+                        //Append Section Name to Each of the Key to make it unique for now
+                        //ToDo: Need to find a better approach later
+                        if (sectionMap.containsKey(gElement.id)) {
+                            val sectionName = sectionMap[gElement.id]
+                            it.key = sectionName + " " + it.key
+                        }
+                    }
                     formData.add(it)
                 }
             }
@@ -110,6 +121,7 @@ abstract class BaseFormFragment : DaggerFragment() {
     private fun getModel() = getFormMapper().decodeJSON()
     private fun getFormIds() = getFormMapper().sortedFormElementIds(getModel())
     private fun getGFormElements() = getFormMapper().mapIdToElements(getModel())
+    private fun getSectionMap() = getFormMapper().mapElementIdToSectionName(getModel())
 
     abstract fun resourceId(): Int?
     abstract fun getAuditId(): Long?
@@ -123,5 +135,6 @@ abstract class BaseFormFragment : DaggerFragment() {
     companion object {
         private const val TAG = "BaseFormFragment"
         private const val SAVE = "SAVE"
+        private const val PREAUDIT = "preaudit"
     }
 }
