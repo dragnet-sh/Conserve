@@ -7,6 +7,8 @@ import com.dropbox.core.v2.files.FileMetadata
 import com.gemini.energy.domain.entity.Computable
 import com.gemini.energy.presentation.audit.DropBox
 import com.gemini.energy.presentation.audit.UploadFileTask
+import com.gemini.energy.presentation.util.EApplianceType
+import com.gemini.energy.presentation.util.ELightingType
 import timber.log.Timber
 import java.io.BufferedOutputStream
 import java.io.ByteArrayInputStream
@@ -29,6 +31,26 @@ class DataHolder {
                 .append("${value?.auditScopeName?.toLowerCase()?.replace("[^a-zA-Z0-9]".toRegex(), "_")}/")
 
                 .toString()
+
+        if (value?.auditScopeSubType == ELightingType.CFL) {
+            this.aggregatorPath = StringBuilder()
+
+                    .append("${value.auditName.toLowerCase().replace("\\s+".toRegex(), "_")}/")
+                    .append("aggregated_cfl/")
+
+                    .toString()
+
+            this.aggregatorFileName = StringBuilder()
+                    .append("${value.auditName.toLowerCase().replace("\\s+".toRegex(), "_")}_")
+                    .append("${value.zoneName.toLowerCase().replace("\\s+".toRegex(), "_")}_")
+                    .append("${value.auditScopeSubType?.toString()?.toLowerCase()}_")
+                    .append(value.auditScopeName.toLowerCase().replace("[^a-zA-Z0-9]".toRegex(), "_"))
+
+                    .toString()
+
+            this.aggregatorType = ELightingType.CFL
+
+        }
     }
 
     /**
@@ -42,6 +64,9 @@ class DataHolder {
      * Set during runtime via the computable set method
      * */
     var path: String = ""
+    var aggregatorType: ELightingType? = null
+    var aggregatorPath: String = ""
+    var aggregatorFileName: String = ""
 
     override fun toString(): String {
         return "fileName: [$fileName]\n" +
@@ -92,9 +117,20 @@ class OutgoingRows(private val context: Context) {
 
                 writeToLocal(data, file)
                 writeToDropBox(data, path)
+
+                val regex = ".*_post_state.csv".toRegex()
+                if (regex.containsMatchIn(eachData.fileName)) {
+                    if (eachData.aggregatorType == ELightingType.CFL) {
+                        val aggregatorPath = "/Gemini/Energy/${eachData.aggregatorPath}${eachData.aggregatorFileName}_${eachData.fileName}"
+                        writeToDropBox(data, aggregatorPath)
+                    }
+                }
+
             }
 
         }
+
+        // *** Call the Aggregate Save *** //
     }
 
     @Synchronized
